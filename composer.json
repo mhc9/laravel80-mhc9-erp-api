@@ -14,6 +14,7 @@
         "laravel/sanctum": "*",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.4",
+        "phattarachai/line-notify": "^2.0",
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {

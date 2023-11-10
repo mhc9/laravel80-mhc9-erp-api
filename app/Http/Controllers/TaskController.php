@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use Phattarachai\LineNotify\Facade\Line;
 use App\Models\Task;
 use App\Models\TaskType;
 use App\Models\TaskGroup;
@@ -197,6 +198,12 @@ class TaskController extends Controller
                         $taskAsset->save();
                     }
                 }
+
+                /** ดึงข้อมูลผู้แจ้ง */
+                $reporter = Employee::with('prefix','position','level')->find($task->reporter_id);
+
+                /** แจ้งเตือนไปในไลน์ */
+                Line::send('คุณ'.$reporter->firstname.' '.$reporter->lastname.' ได้แจ้ง'.$task->problem.' เมื่อ '.convDbDateToThDate($task->task_date).' เวลา '.$task->task_time.'น.');
 
                 return [
                     'status'    => 1,
