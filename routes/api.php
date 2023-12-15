@@ -34,9 +34,9 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/tasks/count/status', 'App\Http\Controllers\TaskController@getCountByStatus');
     Route::get('/tasks/init/form', 'App\Http\Controllers\TaskController@getInitialFormData');
     Route::post('/tasks', 'App\Http\Controllers\TaskController@store');
-    Route::put('/tasks/{id}', 'App\Http\Controllers\TaskController@update');
-    Route::delete('/tasks/{id}', 'App\Http\Controllers\TaskController@destroy');
-    Route::put('/tasks/{id}/handle', 'App\Http\Controllers\TaskController@handle');
+    Route::post('/tasks/{id}/update', 'App\Http\Controllers\TaskController@update');
+    Route::post('/tasks/{id}/delete', 'App\Http\Controllers\TaskController@destroy');
+    Route::post('/tasks/{id}/handle', 'App\Http\Controllers\TaskController@handle');
 
     /** Repairations */
     Route::get('/repairations', 'App\Http\Controllers\RepairationController@getAll');
@@ -45,19 +45,15 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/repairations/asset/{assetId}', 'App\Http\Controllers\RepairationController@getByAsset');
     Route::get('/repairations/init/form', 'App\Http\Controllers\RepairationController@getInitialFormData');
     Route::post('/repairations', 'App\Http\Controllers\RepairationController@store');
-    Route::put('/repairations/{id}', 'App\Http\Controllers\RepairationController@update');
-    Route::put('/repairations/{id}/repair', 'App\Http\Controllers\RepairationController@repair');
-    Route::delete('/repairations/{id}', 'App\Http\Controllers\RepairationController@destroy');
+    Route::post('/repairations/{id}/update', 'App\Http\Controllers\RepairationController@update');
+    Route::post('/repairations/{id}/repair', 'App\Http\Controllers\RepairationController@repair');
+    Route::post('/repairations/{id}/delete', 'App\Http\Controllers\RepairationController@destroy');
 
-    /** Equipments */
-    Route::get('/equipments', 'App\Http\Controllers\EquipmentController@getAll');
-    Route::get('/equipments/{id}', 'App\Http\Controllers\EquipmentController@getById');
-    Route::get('/equipments/init/form', 'App\Http\Controllers\EquipmentController@getInitialFormData');
-    Route::post('/equipments', 'App\Http\Controllers\EquipmentController@store');
-
-    Route::get('/equipment-types', 'App\Http\Controllers\EquipmentTypeController@getAll');
-
-    Route::get('/equipment-groups', 'App\Http\Controllers\EquipmentGroupController@getAll');
+    /** Computer Sets */
+    Route::get('/comsets', 'App\Http\Controllers\EquipmentController@getAll');
+    Route::get('/comsets/{id}', 'App\Http\Controllers\EquipmentController@getById');
+    Route::get('/comsets/init/form', 'App\Http\Controllers\EquipmentController@getInitialFormData');
+    Route::post('/comsets', 'App\Http\Controllers\EquipmentController@store');
 
     /** Assets */
     Route::get('/assets', 'App\Http\Controllers\AssetController@getAll');
@@ -65,8 +61,8 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/assets/{id}', 'App\Http\Controllers\AssetController@getById');
     Route::get('/assets/init/form', 'App\Http\Controllers\AssetController@getInitialFormData');
     Route::post('/assets', 'App\Http\Controllers\AssetController@store');
-    Route::put('/assets/{id}', 'App\Http\Controllers\AssetController@update');
-    Route::delete('/assets/{id}', 'App\Http\Controllers\AssetController@destroy');
+    Route::post('/assets/{id}/update', 'App\Http\Controllers\AssetController@update');
+    Route::post('/assets/{id}/delete', 'App\Http\Controllers\AssetController@destroy');
     Route::post('/assets/{id}/upload', 'App\Http\Controllers\AssetController@uploadImage');
 
     /** Asset Ownerships */
@@ -95,23 +91,23 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/employees/init/form', 'App\Http\Controllers\EmployeeController@getInitialFormData');
     Route::post('/employees', 'App\Http\Controllers\EmployeeController@store');
     Route::post('/employees/{id}', 'App\Http\Controllers\EmployeeController@update');
-    Route::delete('/employees/{id}', 'App\Http\Controllers\EmployeeController@destroy');
+    Route::post('/employees/{id}/delete', 'App\Http\Controllers\EmployeeController@destroy');
     Route::post('/employees/{id}/upload', 'App\Http\Controllers\EmployeeController@uploadAvatar');
 
     /** Departments */
     Route::get('/departments', 'App\Http\Controllers\DepartmentController@getAll');
     Route::get('/departments/{id}', 'App\Http\Controllers\DepartmentController@getById');
     Route::post('/departments', 'App\Http\Controllers\DepartmentController@store');
-    Route::put('/departments/{id}', 'App\Http\Controllers\DepartmentController@update');
-    Route::delete('/departments/{id}', 'App\Http\Controllers\DepartmentController@destroy');
+    Route::post('/departments/{id}/update', 'App\Http\Controllers\DepartmentController@update');
+    Route::post('/departments/{id}/delete', 'App\Http\Controllers\DepartmentController@destroy');
 
     /** Divisions */
     Route::get('/divisions', 'App\Http\Controllers\DivisionController@getAll');
     Route::get('/divisions/{id}', 'App\Http\Controllers\DivisionController@getById');
     Route::get('/divisions/init/form', 'App\Http\Controllers\DivisionController@getInitialFormData');
     Route::post('/divisions', 'App\Http\Controllers\DivisionController@store');
-    Route::put('/divisions/{id}', 'App\Http\Controllers\DivisionController@update');
-    Route::delete('/divisions/{id}', 'App\Http\Controllers\DivisionController@destroy');
+    Route::post('/divisions/{id}/update', 'App\Http\Controllers\DivisionController@update');
+    Route::post('/divisions/{id}/delete', 'App\Http\Controllers\DivisionController@destroy');
 
     /** Members */
     Route::get('/members', 'App\Http\Controllers\MemberController@getAll');
@@ -125,23 +121,23 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/rooms', 'App\Http\Controllers\RoomController@getAll');
     Route::get('/rooms/{id}', 'App\Http\Controllers\RoomController@getById');
     Route::post('/rooms', 'App\Http\Controllers\RoomController@store');
-    Route::put('/rooms/{id}', 'App\Http\Controllers\RoomController@update');
-    Route::delete('/rooms/{id}', 'App\Http\Controllers\RoomController@destroy');
+    Route::post('/rooms/{id}/update', 'App\Http\Controllers\RoomController@update');
+    Route::post('/rooms/{id}/delete', 'App\Http\Controllers\RoomController@destroy');
 
     /** Units */
     Route::get('/units', 'App\Http\Controllers\UnitController@getAll');
     Route::get('/units/{id}', 'App\Http\Controllers\UnitController@getById');
     Route::post('/units', 'App\Http\Controllers\UnitController@store');
-    Route::put('/units/{id}', 'App\Http\Controllers\UnitController@update');
-    Route::delete('/units/{id}', 'App\Http\Controllers\UnitController@destroy');
+    Route::post('/units/{id}/update', 'App\Http\Controllers\UnitController@update');
+    Route::post('/units/{id}/delete', 'App\Http\Controllers\UnitController@destroy');
 
     /** budgets */
     Route::get('/budgets', 'App\Http\Controllers\BudgetController@getAll');
     Route::get('/budgets/search', 'App\Http\Controllers\BudgetController@search');
     Route::get('/budgets/{id}', 'App\Http\Controllers\BudgetController@getById');
     Route::post('/budgets', 'App\Http\Controllers\BudgetController@store');
-    Route::put('/budgets/{id}', 'App\Http\Controllers\BudgetController@update');
-    Route::delete('/budgets/{id}', 'App\Http\Controllers\BudgetController@destroy');
+    Route::post('/budgets/{id}/update', 'App\Http\Controllers\BudgetController@update');
+    Route::post('/budgets/{id}/delete', 'App\Http\Controllers\BudgetController@destroy');
 
     /** Items */
     Route::get('/items', 'App\Http\Controllers\ItemController@getAll');
@@ -149,8 +145,8 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/items/{id}', 'App\Http\Controllers\ItemController@getById');
     Route::get('/items/init/form', 'App\Http\Controllers\ItemController@getInitialFormData');
     Route::post('/items', 'App\Http\Controllers\ItemController@store');
-    Route::post('/items/{id}', 'App\Http\Controllers\ItemController@update');
-    Route::delete('/items/{id}', 'App\Http\Controllers\ItemController@destroy');
+    Route::post('/items/{id}/update', 'App\Http\Controllers\ItemController@update');
+    Route::post('/items/{id}/delete', 'App\Http\Controllers\ItemController@destroy');
 
     /** Requisitions */
     Route::get('/requisitions', 'App\Http\Controllers\RequisitionController@getAll');
@@ -158,8 +154,8 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/requisitions/{id}', 'App\Http\Controllers\RequisitionController@getById');
     Route::get('/requisitions/init/form', 'App\Http\Controllers\RequisitionController@getInitialFormData');
     Route::post('/requisitions', 'App\Http\Controllers\RequisitionController@store');
-    Route::put('/requisitions/{id}', 'App\Http\Controllers\RequisitionController@update');
-    Route::delete('/requisitions/{id}', 'App\Http\Controllers\RequisitionController@destroy');
+    Route::post('/requisitions/{id}/update', 'App\Http\Controllers\RequisitionController@update');
+    Route::post('/requisitions/{id}/delete', 'App\Http\Controllers\RequisitionController@destroy');
 
     /** Orders */
     Route::get('/orders', 'App\Http\Controllers\OrderController@getAll');
@@ -167,8 +163,8 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/orders/{id}', 'App\Http\Controllers\OrderController@getById');
     Route::get('/orders/init/form', 'App\Http\Controllers\OrderController@getInitialFormData');
     Route::post('/orders', 'App\Http\Controllers\OrderController@store');
-    Route::put('/orders/{id}', 'App\Http\Controllers\OrderController@update');
-    Route::delete('/orders/{id}', 'App\Http\Controllers\OrderController@destroy');
+    Route::post('/orders/{id}/update', 'App\Http\Controllers\OrderController@update');
+    Route::post('/orders/{id}/delete', 'App\Http\Controllers\OrderController@destroy');
 
     /** Inspections */
     Route::get('/inspections', 'App\Http\Controllers\InspectionController@getAll');
@@ -176,8 +172,8 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/inspections/{id}', 'App\Http\Controllers\InspectionController@getById');
     Route::get('/inspections/init/form', 'App\Http\Controllers\InspectionController@getInitialFormData');
     Route::post('/inspections', 'App\Http\Controllers\InspectionController@store');
-    Route::put('/inspections/{id}', 'App\Http\Controllers\InspectionController@update');
-    Route::delete('/inspections/{id}', 'App\Http\Controllers\InspectionController@destroy');
+    Route::post('/inspections/{id}/update', 'App\Http\Controllers\InspectionController@update');
+    Route::post('/inspections/{id}/delete', 'App\Http\Controllers\InspectionController@destroy');
 });
 
 Route::get('/db-connection', function () {
