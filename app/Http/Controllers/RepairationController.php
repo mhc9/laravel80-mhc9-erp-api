@@ -147,13 +147,25 @@ class RepairationController extends Controller
 
     public function getInitialFormData()
     {
+        $failures = [
+            ['id' => '1', 'name'  => 'อุปกรณ์หลัก'],
+            ['id' => '2', 'name'  => 'อะไหล่/อุปกรณ์ประกอบ'],
+            ['id' => '3', 'name'  => 'ระบบปฏิบัติการ/โปรแกรม'],
+            ['id' => '4', 'name'  => 'การตั้งค่าการใช้งาน (Config)'],
+            ['id' => '5', 'name'  => 'เฟิร์มแวร์'],
+        ];
+
         $methods = [
-            ['id' => '1', 'name'  => 'ติดตั้งเพิ่ม'],
-            ['id' => '2', 'name'  => 'ถอนการติดตั้ง'],
-            ['id' => '3', 'name'  => 'เปลี่ยนอะไหล่/เบิกวัสดุ'],
-            ['id' => '4', 'name'  => 'ซ่อมแผงวงจร'],
-            ['id' => '5', 'name'  => 'ตั้งค่าใหม่ (Config)'],
-            ['id' => '6', 'name'  => 'อัพเดตเฟิร์มแวร์ (Firmware)'],
+            ['id' => '1', 'name'  => 'ติดตั้งอุปกรณ์ใหม่'],
+            ['id' => '2', 'name'  => 'ติดตั้งอุปกรณ์เพิ่ม'],
+            ['id' => '3', 'name'  => 'ถอนการติดตั้งอุปกรณ์'],
+            ['id' => '4', 'name'  => 'เปลี่ยนอะไหล่/เบิกวัสดุ'],
+            ['id' => '5', 'name'  => 'ซ่อมแผงวงจร/เมนบอร์ด'],
+            ['id' => '6', 'name'  => 'ติดตั้งโปรแกรม/ระบบปฏิบัติการใหม่'],
+            ['id' => '7', 'name'  => 'ติดตั้งโปรแกรมเพิ่ม'],
+            ['id' => '8', 'name'  => 'ถอนการติดตั้งโปรแกรม'],
+            ['id' => '9', 'name'  => 'ตั้งค่าใหม่ (Config)'],
+            ['id' => '10', 'name' => 'อัพเดตเฟิร์มแวร์ (Firmware)'],
         ];
 
         $types = [
@@ -172,6 +184,7 @@ class RepairationController extends Controller
 
         return [
             'types'     => $types,
+            'failures'  => $failures,
             'methods'   => $methods,
             'statuses'  => $statuses,
             'employees' => Employee::with('prefix')->whereIn('status', [1,2])->get(),
@@ -220,11 +233,14 @@ class RepairationController extends Controller
             $repair = Repairation::find($id);
             $repair->repair_date    = $req['repair_date'];
             $repair->repair_time    = $req['repair_time'];
-            $repair->description    = $req['description'];
-            $repair->repair_method_id = $req['repair_method_id'];
+            $repair->repair_failure_id  = $req['repair_failure_id'];
+            $repair->repair_method_id   = $req['repair_method_id'];
+            $repair->root_cause     = $req['root_cause'];
+            $repair->solution       = $req['solution'];
             $repair->repair_type_id = $req['repair_type_id'];
             $repair->total_cost     = $req['total_cost'];
             $repair->supplier_id    = $req['supplier_id'];
+            $repair->overall_time   = $req['overall_time'];
             $repair->staff_id       = $req['staff_id'];
             $repair->status         = 4;
 
