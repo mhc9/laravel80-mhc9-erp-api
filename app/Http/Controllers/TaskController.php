@@ -160,7 +160,8 @@ class TaskController extends Controller
         $statuses = [
             ['id' => 1, 'name'  => 'รอดำเนินการ'],
             ['id' => 2, 'name'  => 'เสร็จแล้ว'],
-            ['id' => 3, 'name'  => 'ส่งซ่อม'],
+            ['id' => 3, 'name'  => 'เสร็จ (ชั่วคราว)'],
+            ['id' => 4, 'name'  => 'ส่งซ่อม'],
             ['id' => 9, 'name'  => 'ยกเลิก'],
         ];
 
