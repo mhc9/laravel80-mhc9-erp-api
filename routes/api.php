@@ -74,8 +74,9 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/asset-ownerships', 'App\Http\Controllers\AssetOwnershipController@store');
 
     Route::get('/asset-types', 'App\Http\Controllers\AssetTypeController@getAll');
-
+    
     Route::get('/asset-categories', 'App\Http\Controllers\AssetCategoryController@getAll');
+    Route::get('/asset-categories/init/form', 'App\Http\Controllers\AssetCategoryController@getInitialFormData');
 
     /** Suppliers */
     Route::get('/suppliers', 'App\Http\Controllers\SupplierController@getAll');

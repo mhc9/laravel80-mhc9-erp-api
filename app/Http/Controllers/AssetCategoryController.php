@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\AssetCategory;
+use App\Models\AssetType;
 
 class AssetCategoryController extends Controller
 {
@@ -105,6 +106,13 @@ class AssetCategoryController extends Controller
     public function getById($id)
     {
         return AssetCategory::with('type')->find($id);
+    }
+
+    public function getInitialFormData()
+    {
+        return [
+            "types" => AssetType::all()
+        ];
     }
 
     public function store(Request $req)
