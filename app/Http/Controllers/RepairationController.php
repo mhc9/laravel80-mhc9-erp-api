@@ -206,7 +206,7 @@ class RepairationController extends Controller
             $repair->status         = 1;
 
             if($repair->save()) {
-                Task::where('id', $repair->task_id)->update(['status' => 3]);
+                Task::where('id', $repair->task_id)->update(['status' => 4]);
 
                 return [
                     'status'        => 1,
