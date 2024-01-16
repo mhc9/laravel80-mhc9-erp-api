@@ -45,4 +45,9 @@ class Requisition extends Model
     {
         return $this->hasMany(Committee::class, 'requisition_id', 'id');
     }
+
+    public function approvals()
+    {
+        return $this->hasMany(Approval::class, 'requisition_id', 'id');
+    }
 }
