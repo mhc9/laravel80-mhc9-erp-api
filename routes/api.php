@@ -158,6 +158,15 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/requisitions/{id}/update', 'App\Http\Controllers\RequisitionController@update');
     Route::post('/requisitions/{id}/delete', 'App\Http\Controllers\RequisitionController@destroy');
 
+    /** Approval */
+    Route::get('/approvals', 'App\Http\Controllers\ApprovalController@getAll');
+    Route::get('/approvals/search', 'App\Http\Controllers\ApprovalController@search');
+    Route::get('/approvals/{id}', 'App\Http\Controllers\ApprovalController@getById');
+    Route::get('/approvals/init/form', 'App\Http\Controllers\ApprovalController@getInitialFormData');
+    Route::post('/approvals', 'App\Http\Controllers\ApprovalController@store');
+    Route::post('/approvals/{id}/update', 'App\Http\Controllers\ApprovalController@update');
+    Route::post('/approvals/{id}/delete', 'App\Http\Controllers\ApprovalController@destroy');
+
     /** Orders */
     Route::get('/orders', 'App\Http\Controllers\OrderController@getAll');
     Route::get('/orders/search', 'App\Http\Controllers\OrderController@search');
