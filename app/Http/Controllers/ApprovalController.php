@@ -89,54 +89,32 @@ class ApprovalController extends Controller
 
     public function getById($id)
     {
-        return Asset::with('group','group.category','brand','budget', 'obtaining','unit','room')->find($id);
+        return Approval::with('requisition','procuring')->find($id);
     }
 
     public function getInitialFormData()
     {
         return [
-            'procurings'         => Procuring::all(),
+            'procurings' => Procuring::all(),
         ];
     }
 
     public function store(Request $req)
     {
         try {
-            $asset = new Asset();
-            $asset->asset_no            = $req['asset_no'];
-            $asset->name                = $req['name'];
-            $asset->description         = $req['description'];
-            $asset->asset_category_id   = $req['asset_category_id'];
-            $asset->asset_group_id      = $req['asset_group_id'];
-            $asset->price               = $req['price'];
-            $asset->unit_id             = $req['unit_id'];
-            $asset->brand_id            = $req['brand_id'];
-            $asset->model               = $req['model'];
-            $asset->purchased_at        = $req['purchased_at'];
-            $asset->date_in             = $req['date_in'];
-            $asset->first_year          = $req['first_year'];
-            $asset->obtain_type_id      = $req['obtain_type_id'];
-            $asset->budget_id           = $req['budget_id'];
-            $asset->location            = $req['location'];
-            $asset->room_id             = $req['room_id'];
-            $asset->remark              = $req['remark'];
-            $asset->status              = 1;
+            $approval = new Approval();
+            $approval->requisition_id  = $req['requisition_id'];
+            $approval->procuring_id    = $req['procuring_id'];
+            $approval->report_no       = $req['report_no'];
+            $approval->report_date     = $req['report_date'];
+            $approval->directive_no    = $req['directive_no'];
+            $approval->directive_date  = $req['directive_date'];
 
-            if ($req->file('img_url')) {
-                $file = $req->file('img_url');
-                $fileName = date('mdYHis') . uniqid(). '.' .$file->getClientOriginalExtension();
-                $destinationPath = 'uploads/assets/';
-
-                if ($file->move($destinationPath, $fileName)) {
-                    $asset->img_url = $fileName;
-                }
-            }
-
-            if($asset->save()) {
+            if($approval->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'asset'     => $asset
+                    'approval'  => $approval
                 ];
             } else {
                 return [
@@ -155,30 +133,19 @@ class ApprovalController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $asset = Asset::find($id);
-            $asset->asset_no            = $req['asset_no'];
-            $asset->name                = $req['name'];
-            $asset->description         = $req['description'];
-            $asset->asset_category_id   = $req['asset_category_id'];
-            $asset->asset_group_id      = $req['asset_group_id'];
-            $asset->price               = $req['price'];
-            $asset->unit_id             = $req['unit_id'];
-            $asset->brand_id            = $req['brand_id'];
-            $asset->model               = $req['model'];
-            $asset->purchased_at        = $req['purchased_at'];
-            $asset->date_in             = $req['date_in'];
-            $asset->first_year          = $req['first_year'];
-            $asset->obtain_type_id      = $req['obtain_type_id'];
-            $asset->budget_id           = $req['budget_id'];
-            $asset->location            = $req['location'];
-            $asset->room_id             = $req['room_id'];
-            $asset->remark              = $req['remark'];
+            $approval = Approval::find($id);
+            $approval->requisition_id  = $req['requisition_id'];
+            $approval->procuring_id    = $req['procuring_id'];
+            $approval->report_no       = $req['report_no'];
+            $approval->report_date     = $req['report_date'];
+            $approval->directive_no    = $req['directive_no'];
+            $approval->directive_date  = $req['directive_date'];
 
-            if($asset->save()) {
+            if($approval->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'asset'     => $asset
+                    'approval'  => $approval
                 ];
             } else {
                 return [
@@ -197,54 +164,13 @@ class ApprovalController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $asset = Asset::find($id);
+            $approval = Approval::find($id);
 
-            if($asset->delete()) {
+            if($approval->delete()) {
                 return [
                     'status'     => 1,
                     'message'    => 'Deleting successfully!!',
                     'id'         => $id
-                ];
-            } else {
-                return [
-                    'status'    => 0,
-                    'message'   => 'Something went wrong!!'
-                ];
-            }
-        } catch (\Exception $ex) {
-            return [
-                'status'    => 0,
-                'message'   => $ex->getMessage()
-            ];
-        }
-    }
-
-    public function uploadImage(Request $req, $id)
-    {
-        try {
-            $asset = Asset::find($id);
-
-            if ($req->file('img_url')) {
-                $file = $req->file('img_url');
-                $fileName = date('mdYHis') . uniqid(). '.' .$file->getClientOriginalExtension();
-                $destinationPath = 'uploads/assets/';
-
-                /** Remove old uploaded file */
-                if (\File::exists($destinationPath . $asset->img_url)) {
-                    \File::delete($destinationPath . $asset->img_url);
-                }
-
-                /** Upload new file */
-                if ($file->move($destinationPath, $fileName)) {
-                    $asset->img_url = $fileName;
-                }
-            }
-
-            if($asset->save()) {
-                return [
-                    'status'    => 1,
-                    'message'   => 'Uploading avatar successfully!!',
-                    'img_url'   => $asset->img_url
                 ];
             } else {
                 return [
