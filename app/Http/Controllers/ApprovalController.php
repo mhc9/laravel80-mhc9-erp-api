@@ -103,12 +103,13 @@ class ApprovalController extends Controller
     {
         try {
             $approval = new Approval();
-            $approval->requisition_id  = $req['requisition_id'];
-            $approval->procuring_id    = $req['procuring_id'];
-            $approval->report_no       = $req['report_no'];
-            $approval->report_date     = $req['report_date'];
-            $approval->directive_no    = $req['directive_no'];
-            $approval->directive_date  = $req['directive_date'];
+            $approval->requisition_id   = $req['requisition_id'];
+            $approval->procuring_id     = $req['procuring_id'];
+            $approval->deliver_date     = $req['deliver_date'];
+            $approval->report_no        = $req['report_no'];
+            $approval->report_date      = $req['report_date'];
+            $approval->directive_no     = $req['directive_no'];
+            $approval->directive_date   = $req['directive_date'];
 
             if($approval->save()) {
                 return [
@@ -134,12 +135,13 @@ class ApprovalController extends Controller
     {
         try {
             $approval = Approval::find($id);
-            $approval->requisition_id  = $req['requisition_id'];
-            $approval->procuring_id    = $req['procuring_id'];
-            $approval->report_no       = $req['report_no'];
-            $approval->report_date     = $req['report_date'];
-            $approval->directive_no    = $req['directive_no'];
-            $approval->directive_date  = $req['directive_date'];
+            $approval->requisition_id   = $req['requisition_id'];
+            $approval->procuring_id     = $req['procuring_id'];
+            $approval->deliver_date     = $req['deliver_date'];
+            $approval->report_no        = $req['report_no'];
+            $approval->report_date      = $req['report_date'];
+            $approval->directive_no     = $req['directive_no'];
+            $approval->directive_date   = $req['directive_date'];
 
             if($approval->save()) {
                 return [
