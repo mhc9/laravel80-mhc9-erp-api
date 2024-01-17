@@ -115,7 +115,7 @@ class ApprovalController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'approval'  => $approval
+                    'approval'  => $approval->load('requisition','procuring')
                 ];
             } else {
                 return [
