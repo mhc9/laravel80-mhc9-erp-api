@@ -13,6 +13,7 @@ use App\Models\Position;
 use App\Models\Level;
 use App\Models\Department;
 use App\Models\Division;
+use App\Models\Member;
 use App\Models\Changwat;
 use App\Models\Amphur;
 use App\Models\Tambon;
@@ -69,9 +70,16 @@ class EmployeeController extends Controller
         $position   = $req->get('position');
         $level      = $req->get('level');
         $name       = $req->get('name');
+        $department = $req->get('department');
+        $status     = $req->get('status');
+
+        $memberLists = [];
+        if (!empty($department)) {
+            $memberLists = Member::where('department_id', $department)->pluck('employee_id');
+        }
 
         $employees = Employee::with('prefix','changwat','amphur','tambon','position','level')
-                        ->with('memberOf','memberOf.department','memberOf.division')
+                        ->with('memberOf','memberOf.duty','memberOf.department','memberOf.division')
                         ->when(!empty($position), function($q) use ($position) {
                             $q->where('position_id', $position);
                         })
@@ -81,9 +89,12 @@ class EmployeeController extends Controller
                         ->when(!empty($name), function($q) use ($name) {
                             $q->where('firstname', 'like', '%'.$name.'%');
                         })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
+                        ->when(!empty($department), function($q) use ($memberLists) {
+                            $q->whereIn('id', $memberLists);
+                        })
+                        ->when(!empty($status), function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         ->paginate(10);
 
         return $employees;
@@ -92,8 +103,9 @@ class EmployeeController extends Controller
     public function getAll(Request $req)
     {
         /** Get params from query string */
-        $position = $req->get('position');
-        $level = $req->get('level');
+        $position   = $req->get('position');
+        $level      = $req->get('level');
+        $status     = $req->get('status');
 
         $employees = Employee::with('prefix','changwat','amphur','tambon','position','level')
                         ->with('memberOf','memberOf.department','memberOf.division')
@@ -103,9 +115,9 @@ class EmployeeController extends Controller
                         ->when(!empty($level), function($q) use ($level) {
                             $q->where('level_id', $level);
                         })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
+                        ->when(!empty($status), function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         ->get();
 
         return $employees;

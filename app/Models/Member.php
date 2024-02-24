@@ -11,6 +11,11 @@ class Member extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
+    public function duty()
+    {
+        return $this->belongsTo(Duty::class, 'duty_id', 'id');
+    }
+
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
