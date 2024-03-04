@@ -7,61 +7,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use App\Services\AssetService;
 use App\Models\Asset;
-use App\Models\AssetType;
-use App\Models\AssetCategory;
-use App\Models\AssetGroup;
-use App\Models\Unit;
-use App\Models\Brand;
-use App\Models\Budget;
-use App\Models\ObtainingType;
-use App\Models\Employee;
-use App\Models\Room;
 
 class AssetController extends Controller
 {
-    public function formValidate (Request $request)
+    /**
+     * @var $assetService
+     */
+    protected $assetService;
+
+    public function __construct(AssetService $assetService)
     {
-        $rules = [
-            'plan_type_id'      => 'required',
-            'item_name'         => 'required',
-            'unit_id'           => 'required',
-        ];
-
-        if ($request['is_addon'] != '1') {
-            $rules['category_id'] = 'required';
-            $rules['price_per_unit'] = 'required';
-        }
-
-        $messages = [
-            'plan_type_id.required'     => 'กรุณาเลือกประเภทแผน',
-            'category_id.required'        => 'กรุณาเลือกประเภทสินค้า/บริการ',
-            'item_name.required'        => 'กรุณาระบุชื่อสินค้า/บริการ',
-            'price_per_unit.required'   => 'กรุณาระบุราคาต่อหน่วย',
-            'unit_id.required'          => 'กรุณาเลือกหน่วยนับ',
-        ];
-
-        $validator = \Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            $messageBag = $validator->getMessageBag();
-
-            // if (!$messageBag->has('start_date')) {
-            //     if ($this->isDateExistsValidation(convThDateToDbDate($request['start_date']), 'start_date') > 0) {
-            //         $messageBag->add('start_date', 'คุณมีการลาในวันที่ระบุแล้ว');
-            //     }
-            // }
-
-            return [
-                'success' => 0,
-                'errors' => $messageBag->toArray(),
-            ];
-        } else {
-            return [
-                'success' => 1,
-                'errors' => $validator->getMessageBag()->toArray(),
-            ];
-        }
+        $this->assetService = $assetService;
     }
 
     public function search(Request $req)
@@ -103,68 +61,17 @@ class AssetController extends Controller
 
     public function getAll(Request $req)
     {
-        /** Get params from query string */
-        $type       = $req->get('type');
-        $category   = $req->get('category');
-        $group      = $req->get('group');
-        $name       = $req->get('name');
-        $owner      = $req->get('owner');
-        $status     = $req->get('status');
-
-        $assets = Asset::with('group','group.category','brand','budget','obtaining','unit','room')
-                    ->with('currentOwner','currentOwner.owner','currentOwner.owner.prefix')
-                    // ->when(!empty($type), function($q) use ($type) {
-                    //     $q->where('asset_type_id', $type);
-                    // })
-                    ->when(!empty($category), function($q) use ($category) {
-                        $q->where('asset_category_id', $category);
-                    })
-                    ->when(!empty($group), function($q) use ($group) {
-                        $q->where('asset_group_id', $group);
-                    })
-                    ->when(!empty($name), function($q) use ($name) {
-                        $q->where('name', 'like', '%'.$name.'%');
-                    })
-                    ->when(!empty($owner), function($q) use ($owner) {
-                        $q->whereHas('currentOwner', function($sq) use ($owner) {
-                            $sq->where('owner_id', $owner);
-                        });
-                    })
-                    ->when(!empty($status), function($q) use ($status) {
-                        $q->where('status', $status);
-                    })
-                    ->get();
-
-        return $assets;
+        return $this->assetService->findAll($req->query());
     }
 
     public function getById($id)
     {
-        return Asset::with('group','group.category','brand','budget', 'obtaining','unit','room')->find($id);
+        return $this->assetService->find($id);
     }
 
     public function getInitialFormData()
     {
-        $statuses = [
-            ['id' => 1, 'name'  => 'ใช้งานอยู่'],
-            ['id' => 2, 'name'  => 'สำรอง'],
-            ['id' => 3, 'name'  => 'ถูกยืม'],
-            ['id' => 9, 'name'  => 'รอจำหน่าย'],
-            ['id' => 99, 'name'  => 'จำหน่าย	'],
-        ];
-
-        return [
-            'types'         => AssetType::all(),
-            'categories'    => AssetCategory::all(),
-            'groups'        => AssetGroup::all(),
-            'units'         => Unit::all(),
-            'brands'        => Brand::all(),
-            'budgets'       => Budget::all(),
-            'obtainingTypes' => ObtainingType::all(),
-            'employees'     => Employee::whereIn('status', [1,2])->get(),
-            'rooms'         => Room::where('status', 1)->get(),
-            'statuses'      => $statuses
-        ];
+        return $this->assetService->initForm();
     }
 
     public function store(Request $req)
