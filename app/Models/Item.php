@@ -11,6 +11,8 @@ class Item extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
+    protected $fillable = ['name','category_id','description','cost','price','unit_id','img_url','status'];
+
     public function category()
     {
         return $this->belongsTo(AssetCategory::class, 'category_id', 'id');

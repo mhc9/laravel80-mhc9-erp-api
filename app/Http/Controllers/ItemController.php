@@ -11,42 +11,21 @@ use App\Models\Item;
 use App\Models\AssetType;
 use App\Models\AssetCategory;
 use App\Models\Unit;
+use App\Services\ItemService;
+use App\Traits\SaveImage;
 
 class ItemController extends Controller
 {
-    public function formValidate (Request $request)
+    use SaveImage;
+
+    /**
+     * @var $itemService
+     */
+    protected $itemService;
+
+    public function __construct(ItemService $itemService)
     {
-        $rules = [
-            'name'          => 'required',
-            'department_id' => 'required',
-        ];
-
-        $messages = [
-            'name.required'             => 'กรุณาระบุชื่องาน',
-            'department_id.required'    => 'กรุณาเลือกกลุ่มงาน',
-        ];
-
-        $validator = \Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            $messageBag = $validator->getMessageBag();
-
-            // if (!$messageBag->has('start_date')) {
-            //     if ($this->isDateExistsValidation(convThDateToDbDate($request['start_date']), 'start_date') > 0) {
-            //         $messageBag->add('start_date', 'คุณมีการลาในวันที่ระบุแล้ว');
-            //     }
-            // }
-
-            return [
-                'success' => 0,
-                'errors' => $messageBag->toArray(),
-            ];
-        } else {
-            return [
-                'success' => 1,
-                'errors' => $validator->getMessageBag()->toArray(),
-            ];
-        }
+        $this->itemService = $itemService;
     }
 
     public function search(Request $req)
@@ -74,65 +53,23 @@ class ItemController extends Controller
 
     public function getAll(Request $req)
     {
-        /** Get params from query string */
-        $category   = $req->get('category');
-        $name       = $req->get('name');
-        $status     = $req->get('status');
-
-        $item = Item::with('category','unit')
-                    ->when(!empty($category), function($q) use ($category) {
-                        $q->where('category_id', $category);
-                    })
-                    ->when(!empty($name), function($q) use ($name) {
-                        $q->where('name', 'like', '%'.$name.'%');
-                    })
-                    ->when($status != '', function($q) use ($status) {
-                        $q->where('status', $status);
-                    })
-                    ->get();
-
-        return $item;
+        return $this->itemService->findAll();
     }
 
     public function getById($id)
     {
-        return Item::with('category','unit')->find($id);
+        return $this->itemService->find($id);
     }
 
     public function getInitialFormData()
     {
-        $types          = AssetType::with('categories')->get();
-
-        return [
-            'types'         => $types,
-            'categories'    => AssetCategory::all(),
-            'units'         => Unit::all(),
-        ];
+        return $this->itemService->initForm();
     }
 
-    public function store(Request $req)
+    public function store(Request $request)
     {
         try {
-            $item = new Item();
-            $item->name         = $req['name'];
-            $item->category_id  = $req['category_id'];
-            $item->cost         = $req['cost'];
-            $item->price        = $req['price'];
-            $item->unit_id      = $req['unit_id'];
-            $item->description  = $req['description'];
-            // $item->status       = $req['status'] ? 1 : 0;
-
-            if ($req->file('img_url')) {
-                $file = $req->file('img_url');
-                $fileName = date('mdYHis') . uniqid(). '.' .$file->getClientOriginalExtension();
-                $destinationPath = 'uploads/products/thumbnails/';
-
-                if ($file->move($destinationPath, $fileName)) {
-                    $item->img_url = $fileName;
-                }
-            }
-
-            if($item->save()) {
+            if($item = $this->itemService->store($request)) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
@@ -162,17 +99,6 @@ class ItemController extends Controller
             $item->price        = $req['price'];
             $item->unit_id      = $req['unit_id'];
             $item->description  = $req['description'];
-            // $item->status       = $req['status'] ? 1 : 0;
-
-            if ($req->file('img_url')) {
-                $file = $req->file('img_url');
-                $fileName = date('mdYHis') . uniqid(). '.' .$file->getClientOriginalExtension();
-                $destinationPath = 'uploads/products/thumbnails/';
-
-                if ($file->move($destinationPath, $fileName)) {
-                    $item->img_url = $fileName;
-                }
-            }
 
             if($item->save()) {
                 return [
@@ -197,20 +123,41 @@ class ItemController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            // $item = Item::find($id);
+            if($this->itemService->delete($id)) {
+                return [
+                    'status'    => 1,
+                    'message'   => 'Deleting successfully!!',
+                    'item'      => $item
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
 
-            // if($item->delete()) {
-            //     return [
-            //         'status'    => 1,
-            //         'message'   => 'Deleting successfully!!',
-            //         'item'      => $item
-            //     ];
-            // } else {
-            //     return [
-            //         'status'    => 0,
-            //         'message'   => 'Something went wrong!!'
-            //     ];
-            // }
+    public function uploadImage(Request $req, $id)
+    {
+        try {
+            if($asset = $this->assetService->updateImage($id, $req->file('img_url'))) {
+                return [
+                    'status'    => 1,
+                    'message'   => 'Uploading avatar successfully!!',
+                    'img_url'   => $asset->img_url
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,

@@ -2,16 +2,16 @@
 
 namespace App\Repositories;
 
-use App\Models\Asset;
+use App\Models\Item;
 
-class AssetRepository
+class ItemRepository
 {
     /**
      *  @var $model
      */
     protected $model;
 
-    public function __construct(Asset $model)
+    public function __construct(Item $model)
     {
         $this->model = $model;
     }
@@ -35,6 +35,13 @@ class AssetRepository
                     ->with('group','group.category','brand','budget','obtaining','unit','room')
                     ->with('currentOwner','currentOwner.owner','currentOwner.owner.prefix')
                     ->find($id);
+    }
+
+    public function store($data)
+    {
+        $newItem = $this->model->create($data);
+
+        return $newItem;
     }
 
     public function delete($id)

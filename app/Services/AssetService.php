@@ -13,9 +13,12 @@ use App\Models\Budget;
 use App\Models\ObtainingType;
 use App\Models\Employee;
 use App\Models\Room;
+use App\Traits\SaveImage;
 
 class AssetService
 {
+    use SaveImage;
+
     /**
      * @var $assetRepo
      */
@@ -70,31 +73,17 @@ class AssetService
         return $this->assertRepo->delete($id);
     }
 
-    public function saveImage($image, $destinationPath = 'uploads/assets/')
-    {
-        if ($image) {
-            $fileName = date('mdYHis') . uniqid(). '.' .$image->getClientOriginalExtension();
-
-            /** Upload new file */
-            if ($image->move($destinationPath, $fileName)) {
-                return $fileName;
-            }
-        }
-
-        return '';
-    }
-
     public function updateImage($id, $image)
     {
         $asset = $this->assetRepo->getAsset($id);
-        $destinationPath = 'uploads/assets/';
+        $destPath = 'uploads/assets/';
 
         /** Remove old uploaded file */
-        if (\File::exists($destinationPath . $asset->img_url)) {
-            \File::delete($destinationPath . $asset->img_url);
+        if (\File::exists($destPath . $asset->img_url)) {
+            \File::delete($destPath . $asset->img_url);
         }
 
-        $asset->img_url = $this->saveImage($image);
+        $asset->img_url = $this->saveImage($image, $destPath);
 
         if (!empty($asset->img_url) && $asset->save()) {
             return $asset;
