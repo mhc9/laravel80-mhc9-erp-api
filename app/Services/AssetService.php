@@ -26,12 +26,17 @@ class AssetService
         $this->assetRepo = $assetRepo;
     }
 
+    public function find($id)
+    {
+        return $this->assetRepo->getAsset($id);
+    }
+
     public function findAll($params = [])
     {
         return $this->assetRepo->getAssets();
     }
 
-    public function find($id)
+    public function findById($id)
     {
         return $this->assetRepo->getAssetById($id);
     }
@@ -58,5 +63,43 @@ class AssetService
             'rooms'         => Room::where('status', 1)->get(),
             'statuses'      => $statuses
         ];
+    }
+
+    public function delete($id)
+    {
+        return $this->assertRepo->delete($id);
+    }
+
+    public function saveImage($image, $destinationPath = 'uploads/assets/')
+    {
+        if ($image) {
+            $fileName = date('mdYHis') . uniqid(). '.' .$image->getClientOriginalExtension();
+
+            /** Upload new file */
+            if ($image->move($destinationPath, $fileName)) {
+                return $fileName;
+            }
+        }
+
+        return '';
+    }
+
+    public function updateImage($id, $image)
+    {
+        $asset = $this->assetRepo->getAsset($id);
+        $destinationPath = 'uploads/assets/';
+
+        /** Remove old uploaded file */
+        if (\File::exists($destinationPath . $asset->img_url)) {
+            \File::delete($destinationPath . $asset->img_url);
+        }
+
+        $asset->img_url = $this->saveImage($image);
+
+        if (!empty($asset->img_url) && $asset->save()) {
+            return $asset;
+        } else {
+            return false;
+        }
     }
 }

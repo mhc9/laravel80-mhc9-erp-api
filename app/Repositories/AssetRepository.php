@@ -16,6 +16,11 @@ class AssetRepository
         $this->asset = $asset;
     }
 
+    public function getAsset($id)
+    {
+        return $this->asset->find($id);
+    }
+
     public function getAssets()
     {
         return $this->asset
@@ -30,5 +35,10 @@ class AssetRepository
                     ->with('group','group.category','brand','budget','obtaining','unit','room')
                     ->with('currentOwner','currentOwner.owner','currentOwner.owner.prefix')
                     ->find($id);
+    }
+
+    public function delete($id)
+    {
+        return $this->getAsset($id)->delete();
     }
 }

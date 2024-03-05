@@ -96,16 +96,7 @@ class AssetController extends Controller
             $asset->room_id             = $req['room_id'];
             $asset->remark              = $req['remark'];
             $asset->status              = 1;
-
-            if ($req->file('img_url')) {
-                $file = $req->file('img_url');
-                $fileName = date('mdYHis') . uniqid(). '.' .$file->getClientOriginalExtension();
-                $destinationPath = 'uploads/assets/';
-
-                if ($file->move($destinationPath, $fileName)) {
-                    $asset->img_url = $fileName;
-                }
-            }
+            $asset->img_url             = $this->assetService->saveImage($req->file('img_url'));
 
             if($asset->save()) {
                 return [
@@ -172,9 +163,7 @@ class AssetController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $asset = Asset::find($id);
-
-            if($asset->delete()) {
+            if($this->assetService->delete($id)) {
                 return [
                     'status'     => 1,
                     'message'    => 'Deleting successfully!!',
@@ -197,25 +186,7 @@ class AssetController extends Controller
     public function uploadImage(Request $req, $id)
     {
         try {
-            $asset = Asset::find($id);
-
-            if ($req->file('img_url')) {
-                $file = $req->file('img_url');
-                $fileName = date('mdYHis') . uniqid(). '.' .$file->getClientOriginalExtension();
-                $destinationPath = 'uploads/assets/';
-
-                /** Remove old uploaded file */
-                if (\File::exists($destinationPath . $asset->img_url)) {
-                    \File::delete($destinationPath . $asset->img_url);
-                }
-
-                /** Upload new file */
-                if ($file->move($destinationPath, $fileName)) {
-                    $asset->img_url = $fileName;
-                }
-            }
-
-            if($asset->save()) {
+            if($asset = $this->assetService->updateImage($id, $req->file('img_url'))) {
                 return [
                     'status'    => 1,
                     'message'   => 'Uploading avatar successfully!!',
