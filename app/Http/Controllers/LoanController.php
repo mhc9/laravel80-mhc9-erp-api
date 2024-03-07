@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Loan;
+use App\Models\Expense;
+use App\Models\Department;
 
 class LoanController extends Controller
 {
@@ -73,6 +75,14 @@ class LoanController extends Controller
     public function getById($id)
     {
         return Loan::find($id);
+    }
+
+    public function getInitialFormData()
+    {
+        return [
+            'departments'   => Department::all(),
+            'expenses'      => Expense::all(),
+        ];
     }
 
     public function store(Request $req)
