@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Budget;
+use App\Models\BudgetType;
+use App\Models\BudgetPlan;
+use App\Models\BudgetProject;
 
 class BudgetController extends Controller
 {
@@ -75,12 +78,25 @@ class BudgetController extends Controller
         return Budget::find($id);
     }
 
+    public function getInitialFormData()
+    {
+        return [
+            'plans'     => BudgetPlan::orderBy('plan_type_id')->orderBy('plan_no')->get(),
+            'projects'  => BudgetProject::all(),
+            'types'     => BudgetType::all(),
+        ];
+    }
+
     public function store(Request $req)
     {
         try {
             $budget = new Budget();
-            $budget->name      = $req['name'];
-            $budget->status    = $req['status'] ? 1 : 0;
+            $budget->name       = $req['name'];
+            $budget->gfmis_id   = $req['gfmis_id'];
+            $budget->main_gfmis_id = $req['main_gfmis_id'];
+            $budget->type_id    = $req['type_id'];
+            $budget->project_id = $req['project_id'];
+            $budget->status     = 1;
 
             if($budget->save()) {
                 return [
@@ -106,8 +122,12 @@ class BudgetController extends Controller
     {
         try {
             $budget = Budget::find($id);
-            $budget->name     = $req['name'];
-            $budget->status   = $req['status'] ? 1 : 0;
+            $budget->name       = $req['name'];
+            $budget->gfmis_id   = $req['gfmis_id'];
+            $budget->main_gfmis_id = $req['main_gfmis_id'];
+            $budget->type_id    = $req['type_id'];
+            $budget->project_id = $req['project_id'];
+            $budget->status     = $req['status'] ? 1 : 0;
 
             if($budget->save()) {
                 return [
