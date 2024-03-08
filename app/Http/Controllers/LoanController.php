@@ -17,30 +17,32 @@ class LoanController extends Controller
     public function search(Request $req)
     {
         /** Get params from query string */
-        $project    = $req->get('project');
+        $year       = $req->get('year');
         $plan       = $req->get('plan');
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('type','project','project.plan')
-                    ->when(!empty($project), function($q) use ($project) {
-                        $q->where('project_id', $project);
-                    })
-                    ->when(!empty($plan), function($q) use ($plan) {
-                        $q->whereHas('project.plan', function($sq) use ($plan) {
-                            $sq->where('plan_id', $plan);
-                        });
-                    })
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
-                    // ->when(!empty($name), function($q) use ($name) {
-                    //     $q->where(function($query) use ($name) {
-                    //         $query->where('item_name', 'like', '%'.$name.'%');
-                    //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                    //     });
-                    // })
-                    ->paginate(10);
+        $activities = Loan::with('project','budget','budget.project','budget.project.plan')
+                        ->with('department','details','details.expense')
+                        ->with('employee','employee.prefix','employee.position','employee.level')
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
+                        })
+                        // ->when(!empty($plan), function($q) use ($plan) {
+                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
+                        //         $sq->where('plan_id', $plan);
+                        //     });
+                        // })
+                        // ->when($status != '', function($q) use ($status) {
+                        //     $q->where('status', $status);
+                        // })
+                        // ->when(!empty($name), function($q) use ($name) {
+                        //     $q->where(function($query) use ($name) {
+                        //         $query->where('item_name', 'like', '%'.$name.'%');
+                        //         $query->orWhere('en_name', 'like', '%'.$name.'%');
+                        //     });
+                        // })
+                        ->paginate(10);
 
         return $activities;
     }
@@ -53,7 +55,7 @@ class LoanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('type','project','project.plan')
+        $activities = Loan::with('project','budget','budget.project','budget.project.plan','expenses')
                     ->when(!empty($project), function($q) use ($project) {
                         $q->where('project_id', $project);
                     })
