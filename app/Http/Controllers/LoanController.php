@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Loan;
+use App\Models\LoanDetail;
 use App\Models\Expense;
 use App\Models\Department;
 
@@ -88,15 +89,33 @@ class LoanController extends Controller
     public function store(Request $req)
     {
         try {
-            $budget = new Loan();
-            $budget->name      = $req['name'];
-            $budget->status    = $req['status'] ? 1 : 0;
+            $loan = new Loan();
+            $loan->doc_no           = $req['doc_no'];
+            $loan->doc_date         = $req['doc_date'];
+            $loan->loan_type_id     = $req['loan_type_id'];
+            $loan->money_type_id    = $req['money_type_id'];
+            $loan->budget_id        = $req['budget_id'];
+            $loan->project_id       = $req['project_id'];
+            $loan->department_id    = $req['department_id'];
+            $loan->employee_id      = $req['employee_id'];
+            $loan->net_total        = currencyToNumber($req['net_total']);
+            // $loan->remark           = $req['remark'];
+            $loan->status           = $req['status'] ? 1 : 0;
 
-            if($budget->save()) {
+            if($loan->save()) {
+                foreach($req['items'] as $item) {
+                    $detail = new LoanDetail();
+                    $detail->loan_id        = $loan->id;
+                    $detail->expense_id     = $item['expense_id'];
+                    $detail->description    = $item['description'];
+                    $detail->total          = currencyToNumber($item['total']);
+                    $detail->save();
+                }
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'Budget'  => $budget
+                    'loan'  => $loan
                 ];
             } else {
                 return [
