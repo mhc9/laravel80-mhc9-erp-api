@@ -8,21 +8,26 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Project;
+use App\Models\Place;
+use App\Models\Employee;
 
 class ProjectController extends Controller
 {
     public function search(Request $req)
     {
         /** Get params from query string */
-        // $project    = $req->get('project');
+        $year    = $req->get('year');
+        $name       = $req->get('name');
         // $plan       = $req->get('plan');
-        // $name       = $req->get('name');
         // $status     = $req->get('status');
 
-        $activities = Project::with('owner','division')
-                    // ->when(!empty($project), function($q) use ($project) {
-                    //     $q->where('project_id', $project);
-                    // })
+        $activities = Project::with('owner','division','place')
+                    ->when(!empty($year), function($q) use ($year) {
+                        $q->where('year', $year);
+                    })
+                    ->when(!empty($name), function($q) use ($name) {
+                        $q->where('name', 'like', '%'.$name.'%');
+                    })
                     // ->when(!empty($plan), function($q) use ($plan) {
                     //     $q->whereHas('project.plan', function($sq) use ($plan) {
                     //         $sq->where('plan_id', $plan);
@@ -30,12 +35,6 @@ class ProjectController extends Controller
                     // })
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
-                    // })
-                    // ->when(!empty($name), function($q) use ($name) {
-                    //     $q->where(function($query) use ($name) {
-                    //         $query->where('item_name', 'like', '%'.$name.'%');
-                    //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                    //     });
                     // })
                     ->paginate(10);
 
@@ -75,12 +74,26 @@ class ProjectController extends Controller
         return Project::find($id);
     }
 
+    public function getInitialFormData()
+    {
+        return [
+            'places'    => Place::all(),
+            'employees' => Employee::with('prefix')->whereIn('status', [1,2])->get(),
+        ];
+    }
+
     public function store(Request $req)
     {
         try {
             $budget = new Project();
-            $budget->name      = $req['name'];
-            $budget->status    = $req['status'] ? 1 : 0;
+            $budget->name       = $req['name'];
+            $budget->year       = $req['year'];
+            $budget->project_type_id = $req['project_type_id'];
+            $budget->owner_id   = $req['owner_id'];
+            $budget->place_id   = $req['place_id'];
+            $budget->from_date  = $req['from_date'];
+            $budget->to_date    = $req['to_date'];
+            $budget->status     = 1;
 
             if($budget->save()) {
                 return [
@@ -106,8 +119,13 @@ class ProjectController extends Controller
     {
         try {
             $budget = Project::find($id);
-            $budget->name     = $req['name'];
-            $budget->status   = $req['status'] ? 1 : 0;
+            $budget->name       = $req['name'];
+            $budget->year       = $req['year'];
+            $budget->project_type_id = $req['project_type_id'];
+            $budget->owner_id   = $req['owner_id'];
+            $budget->place_id   = $req['place_id'];
+            $budget->from_date  = $req['from_date'];
+            $budget->to_date    = $req['to_date'];
 
             if($budget->save()) {
                 return [

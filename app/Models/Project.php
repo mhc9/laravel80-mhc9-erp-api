@@ -20,4 +20,9 @@ class Project extends Model
     {
         return $this->belongsTo(Division::class, 'division_id', 'id');
     }
+
+    public function place()
+    {
+        return $this->belongsTo(Place::class, 'place_id', 'id');
+    }
 }
