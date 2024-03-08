@@ -132,13 +132,29 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/units/{id}/update', 'App\Http\Controllers\UnitController@update');
     Route::post('/units/{id}/delete', 'App\Http\Controllers\UnitController@destroy');
 
+    /** budget-plans */
+    Route::get('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'getAll']);
+    Route::get('/budget-plans/search', [App\Http\Controllers\BudgetPlanController::class, 'search']);
+    Route::get('/budget-plans/{id}', [App\Http\Controllers\BudgetPlanController::class, 'getById']);
+    Route::post('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'store']);
+    Route::post('/budget-plans/{id}/update', [App\Http\Controllers\BudgetPlanController::class, 'update']);
+    Route::post('/budget-plans/{id}/delete', [App\Http\Controllers\BudgetPlanController::class, 'destroy']);
+
+    /** budget-projects */
+    Route::get('/budget-projects', [App\Http\Controllers\BudgetProjectController::class, 'getAll']);
+    Route::get('/budget-projects/search', [App\Http\Controllers\BudgetProjectController::class, 'search']);
+    Route::get('/budget-projects/{id}', [App\Http\Controllers\BudgetProjectController::class, 'getById']);
+    Route::post('/budget-projects', [App\Http\Controllers\BudgetProjectController::class, 'store']);
+    Route::post('/budget-projects/{id}/update', [App\Http\Controllers\BudgetProjectController::class, 'update']);
+    Route::post('/budget-projects/{id}/delete', [App\Http\Controllers\BudgetProjectController::class, 'destroy']);
+
     /** budgets */
-    Route::get('/budgets', 'App\Http\Controllers\BudgetController@getAll');
-    Route::get('/budgets/search', 'App\Http\Controllers\BudgetController@search');
-    Route::get('/budgets/{id}', 'App\Http\Controllers\BudgetController@getById');
-    Route::post('/budgets', 'App\Http\Controllers\BudgetController@store');
-    Route::post('/budgets/{id}/update', 'App\Http\Controllers\BudgetController@update');
-    Route::post('/budgets/{id}/delete', 'App\Http\Controllers\BudgetController@destroy');
+    Route::get('/budgets', [App\Http\Controllers\BudgetController::class, 'getAll']);
+    Route::get('/budgets/search', [App\Http\Controllers\BudgetController::class, 'search']);
+    Route::get('/budgets/{id}', [App\Http\Controllers\BudgetController::class, 'getById']);
+    Route::post('/budgets', [App\Http\Controllers\BudgetController::class, 'store']);
+    Route::post('/budgets/{id}/update', [App\Http\Controllers\BudgetController::class, 'update']);
+    Route::post('/budgets/{id}/delete', [App\Http\Controllers\BudgetController::class, 'destroy']);
 
     /** Items */
     Route::get('/items', 'App\Http\Controllers\ItemController@getAll');
