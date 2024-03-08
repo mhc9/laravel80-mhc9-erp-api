@@ -148,6 +148,14 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/budget-projects/{id}/update', [App\Http\Controllers\BudgetProjectController::class, 'update']);
     Route::post('/budget-projects/{id}/delete', [App\Http\Controllers\BudgetProjectController::class, 'destroy']);
 
+    /** projects */
+    Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'getAll']);
+    Route::get('/projects/search', [App\Http\Controllers\ProjectController::class, 'search']);
+    Route::get('/projects/{id}', [App\Http\Controllers\ProjectController::class, 'getById']);
+    Route::post('/projects', [App\Http\Controllers\ProjectController::class, 'store']);
+    Route::post('/projects/{id}/update', [App\Http\Controllers\ProjectController::class, 'update']);
+    Route::post('/projects/{id}/delete', [App\Http\Controllers\ProjectController::class, 'destroy']);
+
     /** budgets */
     Route::get('/budgets', [App\Http\Controllers\BudgetController::class, 'getAll']);
     Route::get('/budgets/search', [App\Http\Controllers\BudgetController::class, 'search']);
