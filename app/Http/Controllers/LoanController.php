@@ -22,8 +22,9 @@ class LoanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('project','budget','budget.project','budget.project.plan')
-                        ->with('department','details','details.expense')
+        $activities = Loan::with('budget','budget.project','budget.project.plan')
+                        ->with('project','project.place','project.owner')
+                        ->with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
                         ->when(!empty($year), function($q) use ($year) {
                             $q->where('year', $year);
@@ -55,29 +56,36 @@ class LoanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('project','budget','budget.project','budget.project.plan','expenses')
-                    ->when(!empty($project), function($q) use ($project) {
-                        $q->where('project_id', $project);
-                    })
-                    ->when(!empty($plan), function($q) use ($plan) {
-                        $q->whereHas('project.plan', function($sq) use ($plan) {
-                            $sq->where('plan_id', $plan);
-                        });
-                    })
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
-                    // ->when(!empty($name), function($q) use ($name) {
-                    //     $q->where('name', 'like', '%'.$name.'%');
-                    // })
-                    ->get();
+        $activities = Loan::with('budget','budget.project','budget.project.plan')
+                        ->with('project','project.place','project.owner')
+                        ->with('details','details.expense','department')
+                        ->with('employee','employee.prefix','employee.position','employee.level')
+                        ->when(!empty($project), function($q) use ($project) {
+                            $q->where('project_id', $project);
+                        })
+                        ->when(!empty($plan), function($q) use ($plan) {
+                            $q->whereHas('project.plan', function($sq) use ($plan) {
+                                $sq->where('plan_id', $plan);
+                            });
+                        })
+                        // ->when($status != '', function($q) use ($status) {
+                        //     $q->where('status', $status);
+                        // })
+                        // ->when(!empty($name), function($q) use ($name) {
+                        //     $q->where('name', 'like', '%'.$name.'%');
+                        // })
+                        ->get();
 
         return $activities;
     }
 
     public function getById($id)
     {
-        return Loan::find($id);
+        return Loan::with('budget','budget.project','budget.project.plan')
+                ->with('project','project.place','project.owner')
+                ->with('details','details.expense','department')
+                ->with('employee','employee.prefix','employee.position','employee.level')
+                ->find($id);
     }
 
     public function getInitialFormData()
