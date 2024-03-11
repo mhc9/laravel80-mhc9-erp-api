@@ -23,7 +23,7 @@ class LoanContractController extends Controller
         // $status     = $req->get('status');
 
         $activities = LoanContract::with('loan.budget') //,'budget.project','budget.project.plan')
-                        // ->with('project','project.place','project.owner')
+                        ->with('loan.project','loan.project.place','loan.project.owner')
                         ->with('details','details.expense','loan.department')
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
                         // ->when(!empty($plan), function($q) use ($plan) {
@@ -113,11 +113,11 @@ class LoanContractController extends Controller
             $contract->contract_no      = $req['contract_no'];
             $contract->contract_date    = $req['contract_date'];
             $contract->loan_id          = $req['loan_id'];
-            $contract->net_total        = currencyToNumber($req['net_total']);
             $contract->bill_no          = $req['bill_no'];
             $contract->sent_date        = $req['sent_date'];
             $contract->bk02_date        = $req['bk02_date'];
             $contract->deposit_date     = $req['deposit_date'];
+            $contract->net_total        = currencyToNumber($req['net_total']);
             // $contract->employee_id      = $req['employee_id'];
             // $contract->remark           = $req['remark'];
             // $contract->status           = $req['status'] ? 1 : 0;
@@ -126,11 +126,14 @@ class LoanContractController extends Controller
                 foreach($req['items'] as $item) {
                     $detail = new LoanContractDetail();
                     $detail->contract_id    = $contract->id;
+                    $detail->loan_detail_id = $item['id'];
                     $detail->expense_id     = $item['expense_id'];
                     $detail->description    = $item['description'];
                     $detail->total          = currencyToNumber($item['total']);
                     $detail->save();
                 }
+
+                Loan::find($req['loan_id'])->update(['status' => 2]);
 
                 return [
                     'status'    => 1,
