@@ -219,6 +219,15 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/loans', [App\Http\Controllers\LoanController::class, 'store']);
     Route::post('/loans/{id}/update', [App\Http\Controllers\LoanController::class, 'update']);
     Route::post('/loans/{id}/delete', [App\Http\Controllers\LoanController::class, 'destroy']);
+
+    /** Loan Contracts */
+    Route::get('/loan-contracts', [App\Http\Controllers\LoanContractController::class, 'getAll']);
+    Route::get('/loan-contracts/search', [App\Http\Controllers\LoanContractController::class, 'search']);
+    Route::get('/loan-contracts/{id}', [App\Http\Controllers\LoanContractController::class, 'getById']);
+    Route::get('/loan-contracts/init/form', [App\Http\Controllers\LoanContractController::class, 'getInitialFormData']);
+    Route::post('/loan-contracts', [App\Http\Controllers\LoanContractController::class, 'store']);
+    Route::post('/loan-contracts/{id}/update', [App\Http\Controllers\LoanContractController::class, 'update']);
+    Route::post('/loan-contracts/{id}/delete', [App\Http\Controllers\LoanContractController::class, 'destroy']);
 });
 
 Route::get('/db-connection', function () {
