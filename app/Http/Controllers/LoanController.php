@@ -11,6 +11,7 @@ use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\Expense;
 use App\Models\Department;
+use App\Models\Budget;
 
 class LoanController extends Controller
 {
@@ -104,6 +105,7 @@ class LoanController extends Controller
         return [
             'departments'   => Department::all(),
             'expenses'      => Expense::all(),
+            'budgets'       => Budget::with('project','project.plan')->get(),
             'loanTypes'     => $loanTypes,
             'moneyTypes'    => $moneyTypes,
         ];
