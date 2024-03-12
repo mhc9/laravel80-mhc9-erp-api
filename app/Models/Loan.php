@@ -11,11 +11,6 @@ class Loan extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
-    public function budget()
-    {
-        return $this->belongsTo(Budget::class, 'budget_id', 'id');
-    }
-
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
@@ -35,4 +30,10 @@ class Loan extends Model
     {
         return $this->hasMany(LoanDetail::class, 'loan_id', 'id');
     }
+
+    public function budgets()
+    {
+        return $this->hasMany(Budget::class, 'budget_id', 'id');
+    }
+
 }

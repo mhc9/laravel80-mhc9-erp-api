@@ -23,10 +23,10 @@ class LoanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('budget','budget.project','budget.project.plan')
-                        ->with('project','project.place','project.owner')
-                        ->with('details','details.expense','department')
+        $activities = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
+                        // ->with('budgets','budgets.project','budgets.project.plan')
+                        // ->with('project','project.place','project.owner')
                         ->when(!empty($year), function($q) use ($year) {
                             $q->where('year', $year);
                         })
@@ -57,10 +57,10 @@ class LoanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('budget','budget.project','budget.project.plan')
-                        ->with('project','project.place','project.owner')
-                        ->with('details','details.expense','department')
+        $activities = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
+                        // ->with('project','project.place','project.owner')
+                        // ->with('budgets','budgets.project','budgets.project.plan')
                         ->when(!empty($project), function($q) use ($project) {
                             $q->where('project_id', $project);
                         })
@@ -82,10 +82,10 @@ class LoanController extends Controller
 
     public function getById($id)
     {
-        return Loan::with('budget','budget.project','budget.project.plan')
-                ->with('project','project.place','project.owner')
-                ->with('details','details.expense','department')
+        return Loan::with('details','details.expense','department')
                 ->with('employee','employee.prefix','employee.position','employee.level')
+                // ->with('budgets','budgets.project','budgets.project.plan')
+                // ->with('project','project.place','project.owner')
                 ->find($id);
     }
 
