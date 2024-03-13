@@ -21,7 +21,7 @@ class ItemService
     /**
      * @var $destPath
      */
-    protected $destPath = 'uploads/products/thumbnails/';
+    protected $destPath = 'products';
 
     public function __construct(ItemRepository $itemRepo)
     {
@@ -30,17 +30,17 @@ class ItemService
 
     public function find($id)
     {
-        return $this->itemRepo->getAsset($id);
+        return $this->itemRepo->getItem($id);
     }
 
     public function findAll($params = [])
     {
-        return $this->itemRepo->getAssets();
+        return $this->itemRepo->getItems();
     }
 
     public function findById($id)
     {
-        return $this->itemRepo->getAssetById($id);
+        return $this->itemRepo->getItemById($id);
     }
 
     public function initForm()

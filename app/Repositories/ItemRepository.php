@@ -16,24 +16,22 @@ class ItemRepository
         $this->model = $model;
     }
 
-    public function getAsset($id)
+    public function getItem($id)
     {
         return $this->model->find($id);
     }
 
-    public function getAssets()
+    public function getItems()
     {
         return $this->model
-                    ->with('group','group.category','brand','budget','obtaining','unit','room')
-                    ->with('currentOwner','currentOwner.owner','currentOwner.owner.prefix')
+                    ->with('category','unit')
                     ->get();
     }
 
-    public function getAssetById($id)
+    public function getItemById($id)
     {
         return $this->model
-                    ->with('group','group.category','brand','budget','obtaining','unit','room')
-                    ->with('currentOwner','currentOwner.owner','currentOwner.owner.prefix')
+                    ->with('category','unit')
                     ->find($id);
     }
 
@@ -46,6 +44,6 @@ class ItemRepository
 
     public function delete($id)
     {
-        return $this->getAsset($id)->delete();
+        return $this->getItem($id)->delete();
     }
 }
