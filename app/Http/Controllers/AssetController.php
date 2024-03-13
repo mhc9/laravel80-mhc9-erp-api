@@ -96,7 +96,7 @@ class AssetController extends Controller
             $asset->room_id             = $req['room_id'];
             $asset->remark              = $req['remark'];
             $asset->status              = 1;
-            $asset->img_url             = $this->assetService->saveImage($req->file('img_url'));
+            $asset->img_url             = $this->assetService->saveImage($req->file('img_url'), 'assets');
 
             if($asset->save()) {
                 return [

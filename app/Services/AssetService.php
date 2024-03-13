@@ -76,7 +76,7 @@ class AssetService
     public function updateImage($id, $image)
     {
         $asset = $this->assetRepo->getAsset($id);
-        $destPath = 'uploads/assets/';
+        $destPath = 'assets';
 
         /** Remove old uploaded file */
         if (\File::exists($destPath . $asset->img_url)) {
