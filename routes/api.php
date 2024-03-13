@@ -174,6 +174,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/items', 'App\Http\Controllers\ItemController@store');
     Route::post('/items/{id}/update', 'App\Http\Controllers\ItemController@update');
     Route::post('/items/{id}/delete', 'App\Http\Controllers\ItemController@destroy');
+    Route::post('/items/{id}/upload', 'App\Http\Controllers\ItemController@uploadImage');
 
     /** Requisitions */
     Route::get('/requisitions', 'App\Http\Controllers\RequisitionController@getAll');

@@ -146,11 +146,11 @@ class ItemController extends Controller
     public function uploadImage(Request $req, $id)
     {
         try {
-            if($asset = $this->assetService->updateImage($id, $req->file('img_url'))) {
+            if($item = $this->itemService->updateImage($id, $req->file('img_url'))) {
                 return [
                     'status'    => 1,
                     'message'   => 'Uploading avatar successfully!!',
-                    'img_url'   => $asset->img_url
+                    'img_url'   => $item->img_url
                 ];
             } else {
                 return [

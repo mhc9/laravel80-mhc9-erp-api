@@ -77,7 +77,7 @@ class ItemService
 
     public function updateImage($id, $image)
     {
-        $item = $this->itemRepo->getAsset($id);
+        $item = $this->itemRepo->getItem($id);
 
         /** Remove old file */
         if (\File::exists($this->destPath . $item->img_url)) {
