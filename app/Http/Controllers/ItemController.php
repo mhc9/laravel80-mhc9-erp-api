@@ -126,8 +126,7 @@ class ItemController extends Controller
             if($this->itemService->delete($id)) {
                 return [
                     'status'    => 1,
-                    'message'   => 'Deleting successfully!!',
-                    'item'      => $item
+                    'message'   => 'Deleting successfully!!'
                 ];
             } else {
                 return [
