@@ -57,8 +57,8 @@ class ItemService
     public function store($req)
     {
         $data = [
-            // 'name'          => $req['name'],
-            // 'category_id'   => $req['category_id'],
+            'name'          => $req['name'],
+            'category_id'   => $req['category_id'],
             'description'   => $req['description'],
             'cost'          => $req['cost'],
             'price'         => $req['price'],

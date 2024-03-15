@@ -43,7 +43,7 @@ class ItemController extends Controller
                     ->when(!empty($name), function($q) use ($name) {
                         $q->where('name', 'like', '%'.$name.'%');
                     })
-                    ->when($status != '', function($q) use ($status) {
+                    ->when(!empty($status), function($q) use ($status) {
                         $q->where('status', $status);
                     })
                     ->paginate($pageSize);
