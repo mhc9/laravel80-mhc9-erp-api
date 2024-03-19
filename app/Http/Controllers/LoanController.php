@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Loan;
 use App\Models\LoanDetail;
+use App\Models\LoanBudget;
+use App\Models\ProjectCourse;
 use App\Models\Expense;
 use App\Models\Department;
 use App\Models\Budget;
@@ -119,18 +121,45 @@ class LoanController extends Controller
             $loan->doc_date         = $req['doc_date'];
             $loan->loan_type_id     = $req['loan_type_id'];
             $loan->money_type_id    = $req['money_type_id'];
-            $loan->budget_id        = $req['budget_id'];
-            $loan->project_id       = $req['project_id'];
+            $loan->year             = $req['year'];
             $loan->department_id    = $req['department_id'];
+            // $loan->division_id      = $req['division_id'];
             $loan->employee_id      = $req['employee_id'];
+            $loan->project_no       = $req['project_no'];
+            $loan->project_date     = $req['project_date'];
+            $loan->project_name     = $req['project_name'];
+            $loan->project_sdate    = $req['project_sdate'];
+            $loan->project_edate    = $req['project_edate'];
+            $loan->expense_calc     = $req['expense_calc'];
+            $loan->budget_total     = currencyToNumber($req['budget_total']);
             $loan->net_total        = currencyToNumber($req['net_total']);
-            // $loan->remark           = $req['remark'];
-            $loan->status           = $req['status'] ? 1 : 0;
+            $loan->remark           = $req['remark'];
+            $loan->status           = 0;
 
             if($loan->save()) {
+                foreach($req['courses'] as $item) {
+                    $course = new ProjectCourse();
+                    $course->seq_no         = $item['id'];
+                    $course->loan_id        = $loan->id;
+                    $course->course_date    = $item['course_date'];
+                    $course->place_id       = $item['place_id'];
+                    $course->save();
+                }
+
+                foreach($req['budgets'] as $item) {
+                    $budget = new LoanBudget();
+                    $budget->loan_id    = $loan->id;
+                    $budget->budget_id  = $item['budget_id'];
+                    $budget->total      = currencyToNumber($item['total']);
+                    $budget->save();
+                }
+
                 foreach($req['items'] as $item) {
+                    $course = ProjectCourse::where('loan_id', $loan->id)->where('seq_no', $item['course_id'])->first();
+
                     $detail = new LoanDetail();
                     $detail->loan_id        = $loan->id;
+                    $detail->course_id      = $course->id;
                     $detail->expense_id     = $item['expense_id'];
                     $detail->description    = $item['description'];
                     $detail->total          = currencyToNumber($item['total']);
