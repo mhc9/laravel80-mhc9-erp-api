@@ -27,8 +27,8 @@ class LoanController extends Controller
 
         $activities = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
-                        // ->with('budgets','budgets.project','budgets.project.plan')
-                        // ->with('project','project.place','project.owner')
+                        ->with('budgets','budgets.budget','budgets.budget.project')
+                        ->with('budgets.budget.project.plan','courses','courses.place')
                         ->when(!empty($year), function($q) use ($year) {
                             $q->where('year', $year);
                         })
@@ -86,8 +86,8 @@ class LoanController extends Controller
     {
         return Loan::with('details','details.expense','department')
                 ->with('employee','employee.prefix','employee.position','employee.level')
-                // ->with('budgets','budgets.project','budgets.project.plan')
-                // ->with('project','project.place','project.owner')
+                ->with('budgets','budgets.budget','budgets.budget.project')
+                ->with('budgets.budget.project.plan','courses','courses.place')
                 ->find($id);
     }
 
