@@ -60,12 +60,17 @@ class PlaceService
     {
         $data = [
             'name'          => $req['name'],
-            'category_id'   => $req['category_id'],
-            'description'   => $req['description'],
-            'cost'          => $req['cost'],
-            'price'         => $req['price'],
-            'unit_id'       => $req['unit_id'],
-            // 'status'        => $req['status'] ? 1 : 0,
+            'place_type_id' => $req['place_type_id'],
+            'address_no'    => $req['address_no'],
+            'road'          => $req['road'],
+            'moo'           => $req['moo'],
+            'tambon_id'     => $req['tambon_id'],
+            'amphur_id'     => $req['amphur_id'],
+            'changwat_id'   => $req['changwat_id'],
+            'zipcode'       => $req['zipcode'],
+            'latitude'      => $req['latitude'],
+            'longitude'     => $req['longitude'],
+            'status'        => 1,
         ];
 
         return $this->placeRepo->store($data);

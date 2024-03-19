@@ -39,21 +39,11 @@ class PlaceController extends Controller
     public function store(Request $req)
     {
         try {
-            $budget = new Project();
-            $budget->name       = $req['name'];
-            $budget->year       = $req['year'];
-            $budget->project_type_id = $req['project_type_id'];
-            $budget->owner_id   = $req['owner_id'];
-            $budget->place_id   = $req['place_id'];
-            $budget->from_date  = $req['from_date'];
-            $budget->to_date    = $req['to_date'];
-            $budget->status     = 1;
-
-            if($budget->save()) {
+            if($place = $this->placeService->store($req)) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'Budget'    => $budget
+                    'place'     => $place
                 ];
             } else {
                 return [
