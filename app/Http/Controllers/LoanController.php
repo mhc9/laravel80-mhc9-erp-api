@@ -21,34 +21,21 @@ class LoanController extends Controller
     {
         /** Get params from query string */
         $year       = $req->get('year');
-        $plan       = $req->get('plan');
-        $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('details','details.expense','department')
+        $loans = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
                         ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
                         ->when(!empty($year), function($q) use ($year) {
                             $q->where('year', $year);
                         })
-                        // ->when(!empty($plan), function($q) use ($plan) {
-                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                        //         $sq->where('plan_id', $plan);
-                        //     });
-                        // })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where(function($query) use ($name) {
-                        //         $query->where('item_name', 'like', '%'.$name.'%');
-                        //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                        //     });
-                        // })
+                        ->when(!empty($status), function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         ->paginate(10);
 
-        return $activities;
+        return $loans;
     }
 
     public function getAll(Request $req)
@@ -59,7 +46,7 @@ class LoanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Loan::with('details','details.expense','department')
+        $loans = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
                         ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
@@ -79,7 +66,7 @@ class LoanController extends Controller
                         // })
                         ->get();
 
-        return $activities;
+        return $loans;
     }
 
     public function getById($id)
