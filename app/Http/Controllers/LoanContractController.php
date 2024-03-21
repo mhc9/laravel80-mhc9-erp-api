@@ -22,10 +22,10 @@ class LoanContractController extends Controller
         // $name       = $req->get('name');
         // $status     = $req->get('status');
 
-        $activities = LoanContract::with('loan.budget') //,'budget.project','budget.project.plan')
-                        ->with('loan.project','loan.project.place','loan.project.owner')
-                        ->with('details','details.expense','loan.department')
+        $contracts = LoanContract::with('details','details.expense','loan.department')
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                        ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                         // ->when(!empty($plan), function($q) use ($plan) {
                         //     $q->whereHas('project.plan', function($sq) use ($plan) {
                         //         $sq->where('plan_id', $plan);
@@ -42,7 +42,7 @@ class LoanContractController extends Controller
                         // })
                         ->paginate(10);
 
-        return $activities;
+        return $contracts;
     }
 
     public function getAll(Request $req)
