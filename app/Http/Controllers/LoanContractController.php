@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
 use App\Models\Expense;
@@ -133,7 +134,8 @@ class LoanContractController extends Controller
                     $detail->save();
                 }
 
-                Loan::find($req['loan_id'])->update(['status' => 2]);
+                /** อัตเดต status ของตาราง loan เป็น 3=อนุมัติแล้ว */
+                Loan::find($req['loan_id'])->update(['status' => 3]);
 
                 return [
                     'status'    => 1,
