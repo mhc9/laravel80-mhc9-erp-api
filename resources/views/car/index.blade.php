@@ -53,7 +53,7 @@
                         @foreach($cars as $car)
                             <tr>
                                 <td style="text-align: center;">{{++$index}}</td>
-                                <td>{{$car->CarType}}</td>
+                                <td>{{$car->CarType}} {{$car->CarId == 2 ? '(รถเช่า)' : ''}}</td>
                                 <td>{{$car->CarName}}</td>
                                 <td style="text-align: center;">{{$car->CarNum}}</td>
                                 <td style="text-align: center;">ศูนย์สุขภาพจิตที่ 9</td>
