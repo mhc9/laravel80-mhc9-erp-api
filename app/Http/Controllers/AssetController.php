@@ -27,7 +27,8 @@ class AssetController extends Controller
         /** Get params from query string */
         $type       = $req->get('type');
         $category   = $req->get('category');
-        $group       = $req->get('group');
+        $group      = $req->get('group');
+        $no         = $req->get('assetNo');
         $name       = $req->get('name');
         $owner      = $req->get('owner');
         $status     = $req->get('status');
@@ -42,6 +43,9 @@ class AssetController extends Controller
                     })
                     ->when(!empty($group), function($q) use ($group) {
                         $q->where('asset_group_id', $group);
+                    })
+                    ->when(!empty($no), function($q) use ($no) {
+                        $q->where('asset_no', 'like', '%'.$no.'%');
                     })
                     ->when(!empty($name), function($q) use ($name) {
                         $q->where('name', 'like', '%'.$name.'%');
