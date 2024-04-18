@@ -230,6 +230,15 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/loan-contracts/{id}/update', [App\Http\Controllers\LoanContractController::class, 'update']);
     Route::post('/loan-contracts/{id}/delete', [App\Http\Controllers\LoanContractController::class, 'destroy']);
 
+    /** Loan Refunds */
+    Route::get('/loan-refunds', [App\Http\Controllers\LoanRefundController::class, 'getAll']);
+    Route::get('/loan-refunds/search', [App\Http\Controllers\LoanRefundController::class, 'search']);
+    Route::get('/loan-refunds/{id}', [App\Http\Controllers\LoanRefundController::class, 'getById']);
+    Route::get('/loan-refunds/init/form', [App\Http\Controllers\LoanRefundController::class, 'getInitialFormData']);
+    Route::post('/loan-refunds', [App\Http\Controllers\LoanRefundController::class, 'store']);
+    Route::post('/loan-refunds/{id}/update', [App\Http\Controllers\LoanRefundController::class, 'update']);
+    Route::post('/loan-refunds/{id}/delete', [App\Http\Controllers\LoanRefundController::class, 'destroy']);
+
     /** Places */
     Route::get('/places', [App\Http\Controllers\PlaceController::class, 'getAll']);
     Route::get('/places/search', [App\Http\Controllers\PlaceController::class, 'search']);

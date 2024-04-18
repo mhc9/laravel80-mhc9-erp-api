@@ -113,27 +113,27 @@ class LoanRefundController extends Controller
     {
         try {
             $refund = new LoanRefund();
-            $refund->doc_no             = $req['doc_no'];
-            $refund->doc_date           = $req['doc_date'];
-            $refund->contract_id        = $req['contract_id'];
-            $refund->refund_type_id     = $req['refund_type_id'];
-            $refund->net_total          = currencyToNumber($req['net_total']);
-            // $refund->remark           = $req['remark'];
-            // $refund->status           = $req['status'] ? 1 : 0;
+            $refund->doc_no         = $req['doc_no'];
+            $refund->doc_date       = $req['doc_date'];
+            $refund->contract_id    = $req['contract_id'];
+            $refund->refund_type_id = $req['refund_type_id'];
+            // $refund->employee_id    = $req['employee_id'];
+            $refund->net_total      = currencyToNumber($req['net_total']);
+            // $refund->remark         = $req['remark'];
+            // $refund->status         = $req['status'] ? 1 : 0;
 
             if($refund->save()) {
                 foreach($req['items'] as $item) {
                     $detail = new LoanRefundDetail();
-                    $detail->refund_id      = $refund->id;
-                    $detail->contract_detail_id = $item['id'];
-                    $detail->expense_id     = $item['expense_id'];
-                    $detail->description    = $item['description'];
-                    $detail->total          = currencyToNumber($item['total']);
+                    $detail->refund_id  = $refund->id;
+                    $detail->contract_detail_id = $item['contract_detail_id'];
+                    $detail->total      = currencyToNumber($item['total']);
                     $detail->save();
                 }
 
-                /** อัตเดต status ของตาราง loan เป็น 5=เคลียร์แล้ว */
-                Loan::find($req['loan_id'])->update(['status' => 5]);
+                    /** อัตเดต status ของตาราง loan เป็น 5=เคลียร์แล้ว **/
+                    // Loan::find($req['loan_id'])->update(['status' => 5]);
+                
 
                 return [
                     'status'    => 1,
