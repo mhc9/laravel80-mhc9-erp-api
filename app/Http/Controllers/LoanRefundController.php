@@ -25,10 +25,11 @@ class LoanRefundController extends Controller
         // $name       = $req->get('name');
         // $status     = $req->get('status');
 
-        $contracts = LoanRefund::with('details','details.expense','loan.department')
-                        ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
-                        ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+        $contracts = LoanRefund::with('details','details.contractDetail.expense','contract')
+                        // ->with('loan.department')
+                        // ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                        // ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                        // ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                         // ->when(!empty($plan), function($q) use ($plan) {
                         //     $q->whereHas('project.plan', function($sq) use ($plan) {
                         //         $sq->where('plan_id', $plan);

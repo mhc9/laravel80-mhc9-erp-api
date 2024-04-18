@@ -16,11 +16,6 @@ class LoanRefundDetail extends Model
         return $this->belongsTo(LoanRefund::class, 'refund_id', 'id');
     }
 
-    public function expense()
-    {
-        return $this->belongsTo(Expense::class, 'expense_id', 'id');
-    }
-
     public function contractDetail()
     {
         return $this->belongsTo(LoanContractDetail::class, 'contract_detail_id', 'id');
