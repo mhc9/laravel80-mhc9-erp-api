@@ -21,7 +21,7 @@ class LoanContractController extends Controller
         // $year       = $req->get('year');
         // $plan       = $req->get('plan');
         // $name       = $req->get('name');
-        // $status     = $req->get('status');
+        $status     = $req->get('status');
 
         $contracts = LoanContract::with('details','details.expense','loan.department')
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
@@ -32,9 +32,9 @@ class LoanContractController extends Controller
                         //         $sq->where('plan_id', $plan);
                         //     });
                         // })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
+                        ->when(!empty($status), function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         // ->when(!empty($name), function($q) use ($name) {
                         //     $q->where(function($query) use ($name) {
                         //         $query->where('item_name', 'like', '%'.$name.'%');
