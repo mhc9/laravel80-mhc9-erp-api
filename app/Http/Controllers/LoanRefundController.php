@@ -131,9 +131,11 @@ class LoanRefundController extends Controller
                     $detail->save();
                 }
 
-                    /** อัตเดต status ของตาราง loan เป็น 5=เคลียร์แล้ว **/
+                    /** อัตเดต status ของตาราง loans เป็น 5=เคลียร์แล้ว **/
                     // Loan::find($req['loan_id'])->update(['status' => 5]);
-                
+
+                    /** อัตเดต status ของตาราง loan_contracts เป็น 2=เคลียร์แล้ว **/
+                    LoanContract::find($req['contract_id'])->update(['status' => 2]);
 
                 return [
                     'status'    => 1,
