@@ -191,25 +191,7 @@ class EmployeeController extends Controller
     public function uploadAvatar(Request $req, $id)
     {
         try {
-            $employee = Employee::find($id);
-
-            if ($req->file('avatar_url')) {
-                $file = $req->file('avatar_url');
-                $fileName = date('mdYHis') . uniqid(). '.' .$file->getClientOriginalExtension();
-                $destinationPath = 'uploads/employees/';
-
-                /** Remove old uploaded file */
-                if (\File::exists($destinationPath . $employee->avatar_url)) {
-                    \File::delete($destinationPath . $employee->avatar_url);
-                }
-
-                /** Upload new file */
-                if ($file->move($destinationPath, $fileName)) {
-                    $employee->avatar_url = $fileName;
-                }
-            }
-
-            if($employee->save()) {
+            if($employee = $this->employeeService->updateImage($id, $req->file('avatar_url'))) {
                 return [
                     'status'        => 1,
                     'message'       => 'Uploading avatar successfully!!',
