@@ -69,13 +69,13 @@ class EmployeeService
         $destPath = 'employees';
 
         /** Remove old uploaded file */
-        if (\File::exists($destPath . $employee->img_url)) {
-            \File::delete($destPath . $employee->img_url);
+        if (\File::exists($destPath . $employee->avatar_url)) {
+            \File::delete($destPath . $employee->avatar_url);
         }
 
-        $employee->img_url = $this->saveImage($image, $destPath);
+        $employee->avatar_url = $this->saveImage($image, $destPath);
 
-        if (!empty($employee->img_url) && $employee->save()) {
+        if (!empty($employee->avatar_url) && $employee->save()) {
             return $employee;
         } else {
             return false;
