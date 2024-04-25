@@ -23,7 +23,7 @@ class LoanContractController extends Controller
         // $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $contracts = LoanContract::with('details','details.expense','loan.department')
+        $contracts = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
                         ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
                         ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
@@ -54,7 +54,7 @@ class LoanContractController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = LoanContract::with('details','details.expense','loan.department')
+        $activities = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
                         ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
                         ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
@@ -79,7 +79,7 @@ class LoanContractController extends Controller
 
     public function getById($id)
     {
-        return LoanContract::with('details','details.expense','loan.department')
+        return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
                 ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
                 ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
                 ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
