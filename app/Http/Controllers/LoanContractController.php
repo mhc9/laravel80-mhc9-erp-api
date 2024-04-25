@@ -231,7 +231,10 @@ class LoanContractController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Approving successfully!!',
-                    'contract'  => $contract
+                    'contract'  => $contract->load('details','details.expense','details.loanDetail','loan.department',
+                                        'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
+                                        'loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan',
+                                        'loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ];
             } else {
                 return [
@@ -261,7 +264,10 @@ class LoanContractController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Approving successfully!!',
-                    'contract'  => $contract
+                    'contract'  => $contract->load('details','details.expense','details.loanDetail','loan.department',
+                                        'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
+                                        'loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan',
+                                        'loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ];
             } else {
                 return [

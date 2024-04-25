@@ -11,6 +11,8 @@ class Loan extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
+    protected $fillable = ['status'];
+
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
