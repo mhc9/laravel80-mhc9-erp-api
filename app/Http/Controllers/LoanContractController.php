@@ -54,10 +54,10 @@ class LoanContractController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = LoanContract::with('budget','budget.project','budget.project.plan')
-                        ->with('project','project.place','project.owner')
-                        ->with('details','details.expense','department')
-                        ->with('employee','employee.prefix','employee.position','employee.level')
+        $activities = LoanContract::with('details','details.expense','loan.department')
+                        ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                        ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                         ->when(!empty($project), function($q) use ($project) {
                             $q->where('project_id', $project);
                         })
@@ -79,10 +79,10 @@ class LoanContractController extends Controller
 
     public function getById($id)
     {
-        return LoanContract::with('budget','budget.project','budget.project.plan')
-                ->with('project','project.place','project.owner')
-                ->with('details','details.expense','department')
-                ->with('employee','employee.prefix','employee.position','employee.level')
+        return LoanContract::with('details','details.expense','loan.department')
+                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ->find($id);
     }
 
