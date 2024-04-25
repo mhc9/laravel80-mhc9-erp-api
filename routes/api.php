@@ -229,6 +229,8 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/loan-contracts', [App\Http\Controllers\LoanContractController::class, 'store']);
     Route::post('/loan-contracts/{id}/update', [App\Http\Controllers\LoanContractController::class, 'update']);
     Route::post('/loan-contracts/{id}/delete', [App\Http\Controllers\LoanContractController::class, 'destroy']);
+    Route::post('/loan-contracts/{id}/approve', [App\Http\Controllers\LoanContractController::class, 'approve']);
+    Route::post('/loan-contracts/{id}/deposit', [App\Http\Controllers\LoanContractController::class, 'deposit']);
 
     /** Loan Refunds */
     Route::get('/loan-refunds', [App\Http\Controllers\LoanRefundController::class, 'getAll']);

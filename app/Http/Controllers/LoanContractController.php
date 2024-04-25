@@ -216,4 +216,64 @@ class LoanContractController extends Controller
             ];
         }
     }
+
+    public function approve(Request $req, $id)
+    {
+        try {
+            $contract = LoanContract::find($id);
+            $contract->approve_date = $req['approve_date'];
+            $contract->status       = 2;
+
+            if($contract->save()) {
+                /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=3 (3=อนุมัติแล้ว) */
+                Loan::find($contract->loan_id)->update(['status', 3]);
+
+                return [
+                    'status'    => 1,
+                    'message'   => 'Approving successfully!!',
+                    'contract'  => $contract
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function deposit(Request $req, $id)
+    {
+        try {
+            $contract = LoanContract::find($id);
+            $contract->deposit_date = $req['deposit_date'];
+            $contract->refund_date  = $req['refund_date'];
+
+            if($contract->save()) {
+                /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=4 (4=เงินเข้าแล้ว) */
+                Loan::find($contract->loan_id)->update(['status', 4]);
+
+                return [
+                    'status'    => 1,
+                    'message'   => 'Approving successfully!!',
+                    'contract'  => $contract
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
 }
