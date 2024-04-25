@@ -118,6 +118,7 @@ class LoanContractController extends Controller
             $contract->sent_date        = $req['sent_date'];
             $contract->bk02_date        = $req['bk02_date'];
             $contract->deposit_date     = $req['deposit_date'];
+            $contract->refund_days      = $req['refund_days'];
             $contract->net_total        = currencyToNumber($req['net_total']);
             $contract->remark           = $req['remark'];
             $contract->status           = 1;
@@ -167,6 +168,7 @@ class LoanContractController extends Controller
             $contract->sent_date        = $req['sent_date'];
             $contract->bk02_date        = $req['bk02_date'];
             $contract->deposit_date     = $req['deposit_date'];
+            $contract->refund_days      = $req['refund_days'];
             $contract->remark           = $req['remark'];
             $contract->status           = $req['status'];
 
