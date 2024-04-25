@@ -167,9 +167,8 @@ class LoanContractController extends Controller
             $contract->sent_date        = $req['sent_date'];
             $contract->bk02_date        = $req['bk02_date'];
             $contract->deposit_date     = $req['deposit_date'];
-            // $contract->employee_id      = $req['employee_id'];
-            // $contract->remark           = $req['remark'];
-            // $contract->status           = $req['status'] ? 1 : 0;
+            $contract->remark           = $req['remark'];
+            $contract->status           = $req['status'];
 
             if($contract->save()) {
                 return [
