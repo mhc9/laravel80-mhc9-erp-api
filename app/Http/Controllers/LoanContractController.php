@@ -221,8 +221,8 @@ class LoanContractController extends Controller
     {
         try {
             $contract = LoanContract::find($id);
-            $contract->approve_date = $req['approve_date'];
-            $contract->status       = 2;
+            $contract->approved_date    = $req['approved_date'];
+            $contract->status           = 2;
 
             if($contract->save()) {
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=3 (3=อนุมัติแล้ว) */
