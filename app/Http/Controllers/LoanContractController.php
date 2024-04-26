@@ -254,8 +254,8 @@ class LoanContractController extends Controller
     {
         try {
             $contract = LoanContract::find($id);
-            $contract->deposit_date = $req['deposit_date'];
-            $contract->refund_date  = $req['refund_date'];
+            $contract->deposited_date   = $req['deposited_date'];
+            $contract->refund_date      = $req['refund_date'];
 
             if($contract->save()) {
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=4 (4=เงินเข้าแล้ว) */
