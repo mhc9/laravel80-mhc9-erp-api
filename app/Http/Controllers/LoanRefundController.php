@@ -119,7 +119,7 @@ class LoanRefundController extends Controller
             // $refund->employee_id    = $req['employee_id'];
             $refund->net_total      = currencyToNumber($req['net_total']);
             // $refund->remark         = $req['remark'];
-            // $refund->status         = $req['status'] ? 1 : 0;
+            $refund->status         = 'N';
 
             if($refund->save()) {
                 foreach($req['items'] as $item) {
