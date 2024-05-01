@@ -83,6 +83,7 @@ class AssetController extends Controller
         try {
             $asset = new Asset();
             $asset->asset_no            = $req['asset_no'];
+            $asset->fsn_no              = $req['fsn_no'];
             $asset->name                = $req['name'];
             $asset->description         = $req['description'];
             $asset->asset_category_id   = $req['asset_category_id'];
@@ -127,6 +128,7 @@ class AssetController extends Controller
         try {
             $asset = Asset::find($id);
             $asset->asset_no            = $req['asset_no'];
+            $asset->fsn_no              = $req['fsn_no'];
             $asset->name                = $req['name'];
             $asset->description         = $req['description'];
             $asset->asset_category_id   = $req['asset_category_id'];
