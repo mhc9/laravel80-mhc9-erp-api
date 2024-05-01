@@ -26,6 +26,7 @@ class EmployeeRepository
         return $this->model
                     ->with('prefix','changwat','amphur','tambon','position','level')
                     ->with('memberOf','memberOf.duty','memberOf.department','memberOf.division')
+                    ->where('status', 1)
                     ->get();
     }
 
