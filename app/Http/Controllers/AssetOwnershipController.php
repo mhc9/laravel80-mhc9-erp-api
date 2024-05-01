@@ -114,12 +114,12 @@ class AssetOwnershipController extends Controller
 
     public function getByAsset($assetId)
     {
-        return AssetOwnership::with('asset','owner')->where('asset_id', $assetId)->paginate(10);
+        return AssetOwnership::with('asset','owner')->where('asset_id', $assetId)->orderBy('owned_at', 'DESC')->paginate(10);
     }
 
     public function getByOwner($ownerId)
     {
-        return AssetOwnership::with('asset','owner')->where('owner_id', $ownerId)->paginate(10);
+        return AssetOwnership::with('asset','owner')->where('owner_id', $ownerId)->orderBy('owned_at', 'DESC')->paginate(10);
     }
 
     public function getInitialFormData()
