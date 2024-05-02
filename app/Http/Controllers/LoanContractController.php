@@ -86,6 +86,17 @@ class LoanContractController extends Controller
                 ->find($id);
     }
 
+    public function getReport($year)
+    {
+        return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
+                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                ->with('refund')
+                ->where('year', $year)
+                ->paginate(10);
+    }
+
     public function getInitialFormData()
     {
         $loanTypes = [

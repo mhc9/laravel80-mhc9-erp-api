@@ -225,6 +225,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/loan-contracts', [App\Http\Controllers\LoanContractController::class, 'getAll']);
     Route::get('/loan-contracts/search', [App\Http\Controllers\LoanContractController::class, 'search']);
     Route::get('/loan-contracts/{id}', [App\Http\Controllers\LoanContractController::class, 'getById']);
+    Route::get('/loan-contracts/report/{year}', [App\Http\Controllers\LoanContractController::class, 'getReport']);
     Route::get('/loan-contracts/init/form', [App\Http\Controllers\LoanContractController::class, 'getInitialFormData']);
     Route::post('/loan-contracts', [App\Http\Controllers\LoanContractController::class, 'store']);
     Route::post('/loan-contracts/{id}/update', [App\Http\Controllers\LoanContractController::class, 'update']);
