@@ -118,6 +118,7 @@ class LoanRefundController extends Controller
             $refund->refund_type_id = $req['refund_type_id'];
             // $refund->employee_id    = $req['employee_id'];
             $refund->net_total      = currencyToNumber($req['net_total']);
+            $refund->balance        = currencyToNumber($req['balance']);
             // $refund->remark         = $req['remark'];
             $refund->status         = 'N';
 
@@ -130,11 +131,14 @@ class LoanRefundController extends Controller
                     $detail->save();
                 }
 
-                    /** อัตเดต status ของตาราง loans เป็น 5=เคลียร์แล้ว **/
-                    // Loan::find($req['loan_id'])->update(['status' => 5]);
+                /** อัตเดต status ของตาราง loan_contracts เป็น 3=รอเคลียร์ **/
+                $contract = LoanContract::find($req['contract_id']);
+                $contract->status = 3;
+                $contract->save();
 
-                    /** อัตเดต status ของตาราง loan_contracts เป็น 2=เคลียร์แล้ว **/
-                    LoanContract::find($req['contract_id'])->update(['status' => 2]);
+                /** อัตเดต status ของตาราง loans เป็น 5=เคลียร์แล้ว **/
+                Loan::find($contract->loan_id)->update(['status' => 5]);
+
 
                 return [
                     'status'    => 1,
@@ -164,6 +168,7 @@ class LoanRefundController extends Controller
             $refund->contract_id        = $req['contract_id'];
             $refund->refund_type_id     = $req['refund_type_id'];
             $refund->net_total          = currencyToNumber($req['net_total']);
+            $refund->balance            = currencyToNumber($req['balance']);
             // $refund->remark           = $req['remark'];
             // $refund->status           = $req['status'] ? 1 : 0;
 
