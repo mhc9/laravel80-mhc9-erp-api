@@ -241,6 +241,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/loan-refunds', [App\Http\Controllers\LoanRefundController::class, 'store']);
     Route::post('/loan-refunds/{id}/update', [App\Http\Controllers\LoanRefundController::class, 'update']);
     Route::post('/loan-refunds/{id}/delete', [App\Http\Controllers\LoanRefundController::class, 'destroy']);
+    Route::post('/loan-refunds/{id}/approve', [App\Http\Controllers\LoanRefundController::class, 'approve']);
 
     /** Places */
     Route::get('/places', [App\Http\Controllers\PlaceController::class, 'getAll']);
