@@ -122,13 +122,8 @@ class LoanContractController extends Controller
     {
         try {
             $contract = new LoanContract();
-            $contract->contract_no      = $req['contract_no'];
-            $contract->contract_date    = $req['contract_date'];
             $contract->loan_id          = $req['loan_id'];
-            $contract->bill_no          = $req['bill_no'];
-            $contract->sent_date        = $req['sent_date'];
-            $contract->bk02_date        = $req['bk02_date'];
-            $contract->deposit_date     = $req['deposit_date'];
+            $contract->year             = $req['year'];
             $contract->refund_days      = $req['refund_days'];
             $contract->net_total        = currencyToNumber($req['net_total']);
             $contract->remark           = $req['remark'];
@@ -232,7 +227,11 @@ class LoanContractController extends Controller
     {
         try {
             $contract = LoanContract::find($id);
+            $contract->contract_no      = $req['contract_no'];
             $contract->approved_date    = $req['approved_date'];
+            $contract->sent_date        = $req['sent_date'];
+            $contract->bill_no          = $req['bill_no'];
+            $contract->bk02_date        = $req['bk02_date'];
             $contract->status           = 2;
 
             if($contract->save()) {
