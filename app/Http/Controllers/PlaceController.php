@@ -43,7 +43,7 @@ class PlaceController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'place'     => $place
+                    'place'     => $place->load('tambon','amphur','changwat')
                 ];
             } else {
                 return [
