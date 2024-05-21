@@ -215,9 +215,10 @@ class LoanRefundController extends Controller
     {
         try {
             $refund = LoanRefund::find($id);
-            $refund->bill_no        = $req['bill_no'];
-            $refund->receipt_no     = $req['receipt_no'];
             $refund->approved_date  = $req['approved_date'];
+            $refund->bill_no        = $req['bill_no'];
+            $refund->bill_date      = $req['bill_date'];
+            $refund->receipt_no     = $req['receipt_no'];
             $refund->status         = 'Y';
 
             if($refund->save()) {
