@@ -125,9 +125,10 @@ class LoanRefundController extends Controller
             if($refund->save()) {
                 foreach($req['items'] as $item) {
                     $detail = new LoanRefundDetail();
-                    $detail->refund_id  = $refund->id;
+                    $detail->refund_id      = $refund->id;
                     $detail->contract_detail_id = $item['contract_detail_id'];
-                    $detail->total      = currencyToNumber($item['total']);
+                    $detail->description    = $item['description'];
+                    $detail->total          = currencyToNumber($item['total']);
                     $detail->save();
                 }
 
