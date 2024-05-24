@@ -81,8 +81,8 @@ class LoanRefundController extends Controller
 
     public function getById($id)
     {
-        return LoanRefund::with('details','details.contractDetail.expense','contract','contract.loan')
-                ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.department')
+        return LoanRefund::with('details','details.contractDetail.expense','contract','contract.loan','contract.loan.department')
+                ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place')
                 ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                 ->find($id);
     }
