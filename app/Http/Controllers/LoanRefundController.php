@@ -43,6 +43,7 @@ class LoanRefundController extends Controller
                         //         $query->orWhere('en_name', 'like', '%'.$name.'%');
                         //     });
                         // })
+                        ->orderBy('doc_date', 'DESC')
                         ->paginate(10);
 
         return $contracts;
@@ -74,6 +75,7 @@ class LoanRefundController extends Controller
                         // ->when(!empty($name), function($q) use ($name) {
                         //     $q->where('name', 'like', '%'.$name.'%');
                         // })
+                        ->orderBy('doc_date', 'DESC')
                         ->get();
 
         return $activities;
