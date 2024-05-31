@@ -11,69 +11,25 @@ use App\Models\Comset;
 
 class ComsetController extends Controller
 {
-    public function formValidate (Request $request)
-    {
-        $rules = [
-            'plan_type_id'      => 'required',
-            'item_name'         => 'required',
-            'unit_id'           => 'required',
-        ];
-
-        if ($request['is_addon'] != '1') {
-            $rules['category_id'] = 'required';
-            $rules['price_per_unit'] = 'required';
-        }
-
-        $messages = [
-            'plan_type_id.required'     => 'กรุณาเลือกประเภทแผน',
-            'category_id.required'        => 'กรุณาเลือกประเภทสินค้า/บริการ',
-            'item_name.required'        => 'กรุณาระบุชื่อสินค้า/บริการ',
-            'price_per_unit.required'   => 'กรุณาระบุราคาต่อหน่วย',
-            'unit_id.required'          => 'กรุณาเลือกหน่วยนับ',
-        ];
-
-        $validator = \Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            $messageBag = $validator->getMessageBag();
-
-            // if (!$messageBag->has('start_date')) {
-            //     if ($this->isDateExistsValidation(convThDateToDbDate($request['start_date']), 'start_date') > 0) {
-            //         $messageBag->add('start_date', 'คุณมีการลาในวันที่ระบุแล้ว');
-            //     }
-            // }
-
-            return [
-                'success' => 0,
-                'errors' => $messageBag->toArray(),
-            ];
-        } else {
-            return [
-                'success' => 1,
-                'errors' => $validator->getMessageBag()->toArray(),
-            ];
-        }
-    }
-
     public function search(Request $req)
     {
         /** Get params from query string */
-        // $type = $req->get('type');
-        // $group = $req->get('group');
+        $type = $req->get('type');
+        $group = $req->get('group');
 
-        // $comsets = Comset::with('type','group')
-        //             ->when($status != '', function($q) use ($status) {
-        //                 $q->where('status', $status);
-        //             })
-        //             ->when(!empty($name), function($q) use ($name) {
-        //                 $q->where(function($query) use ($name) {
-        //                     $query->where('item_name', 'like', '%'.$name.'%');
-        //                     $query->orWhere('en_name', 'like', '%'.$name.'%');
-        //                 });
-        //             })
-        //             ->paginate(10);
+        $comsets = Comset::with('type','group')
+                    // ->when($status != '', function($q) use ($status) {
+                    //     $q->where('status', $status);
+                    // })
+                    // ->when(!empty($name), function($q) use ($name) {
+                    //     $q->where(function($query) use ($name) {
+                    //         $query->where('item_name', 'like', '%'.$name.'%');
+                    //         $query->orWhere('en_name', 'like', '%'.$name.'%');
+                    //     });
+                    // })
+                    ->paginate(10);
 
-        // return $comsets;
+        return $comsets;
     }
 
     public function getAll(Request $req)
