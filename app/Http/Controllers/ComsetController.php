@@ -14,10 +14,10 @@ class ComsetController extends Controller
     public function search(Request $req)
     {
         /** Get params from query string */
-        $type = $req->get('type');
-        $group = $req->get('group');
+        // $type = $req->get('type');
+        // $group = $req->get('group');
 
-        $comsets = Comset::with('type','group')
+        $comsets = Comset::with('asset','details')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -38,7 +38,7 @@ class ComsetController extends Controller
         // $type = $req->get('type');
         // $group = $req->get('group');
 
-        $comsets = Comset::with('type','group')
+        $comsets = Comset::with('asset','details')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
