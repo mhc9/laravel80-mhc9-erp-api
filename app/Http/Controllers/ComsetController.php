@@ -49,7 +49,7 @@ class ComsetController extends Controller
 
     public function getById($id)
     {
-        return Comset::with('type','group')->find($id);
+        return Comset::with('asset','details')->find($id);
     }
 
     public function getInitialFormData()
