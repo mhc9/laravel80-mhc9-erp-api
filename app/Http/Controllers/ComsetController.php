@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Comset;
+use App\Models\Brand;
+use App\Models\EquipmentType;
 
 class ComsetController extends Controller
 {
@@ -55,7 +57,8 @@ class ComsetController extends Controller
     public function getInitialFormData()
     {
         return [
-            
+            'types'     => EquipmentType::all(),
+            'brands'    => Brand::all(),
         ];
     }
 
