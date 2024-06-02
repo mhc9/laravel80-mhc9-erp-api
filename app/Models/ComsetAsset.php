@@ -4,20 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ComsetEquipment extends Model
+class ComsetAsset extends Model
 {
-    protected $table = 'comset_equipments';
+    protected $table = 'comset_assets';
     // protected $primaryKey = 'id';
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
-    public function type()
+    public function asset()
     {
-        return $this->belongsTo(EquipmentType::class, 'equipment_type_id', 'id');
-    }
-
-    public function brand()
-    {
-        return $this->belongsTo(Brand::class, 'brand_id', 'id');
+        return $this->belongsTo(Asset::class, 'asset_id', 'id');
     }
 }
