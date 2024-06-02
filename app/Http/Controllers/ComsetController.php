@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Comset;
+use App\Models\ComsetEquipment;
+use App\Models\ComsetAsset;
 use App\Models\Brand;
 use App\Models\EquipmentType;
 
@@ -19,7 +21,7 @@ class ComsetController extends Controller
         // $type = $req->get('type');
         // $group = $req->get('group');
 
-        $comsets = Comset::with('asset','details')
+        $comsets = Comset::with('asset','equipments')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -40,7 +42,7 @@ class ComsetController extends Controller
         // $type = $req->get('type');
         // $group = $req->get('group');
 
-        $comsets = Comset::with('asset','details')
+        $comsets = Comset::with('asset','equipments')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -51,7 +53,7 @@ class ComsetController extends Controller
 
     public function getById($id)
     {
-        return Comset::with('asset','details')->find($id);
+        return Comset::with('asset','equipments')->find($id);
     }
 
     public function getInitialFormData()
@@ -66,12 +68,36 @@ class ComsetController extends Controller
     {
         try {
             $comset = new Comset();
-            $comset->asset_id       = $req['asset_id'];
+            $comset->name           = $req['name'];
             $comset->description    = $req['description'];
+            $comset->asset_id       = $req['asset_id'];
             $comset->remark         = $req['remark'];
             $comset->status         = 1;
 
             if($comset->save()) {
+                if (array_key_exists('equipments', $req)) {
+                    foreach ($req['equipments'] as $equipment) {
+                        $newEquipment = new ComsetEquipment();
+                        $newEquipment->comset_id            = $comset->id;
+                        $newEquipment->equipment_type_id    = $equipment['equipment_type_id'];
+                        $newEquipment->brand_id             = $equipment['brand_id'];
+                        $newEquipment->model                = $equipment['model'];
+                        $newEquipment->capacity             = $equipment['capacity'];
+                        $newEquipment->description          = $equipment['description'];
+                        $newEquipment->price                = $equipment['price'];
+                        $newEquipment->save();
+                    }
+                }
+
+                if (array_key_exists('assets', $req)) {
+                    foreach ($req['assets'] as $asset) {
+                        $newAsset = new ComsetAsset();
+                        $newAsset->comset_id    = $comset->id;
+                        $newAsset->asset_id     = $asset['asset_id'];
+                        $newAsset->save();
+                    }
+                }
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
