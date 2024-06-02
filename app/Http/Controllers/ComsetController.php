@@ -21,7 +21,7 @@ class ComsetController extends Controller
         // $type = $req->get('type');
         // $group = $req->get('group');
 
-        $comsets = Comset::with('asset','equipments')
+        $comsets = Comset::with('asset','equipments','equipments.type','equipments.brand')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -42,7 +42,7 @@ class ComsetController extends Controller
         // $type = $req->get('type');
         // $group = $req->get('group');
 
-        $comsets = Comset::with('asset','equipments')
+        $comsets = Comset::with('asset','equipments','equipments.type','equipments.brand')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -53,7 +53,7 @@ class ComsetController extends Controller
 
     public function getById($id)
     {
-        return Comset::with('asset','equipments')->find($id);
+        return Comset::with('asset','equipments','equipments.type','equipments.brand')->find($id);
     }
 
     public function getInitialFormData()
