@@ -16,8 +16,8 @@ class Comset extends Model
         return $this->belongsTo(Asset::class, 'asset_id', 'id');
     }
 
-    public function details()
+    public function equipments()
     {
-        return $this->hasMany(ComsetDetail::class, 'comset_id', 'id');
+        return $this->hasMany(ComsetEquipment::class, 'comset_id', 'id');
     }
 }
