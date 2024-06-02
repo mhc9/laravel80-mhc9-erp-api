@@ -75,7 +75,7 @@ class ComsetController extends Controller
             $comset->status         = 1;
 
             if($comset->save()) {
-                if (array_key_exists('equipments', $req)) {
+                if (count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
                         $newEquipment = new ComsetEquipment();
                         $newEquipment->comset_id            = $comset->id;
@@ -89,7 +89,7 @@ class ComsetController extends Controller
                     }
                 }
 
-                if (array_key_exists('assets', $req)) {
+                if (count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
                         $newAsset = new ComsetAsset();
                         $newAsset->comset_id    = $comset->id;
