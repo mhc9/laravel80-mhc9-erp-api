@@ -75,7 +75,7 @@ class ComsetController extends Controller
             $comset->status         = 1;
 
             if($comset->save()) {
-                if (count($req['equipments']) > 0) {
+                if (array_key_exists('equipments', get_object_vars($req)) && count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
                         $newEquipment = new ComsetEquipment();
                         $newEquipment->comset_id            = $comset->id;
@@ -89,7 +89,7 @@ class ComsetController extends Controller
                     }
                 }
 
-                if (count($req['assets']) > 0) {
+                if (array_key_exists('assets', get_object_vars($req)) && count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
                         $newAsset = new ComsetAsset();
                         $newAsset->comset_id    = $comset->id;
@@ -120,32 +120,48 @@ class ComsetController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            // $comset = Comset::find($id);
-            // $comset->category_id  = $req['category_id'];
-            // $comset->group_id     = $req['group_id'];
-            // $comset->asset_no     = $req['asset_no'];
-            // $comset->en_name      = $req['en_name'];
-            // $comset->price_per_unit = currencyToNumber($req['price_per_unit']);
-            // $comset->unit_id      = $req['unit_id'];
-            // $comset->in_stock     = $req['in_stock'];
-            // $comset->calc_method  = $req['calc_method'];
-            // $comset->is_addon     = $req['is_addon'];
-            // $comset->first_year   = $req['first_year'];
-            // $comset->remark       = $req['remark'];
-            // $comset->status       = $req['status'];
+            $comset = Comset::find($id);
+            $comset->name           = $req['name'];
+            $comset->description    = $req['description'];
+            $comset->asset_id       = $req['asset_id'];
+            $comset->remark         = $req['remark'];
+            $comset->status         = 1;
 
-            // if($comset->save()) {
-            //     return [
-                    // 'status'    => 1,
-                    // 'message'   => 'Updating successfully!!',
-                    // 'comset'    => $comset
-            //     ];
-            // } else {
-            //     return [
-            //         'status'    => 0,
-            //         'message'   => 'Something went wrong!!'
-            //     ];
-            // }
+            if($comset->save()) {
+                if (array_key_exists('equipments', get_object_vars($req)) && count($req['equipments']) > 0) {
+                    foreach ($req['equipments'] as $equipment) {
+                        $newEquipment = new ComsetEquipment();
+                        $newEquipment->comset_id            = $comset->id;
+                        $newEquipment->equipment_type_id    = $equipment['equipment_type_id'];
+                        $newEquipment->brand_id             = $equipment['brand_id'];
+                        $newEquipment->model                = $equipment['model'];
+                        $newEquipment->capacity             = $equipment['capacity'];
+                        $newEquipment->description          = $equipment['description'];
+                        $newEquipment->price                = $equipment['price'];
+                        $newEquipment->save();
+                    }
+                }
+
+                if (array_key_exists('assets', get_object_vars($req)) && count($req['assets']) > 0) {
+                    foreach ($req['assets'] as $asset) {
+                        $newAsset = new ComsetAsset();
+                        $newAsset->comset_id    = $comset->id;
+                        $newAsset->asset_id     = $asset['asset_id'];
+                        $newAsset->save();
+                    }
+                }
+
+                return [
+                    'status'    => 1,
+                    'message'   => 'Updating successfully!!',
+                    'comset'    => $comset->load('asset','equipments','equipments.type','equipments.brand')
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,

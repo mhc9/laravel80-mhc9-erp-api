@@ -54,6 +54,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/comsets/{id}', 'App\Http\Controllers\ComsetController@getById');
     Route::get('/comsets/init/form', 'App\Http\Controllers\ComsetController@getInitialFormData');
     Route::post('/comsets', 'App\Http\Controllers\ComsetController@store');
+    Route::post('/comsets/{id}/update', 'App\Http\Controllers\ComsetController@update');
 
     /** Assets */
     Route::get('/assets', 'App\Http\Controllers\AssetController@getAll');
