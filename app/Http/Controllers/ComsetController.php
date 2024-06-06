@@ -75,7 +75,7 @@ class ComsetController extends Controller
             $comset->status         = 1;
 
             if($comset->save()) {
-                if (array_key_exists('equipments', get_object_vars($req)) && count($req['equipments']) > 0) {
+                if ($req->exists('equipments') && count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
                         $newEquipment = new ComsetEquipment();
                         $newEquipment->comset_id            = $comset->id;
@@ -89,7 +89,7 @@ class ComsetController extends Controller
                     }
                 }
 
-                if (array_key_exists('assets', get_object_vars($req)) && count($req['assets']) > 0) {
+                if ($req->exists('assets') && count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
                         $newAsset = new ComsetAsset();
                         $newAsset->comset_id    = $comset->id;
@@ -128,26 +128,36 @@ class ComsetController extends Controller
             $comset->status         = 1;
 
             if($comset->save()) {
-                if (array_key_exists('equipments', get_object_vars($req)) && count($req['equipments']) > 0) {
+                if ($req->exists('equipments') && count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
-                        $newEquipment = new ComsetEquipment();
-                        $newEquipment->comset_id            = $comset->id;
-                        $newEquipment->equipment_type_id    = $equipment['equipment_type_id'];
-                        $newEquipment->brand_id             = $equipment['brand_id'];
-                        $newEquipment->model                = $equipment['model'];
-                        $newEquipment->capacity             = $equipment['capacity'];
-                        $newEquipment->description          = $equipment['description'];
-                        $newEquipment->price                = $equipment['price'];
-                        $newEquipment->save();
+                        if (array_key_exists('id', $equipment)) {
+                            echo 'It is old data...';
+                        } else {
+                            echo 'It is new data...';
+                            $newEquipment = new ComsetEquipment();
+                            $newEquipment->comset_id            = $comset->id;
+                            $newEquipment->equipment_type_id    = $equipment['equipment_type_id'];
+                            $newEquipment->brand_id             = $equipment['brand_id'];
+                            $newEquipment->model                = $equipment['model'];
+                            $newEquipment->capacity             = $equipment['capacity'];
+                            $newEquipment->description          = $equipment['description'];
+                            $newEquipment->price                = $equipment['price'];
+                            $newEquipment->save();
+                        }
                     }
                 }
 
-                if (array_key_exists('assets', get_object_vars($req)) && count($req['assets']) > 0) {
+                if ($req->exists('assets') && count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
-                        $newAsset = new ComsetAsset();
-                        $newAsset->comset_id    = $comset->id;
-                        $newAsset->asset_id     = $asset['asset_id'];
-                        $newAsset->save();
+                        if (array_key_exists('id', $equipment)) {
+                            echo 'It is old data...';
+                        } else {
+                            echo 'It is new data...';
+                            $newAsset = new ComsetAsset();
+                            $newAsset->comset_id    = $comset->id;
+                            $newAsset->asset_id     = $asset['asset_id'];
+                            $newAsset->save();
+                        }
                     }
                 }
 
