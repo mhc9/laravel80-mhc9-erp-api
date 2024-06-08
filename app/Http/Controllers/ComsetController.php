@@ -21,7 +21,8 @@ class ComsetController extends Controller
         // $type = $req->get('type');
         // $group = $req->get('group');
 
-        $comsets = Comset::with('asset','equipments','equipments.type','equipments.brand')
+        $comsets = Comset::with('asset','asset.brand')
+                    ->with('equipments','equipments.type','equipments.brand')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -42,7 +43,8 @@ class ComsetController extends Controller
         // $type = $req->get('type');
         // $group = $req->get('group');
 
-        $comsets = Comset::with('asset','equipments','equipments.type','equipments.brand')
+        $comsets = Comset::with('asset','asset.brand')
+                    ->with('equipments','equipments.type','equipments.brand')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -53,7 +55,9 @@ class ComsetController extends Controller
 
     public function getById($id)
     {
-        return Comset::with('asset','equipments','equipments.type','equipments.brand')->find($id);
+        return Comset::with('asset','asset.brand')
+                ->with('equipments','equipments.type','equipments.brand')
+                ->find($id);
     }
 
     public function getInitialFormData()
@@ -164,7 +168,7 @@ class ComsetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'comset'    => $comset->load('asset','equipments','equipments.type','equipments.brand')
+                    'comset'    => $comset->load('asset','asset.brand','equipments','equipments.type','equipments.brand')
                 ];
             } else {
                 return [
