@@ -18,6 +18,11 @@ class Comset extends Model
 
     public function equipments()
     {
-        return $this->hasMany(ComsetEquipment::class, 'comset_id', 'id');
+        return $this->hasMany(ComsetEquipment::class, 'comset_id', 'id')->orderBy('equipment_type_id');
+    }
+
+    public function assets()
+    {
+        return $this->hasMany(ComsetAsset::class, 'asset_id', 'id')->orderBy('asset_id');
     }
 }
