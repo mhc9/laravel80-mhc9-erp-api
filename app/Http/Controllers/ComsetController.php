@@ -33,6 +33,7 @@ class ComsetController extends Controller
                     //         $query->orWhere('en_name', 'like', '%'.$name.'%');
                     //     });
                     // })
+                    ->orderBy('name')
                     ->paginate(10);
 
         return $comsets;
@@ -137,9 +138,8 @@ class ComsetController extends Controller
                 if ($req->exists('equipments') && count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
                         if (array_key_exists('id', $equipment)) {
-                            echo 'It is old data...';
+                            
                         } else {
-                            echo 'It is new data...';
                             $newEquipment = new ComsetEquipment();
                             $newEquipment->comset_id            = $comset->id;
                             $newEquipment->equipment_type_id    = $equipment['equipment_type_id'];
@@ -156,9 +156,8 @@ class ComsetController extends Controller
                 if ($req->exists('assets') && count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
                         if (array_key_exists('id', $equipment)) {
-                            echo 'It is old data...';
+                            
                         } else {
-                            echo 'It is new data...';
                             $newAsset = new ComsetAsset();
                             $newAsset->comset_id    = $comset->id;
                             $newAsset->asset_id     = $asset['asset_id'];
