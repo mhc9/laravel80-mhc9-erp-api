@@ -129,7 +129,6 @@ class ComsetController extends Controller
             $comset->description    = $req['description'];
             $comset->asset_id       = $req['asset_id'];
             $comset->remark         = $req['remark'];
-            $comset->status         = 1;
 
             if($comset->save()) {
                 if ($req->exists('equipments') && count($req['equipments']) > 0) {
@@ -187,20 +186,19 @@ class ComsetController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            // $comset = Comset::find($id);
+            $comset = Comset::find($id);
 
-            // if($comset->delete()) {
-            //     return [
-                    // 'status'    => 1,
-                    // 'message'   => 'Deleting successfully!!',
-                    // 'comset'    => $comset
-            //     ];
-            // } else {
-            //     return [
-            //         'status'    => 0,
-            //         'message'   => 'Something went wrong!!'
-            //     ];
-            // }
+            if($comset->delete()) {
+                return [
+                    'status'    => 1,
+                    'message'   => 'Deleting successfully!!',
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,
