@@ -26,5 +26,5 @@ Route::get('/requisitions/{id}/print-pr', 'App\Http\Controllers\RequisitionContr
 Route::get('/cars', [App\Http\Controllers\CarController::class, 'index']);
 
 Route::get('/linkstorage', function () {
-    Artisan::call('storage:link');
+    echo exec("php artisan storage:link");
 });
