@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Process;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,5 +26,5 @@ Route::get('/requisitions/{id}/print-pr', 'App\Http\Controllers\RequisitionContr
 Route::get('/cars', [App\Http\Controllers\CarController::class, 'index']);
 
 Route::get('/linkstorage', function () {
-    echo Process::run("php artisan storage:link");
+    Artisan::call('storage:link');
 });
