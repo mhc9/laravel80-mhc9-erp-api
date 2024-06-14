@@ -24,3 +24,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/requisitions/{id}/print-pr', 'App\Http\Controllers\RequisitionController@printPR');
 
 Route::get('/cars', [App\Http\Controllers\CarController::class, 'index']);
+
+Route::get('/linkstorage', function () {
+    Artisan::call('storage:link');
+});
