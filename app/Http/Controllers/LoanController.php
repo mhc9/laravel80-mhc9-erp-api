@@ -193,7 +193,6 @@ class LoanController extends Controller
             $loan->budget_total     = currencyToNumber($req['budget_total']);
             $loan->net_total        = currencyToNumber($req['net_total']);
             $loan->remark           = $req['remark'];
-            $loan->status           = 0;
 
             if($loan->save()) {
                 foreach($req['courses'] as $item) {
