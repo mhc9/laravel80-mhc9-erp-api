@@ -40,6 +40,7 @@ class BudgetController extends Controller
                     //         $query->orWhere('en_name', 'like', '%'.$name.'%');
                     //     });
                     // })
+                    ->orderBy('project_id')
                     ->paginate(10);
 
         return $activities;
