@@ -237,15 +237,32 @@ class LoanController extends Controller
                         $detail->total          = currencyToNumber($item['total']);
                         $detail->save();
                     } else {
-                        /** TODO: ถ้าเป็นรายการเดิม */
-                        //
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag updated หรือ removed หรือไม่ */
+                        if (array_key_exists('updated', $item) && $item['updated']) {
+                            /** This is item to update */
+                            $updated = LoanDetail::find($item['id']);
+                            $updated->loan_id        = $item['loan_id'];
+                            $updated->course_id      = $item['course_id'];
+                            $updated->expense_id     = $item['expense_id'];
+                            $updated->description    = $item['description'];
+                            $updated->total          = currencyToNumber($item['total']);
+                            $updated->save();
+                        }
+
+                        if (array_key_exists('removed', $item) && $item['removed']) {
+                            /** This is item to remove */
+                            LoanDetail::find($item['id'])->delete();
+                        }
                     }
                 }
 
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'loan'      => $loan
+                    'loan'      => $loan->load('details','details.expense','department',
+                                                'employee','employee.prefix','employee.position','employee.level',
+                                                'budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan',
+                                                'courses','courses.place','courses.place.changwat')
                 ];
             } else {
                 return [
