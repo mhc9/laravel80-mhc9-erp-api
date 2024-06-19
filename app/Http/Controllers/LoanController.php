@@ -195,32 +195,36 @@ class LoanController extends Controller
             $loan->remark           = $req['remark'];
 
             if($loan->save()) {
-                foreach($req['courses'] as $item) {
+                foreach($req['courses'] as $course) {
                     /** ถ้า element ของ courses ไม่มี property id (รายการใหม่) */
-                    if (!array_key_exists('id', $item)) {
-                        $course = new ProjectCourse();
-                        $course->seq_no         = $item['id'];
-                        $course->loan_id        = $loan->id;
-                        $course->course_date    = $item['course_date'];
-                        $course->place_id       = $item['place_id'];
-                        $course->save();
+                    if (!array_key_exists('id', $course)) {
+                        $newCourse = new ProjectCourse();
+                        $newCourse->seq_no         = $course['id'];
+                        $newCourse->loan_id        = $loan->id;
+                        $newCourse->course_date    = $course['course_date'];
+                        $newCourse->place_id       = $course['place_id'];
+                        $newCourse->save();
                     } else {
-                        /** TODO: ถ้าเป็นรายการเดิม */
-                        // 
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
+                        if (array_key_exists('removed', $course) && $course['removed']) {
+                            ProjectCourse::find($id)->delete();
+                        }
                     }
                 }
 
-                foreach($req['budgets'] as $item) {
+                foreach($req['budgets'] as $budget) {
                     /** ถ้า element ของ budgets ไม่มี property id (รายการใหม่) */
-                    if (!array_key_exists('id', $item)) {
-                        $budget = new LoanBudget();
-                        $budget->loan_id    = $loan->id;
-                        $budget->budget_id  = $item['budget_id'];
-                        $budget->total      = currencyToNumber($item['total']);
-                        $budget->save();
+                    if (!array_key_exists('id', $budget)) {
+                        $newBudget = new LoanBudget();
+                        $newBudget->loan_id    = $loan->id;
+                        $newBudget->budget_id  = $budget['budget_id'];
+                        $newBudget->total      = currencyToNumber($budget['total']);
+                        $newBudget->save();
                     } else {
-                        /** TODO: ถ้าเป็นรายการเดิม */
-                        //
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
+                        if (array_key_exists('removed', $budget) && $budget['removed']) {
+                            LoanBudget::find($id)->delete();
+                        }
                     }
                 }
 
