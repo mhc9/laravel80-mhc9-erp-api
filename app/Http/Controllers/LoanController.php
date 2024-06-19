@@ -197,7 +197,7 @@ class LoanController extends Controller
             if($loan->save()) {
                 foreach($req['courses'] as $course) {
                     /** ถ้า element ของ courses ไม่มี property id (รายการใหม่) */
-                    if (!array_key_exists('id', $course)) {
+                    if (!array_key_exists('loan_id', $course)) {
                         $newCourse = new ProjectCourse();
                         $newCourse->seq_no         = $course['id'];
                         $newCourse->loan_id        = $loan->id;
@@ -207,14 +207,14 @@ class LoanController extends Controller
                     } else {
                         /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
                         if (array_key_exists('removed', $course) && $course['removed']) {
-                            ProjectCourse::find($id)->delete();
+                            ProjectCourse::find($course['id'])->delete();
                         }
                     }
                 }
 
                 foreach($req['budgets'] as $budget) {
                     /** ถ้า element ของ budgets ไม่มี property id (รายการใหม่) */
-                    if (!array_key_exists('id', $budget)) {
+                    if (!array_key_exists('loan_id', $budget)) {
                         $newBudget = new LoanBudget();
                         $newBudget->loan_id    = $loan->id;
                         $newBudget->budget_id  = $budget['budget_id'];
@@ -223,7 +223,7 @@ class LoanController extends Controller
                     } else {
                         /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
                         if (array_key_exists('removed', $budget) && $budget['removed']) {
-                            LoanBudget::find($id)->delete();
+                            LoanBudget::find($budget['id'])->delete();
                         }
                     }
                 }
@@ -232,7 +232,7 @@ class LoanController extends Controller
                     $course = ProjectCourse::where('id', $item['course_id'])->where('loan_id', $loan->id)->first();
 
                     /** ถ้า element ของ items ไม่มี property id (รายการใหม่) */
-                    if (!array_key_exists('id', $item)) {
+                    if (empty($item['loan_id'])) {
                         $detail = new LoanDetail();
                         $detail->loan_id        = $loan->id;
                         $detail->course_id      = $course->id;
@@ -252,7 +252,7 @@ class LoanController extends Controller
                             $updated->total          = currencyToNumber($item['total']);
                             $updated->save();
                         }
-
+                        
                         if (array_key_exists('removed', $item) && $item['removed']) {
                             /** This is item to remove */
                             LoanDetail::find($item['id'])->delete();
