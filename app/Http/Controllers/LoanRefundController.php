@@ -27,6 +27,9 @@ class LoanRefundController extends Controller
 
         $contracts = LoanRefund::with('details','details.contractDetail.expense','contract','contract.loan','contract.loan.department')
                         ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                        ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
+                            $q->where('employee_id', auth()->user()->employee_id);
+                        })
                         // ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
                         // ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                         // ->when(!empty($plan), function($q) use ($plan) {
