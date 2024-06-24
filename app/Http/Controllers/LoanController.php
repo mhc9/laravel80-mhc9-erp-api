@@ -27,6 +27,9 @@ class LoanController extends Controller
                         ->with('employee','employee.prefix','employee.position','employee.level')
                         ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
+                        ->when(!auth()->user()->isAdmin(), function($q) {
+                            $q->where('employee_id', auth()->user()->id);
+                        })
                         ->when(!empty($year), function($q) use ($year) {
                             $q->where('year', $year);
                         })
@@ -72,10 +75,10 @@ class LoanController extends Controller
     public function getById($id)
     {
         return Loan::with('details','details.expense','department')
-                ->with('employee','employee.prefix','employee.position','employee.level')
-                ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
-                ->with('courses','courses.place','courses.place.changwat')
-                ->find($id);
+                    ->with('employee','employee.prefix','employee.position','employee.level')
+                    ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
+                    ->with('courses','courses.place','courses.place.changwat')
+                    ->find($id);
     }
 
     public function getInitialFormData()
