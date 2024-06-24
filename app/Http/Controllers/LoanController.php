@@ -28,7 +28,7 @@ class LoanController extends Controller
                         ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
                         ->when(!auth()->user()->isAdmin(), function($q) {
-                            $q->where('employee_id', auth()->user()->id);
+                            $q->where('employee_id', auth()->user()->employee_id);
                         })
                         ->when(!empty($year), function($q) use ($year) {
                             $q->where('year', $year);

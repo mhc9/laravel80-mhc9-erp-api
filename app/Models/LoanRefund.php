@@ -16,6 +16,11 @@ class LoanRefund extends Model
         return $this->belongsTo(LoanContract::class, 'contract_id', 'id');
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'id');
+    }
+
     public function details()
     {
         return $this->hasMany(LoanRefundDetail::class, 'refund_id', 'id');
