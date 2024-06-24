@@ -105,4 +105,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->permissions()->where('role_id', 1)->exists();
     }
+
+    public function isFinancial()
+    {
+        return $this->permissions()->where('role_id', 4)->exists();
+    }
 }
