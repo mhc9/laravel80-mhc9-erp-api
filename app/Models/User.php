@@ -100,4 +100,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(UserPermission::class, 'user_id', 'id');
     }
+
+    public function isAdmin()
+    {
+        return $this->permissions()->where('role_id', 1)->exists();
+    }
 }
