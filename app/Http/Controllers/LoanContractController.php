@@ -206,8 +206,15 @@ class LoanContractController extends Controller
     {
         try {
             $contract = LoanContract::find($id);
+            $loanId = $contract->loan_id;
 
             if($contract->delete()) {
+                /** Delete loan_contract_details according to deleted contract's id */
+                LoanContractDetail::where('contract_id', $id)->delete();
+
+                /** Update loans's status to 1 according to deleted contract's loan_id */
+                Loan::find($loanId)->update(['status' => 1]);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
