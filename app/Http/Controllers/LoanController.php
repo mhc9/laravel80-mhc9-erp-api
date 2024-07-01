@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Loan;
 use App\Models\LoanDetail;
+use App\Models\LoanOrder;
 use App\Models\LoanBudget;
 use App\Models\ProjectCourse;
 use App\Models\Expense;
@@ -122,6 +123,8 @@ class LoanController extends Controller
             $loan->project_edate    = $req['project_edate'];
             $loan->expense_calc     = $req['expense_calc'];
             $loan->budget_total     = currencyToNumber($req['budget_total']);
+            $loan->item_total       = currencyToNumber($req['item_total']);
+            $loan->order_total      = currencyToNumber($req['order_total']);
             $loan->net_total        = currencyToNumber($req['net_total']);
             $loan->remark           = $req['remark'];
             $loan->status           = 1;
@@ -152,6 +155,16 @@ class LoanController extends Controller
                     $detail->course_id      = $course->id;
                     $detail->expense_id     = $item['expense_id'];
                     $detail->description    = $item['description'];
+                    $detail->total          = currencyToNumber($item['total']);
+                    $detail->save();
+                }
+
+                foreach($req['orders'] as $order) {
+                    $detail = new LoanOrder();
+                    $detail->loan_id        = $loan->id;
+                    $detail->order_id       = $order['order_id'];
+                    $detail->expense_id     = $order['expense_id'];
+                    $detail->description    = $order['description'];
                     $detail->total          = currencyToNumber($item['total']);
                     $detail->save();
                 }
@@ -194,6 +207,8 @@ class LoanController extends Controller
             $loan->project_edate    = $req['project_edate'];
             $loan->expense_calc     = $req['expense_calc'];
             $loan->budget_total     = currencyToNumber($req['budget_total']);
+            $loan->item_total       = currencyToNumber($req['item_total']);
+            $loan->order_total      = currencyToNumber($req['order_total']);
             $loan->net_total        = currencyToNumber($req['net_total']);
             $loan->remark           = $req['remark'];
 
