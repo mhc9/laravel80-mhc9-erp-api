@@ -96,6 +96,11 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['password'] = $value;
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'id');
+    }
+
     public function permissions()
     {
         return $this->hasMany(UserPermission::class, 'user_id', 'id');
