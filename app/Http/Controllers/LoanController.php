@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Loan;
 use App\Models\LoanDetail;
-use App\Models\LoanOrder;
 use App\Models\LoanBudget;
 use App\Models\ProjectCourse;
 use App\Models\Expense;
@@ -148,23 +147,15 @@ class LoanController extends Controller
                 }
 
                 foreach($req['items'] as $item) {
-                    $course = ProjectCourse::where('loan_id', $loan->id)->where('seq_no', $item['course_id'])->first();
+                    /** ดึงข้อมูลรุ่นของโครงการ */
+                    $course = $item['expense_group'] == '1' ? ProjectCourse::where('loan_id', $loan->id)->where('seq_no', $item['course_id'])->first() : null;
 
                     $detail = new LoanDetail();
                     $detail->loan_id        = $loan->id;
-                    $detail->course_id      = $course->id;
+                    $detail->course_id      = $item['expense_group'] == '1' ? $course->id : $course;
                     $detail->expense_id     = $item['expense_id'];
+                    $detail->expense_group  = $item['expense_group'];
                     $detail->description    = $item['description'];
-                    $detail->total          = currencyToNumber($item['total']);
-                    $detail->save();
-                }
-
-                foreach($req['orders'] as $order) {
-                    $detail = new LoanOrder();
-                    $detail->loan_id        = $loan->id;
-                    $detail->order_id       = $order['order_id'];
-                    $detail->expense_id     = $order['expense_id'];
-                    $detail->description    = $order['description'];
                     $detail->total          = currencyToNumber($item['total']);
                     $detail->save();
                 }
@@ -247,14 +238,15 @@ class LoanController extends Controller
                 }
 
                 foreach($req['items'] as $item) {
-                    $course = ProjectCourse::where('id', $item['course_id'])->where('loan_id', $loan->id)->first();
+                    $course = $item['expense_group'] == '1' ? ProjectCourse::where('id', $item['course_id'])->where('loan_id', $loan->id)->first() : null;
 
                     /** ถ้า element ของ items ไม่มี property id (รายการใหม่) */
                     if (empty($item['loan_id'])) {
                         $detail = new LoanDetail();
                         $detail->loan_id        = $loan->id;
-                        $detail->course_id      = $course->id;
+                        $detail->course_id      = $item['expense_group'] == '1' ? $course->id : $course;
                         $detail->expense_id     = $item['expense_id'];
+                        $detail->expense_group  = $item['expense_group'];
                         $detail->description    = $item['description'];
                         $detail->total          = currencyToNumber($item['total']);
                         $detail->save();
@@ -263,11 +255,16 @@ class LoanController extends Controller
                         if (array_key_exists('updated', $item) && $item['updated']) {
                             /** This is item to update */
                             $updated = LoanDetail::find($item['id']);
-                            $updated->loan_id        = $item['loan_id'];
-                            $updated->course_id      = $item['course_id'];
-                            $updated->expense_id     = $item['expense_id'];
-                            $updated->description    = $item['description'];
-                            $updated->total          = currencyToNumber($item['total']);
+                            $updated->loan_id       = $item['loan_id'];
+
+                            if ($item['expense_group'] == '1') {
+                                $updated->course_id     = $item['course_id'];
+                            }
+
+                            $updated->expense_id    = $item['expense_id'];
+                            $updated->expense_group = $item['expense_group'];
+                            $updated->description   = $item['description'];
+                            $updated->total         = currencyToNumber($item['total']);
                             $updated->save();
                         }
                         
