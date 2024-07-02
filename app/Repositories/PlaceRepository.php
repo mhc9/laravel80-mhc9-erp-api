@@ -23,7 +23,16 @@ class PlaceRepository
 
     public function getPlaces($params = [])
     {
-        return $this->model->with('tambon','amphur','changwat');
+        $name = array_key_exists('name', $params) ? $params['name'] : '';
+        $place_type_id = array_key_exists('place_type_id', $params) ? $params['place_type_id'] : '';
+
+        return $this->model->with('tambon','amphur','changwat')
+                            ->when(!empty($name), function($q) use ($name) {
+                                $q->where('name', 'like', '%'.$name.'%');
+                            })
+                            ->when(!empty($place_type_id), function($q) use ($place_type_id) {
+                                $q->where('place_type_id', $place_type_id);
+                            });
     }
 
     public function getPlaceById($id)
