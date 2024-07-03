@@ -41,6 +41,7 @@ class LoanContractController extends Controller
                         //         $query->orWhere('en_name', 'like', '%'.$name.'%');
                         //     });
                         // })
+                        ->orderBy('approved_date', 'DESC')
                         ->paginate(10);
 
         return $contracts;
@@ -72,6 +73,7 @@ class LoanContractController extends Controller
                         // ->when(!empty($name), function($q) use ($name) {
                         //     $q->where('name', 'like', '%'.$name.'%');
                         // })
+                        ->orderBy('approved_date', 'DESC')
                         ->get();
 
         return $activities;
