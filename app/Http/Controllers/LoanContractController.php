@@ -122,15 +122,18 @@ class LoanContractController extends Controller
     {
         try {
             $contract = new LoanContract();
-            $contract->loan_id          = $req['loan_id'];
             $contract->contract_no      = $req['contract_no'];
+            $contract->year             = $req['year'];
+            $contract->loan_id          = $req['loan_id'];
+            $contract->item_total       = currencyToNumber($req['item_total']);
+            $contract->order_total      = currencyToNumber($req['order_total']);
+            $contract->net_total        = currencyToNumber($req['net_total']);
             $contract->approved_date    = $req['approved_date'];
             $contract->sent_date        = $req['sent_date'];
             $contract->bill_no          = $req['bill_no'];
             $contract->bk02_date        = $req['bk02_date'];
             $contract->year             = $req['year'];
             $contract->refund_days      = $req['refund_days'];
-            $contract->net_total        = currencyToNumber($req['net_total']);
             $contract->remark           = $req['remark'];
             $contract->status           = 1;
 
@@ -140,6 +143,7 @@ class LoanContractController extends Controller
                     $detail->contract_id    = $contract->id;
                     $detail->loan_detail_id = $item['id'];
                     $detail->expense_id     = $item['expense_id'];
+                    $detail->expense_group  = $item['expense_group'];
                     $detail->description    = $item['description'];
                     $detail->total          = currencyToNumber($item['total']);
                     $detail->save();
@@ -171,15 +175,18 @@ class LoanContractController extends Controller
     {
         try {
             $contract = LoanContract::find($id);
-            $contract->loan_id          = $req['loan_id'];
             $contract->contract_no      = $req['contract_no'];
+            $contract->year             = $req['year'];
+            $contract->loan_id          = $req['loan_id'];
+            $contract->item_total       = currencyToNumber($req['item_total']);
+            $contract->order_total      = currencyToNumber($req['order_total']);
+            $contract->net_total        = currencyToNumber($req['net_total']);
             $contract->approved_date    = $req['approved_date'];
             $contract->sent_date        = $req['sent_date'];
             $contract->bill_no          = $req['bill_no'];
             $contract->bk02_date        = $req['bk02_date'];
             $contract->year             = $req['year'];
             $contract->refund_days      = $req['refund_days'];
-            $contract->net_total        = currencyToNumber($req['net_total']);
             $contract->remark           = $req['remark'];
 
             if($contract->save()) {
