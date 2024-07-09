@@ -36,6 +36,7 @@ class LoanController extends Controller
                         ->when(!empty($status), function($q) use ($status) {
                             $q->where('status', $status);
                         })
+                        ->orderBy('doc_date', 'DESC')
                         ->paginate(10);
 
         return $loans;
