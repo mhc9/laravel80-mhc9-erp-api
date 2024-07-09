@@ -96,6 +96,7 @@ class LoanContractController extends Controller
                 ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ->with('refund')
                 ->where('year', $year)
+                ->orderBy('approved_date', 'DESC')
                 ->paginate(10);
     }
 
