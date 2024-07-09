@@ -199,7 +199,16 @@ class LoanRefundController extends Controller
         try {
             $refund = LoanRefund::find($id);
 
+            /** ดึงรหัส contract_id มาเก็บไว้ก่อน */
+            $contractId = $refund->contract_id;
+
             if($refund->delete()) {
+                /** ลบรายการในตาราง loan_refund_details */
+                $detail = LoanRefundDetail::where('refund_id', $id)->delete();
+
+                /** Revert status ของตาราง loan_contracts เป็น 2=เงินเข้าแล้ว **/
+                $contract = LoanContract::find($contractId)->update(['status' => 2]);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
