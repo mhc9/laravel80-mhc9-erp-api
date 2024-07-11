@@ -148,6 +148,7 @@ class RequisitionController extends Controller
             $requisition->pr_date       = $req['pr_date'];
             $requisition->order_type_id = $req['order_type_id'];
             $requisition->category_id   = $req['category_id'];
+            $requisition->contract_desc = $req['contract_desc'];
             $requisition->topic         = $req['topic'];
             $requisition->year          = $req['year'];
             $requisition->budget_id     = $req['budget_id'];
