@@ -276,4 +276,25 @@ class RequisitionController extends Controller
 
         return renderPdf('forms.pr-form', $data, $paper);
     }
+
+    public function getDocument(Request $req, $id)
+    {
+        $requisition = Requisition::with('category','budget','details','project','division','division.department')
+                        ->with('details.item','details.item.unit')
+                        ->with('requester','requester.prefix','requester.position','requester.level')
+                        ->with('committees','committees.employee','committees.employee.prefix')
+                        ->with('committees.employee.position','committees.employee.level')
+                        ->find($id);
+
+        $word = new \PhpOffice\PhpWord\PhpWord();
+        $section = $word->addSection();
+        $text = $section->addText($requisition->topic, ['name' => 'Arial', 'size' => 20, 'bold' => true]);
+        $text = $section->addText('ด้วย' .$requisition->division->name. ' ' .$requisition->division->department->name. ' มีความประสงค์จะ' .($requisition->order_type_id == 1 ? 'ซื้อ' : '') .$requisition->category->name);
+        $text = $section->addText('จำนวน ' .$requisition->item_count. ' รายการ');
+
+        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($word, 'Word2007');
+        $writer->save('RequisitionForm.docx');
+
+        return response()->download(public_path('RequisitionForm.docx'));
+    }
 }
