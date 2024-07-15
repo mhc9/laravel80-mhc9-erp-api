@@ -16,6 +16,8 @@ use App\Models\Department;
 use App\Models\Division;
 use App\Models\Committee;
 use App\Models\Project;
+use App\Models\Employee;
+use App\Models\Member;
 
 class RequisitionController extends Controller
 {
@@ -286,15 +288,50 @@ class RequisitionController extends Controller
                         ->with('committees.employee.position','committees.employee.level')
                         ->find($id);
 
-        $word = new \PhpOffice\PhpWord\PhpWord();
-        $section = $word->addSection();
-        $text = $section->addText($requisition->topic, ['name' => 'Arial', 'size' => 20, 'bold' => true]);
-        $text = $section->addText('ด้วย' .$requisition->division->name. ' ' .$requisition->division->department->name. ' มีความประสงค์จะ' .($requisition->order_type_id == 1 ? 'ซื้อ' : '') .$requisition->category->name);
-        $text = $section->addText('จำนวน ' .$requisition->item_count. ' รายการ');
+        $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
+                            ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+                            ->where('status', 1)
+                            ->first();
 
-        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($word, 'Word2007');
-        $writer->save('RequisitionForm.docx');
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisition.docx'));
 
-        return response()->download(public_path('RequisitionForm.docx'));
+        /** ================================== HEADER ================================== */
+        $word->setValue('department', $requisition->division->department->name);
+        $word->setValue('pr_no', $requisition->pr_no);
+        $word->setValue('pr_date', convDbDateToLongThDate($requisition->pr_date));
+        $word->setValue('topic', $requisition->topic);
+        /** ================================== HEADER ================================== */
+
+        /** ================================== CONTENT ================================== */
+        $word->setValue('division', $requisition->division->name);
+        $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
+        $word->setValue('itemCount', $requisition->item_count);
+        $word->setValue('reason', $requisition->reason);
+        $word->setValue('year', $requisition->year);
+        $word->setValue('budget', $requisition->budget->project->plan->name . ' ' . $requisition->budget->project->name  . ' ' . $requisition->budget->name);
+        $word->setValue('netTotal', $requisition->net_total);
+        $word->setValue('netTotalText', baht_text($requisition->net_total));
+        $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
+        $word->setValue('requesterPosition', $requisition->requester->position->name . ($requisition->requester->level ? $requisition->requester->level->name : ''));
+        
+        $cx = 1;
+        $word->cloneRow('inspector', sizeof($requisition->committees));
+        foreach($requisition->committees as $inspector => $committee) {
+            $word->setValue('inspector#' . $cx, $committee->employee->prefix->name.$committee->employee->firstname . ' ' . $committee->employee->lastname);
+            $word->setValue('inspectorPosition#' . $cx, $committee->employee->position->name . ($committee->employee->level ? $committee->employee->level->name : ''));
+            $cx++;
+        }
+        /** ================================== CONTENT ================================== */
+        
+        /** ================================== SIGNATURE ================================== */
+        $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
+        $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
+        $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
+        /** ================================== SIGNATURE ================================== */
+
+        $pathToSave = public_path('temp/file.docx');
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
     }
 }
