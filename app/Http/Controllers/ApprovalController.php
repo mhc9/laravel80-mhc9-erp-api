@@ -112,6 +112,9 @@ class ApprovalController extends Controller
             $approval->directive_date   = $req['directive_date'];
 
             if($approval->save()) {
+                /** อัพเดตสถานะของรายการตาราง requisitions เป็น 2 (แต่งตั้งผู้ตรวจรับ) */
+                Requisition::find($approval->requisition_id)->update(['status' => 2]);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
