@@ -21,8 +21,9 @@ class BudgetController extends Controller
         $plan       = $req->get('plan');
         $name       = $req->get('name');
         $status     = $req->get('status');
+        $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
-        $activities = Budget::with('type','project','project.plan')
+        $budgets = Budget::with('type','project','project.plan')
                     ->when(!empty($project), function($q) use ($project) {
                         $q->where('project_id', $project);
                     })
@@ -31,19 +32,16 @@ class BudgetController extends Controller
                             $sq->where('plan_id', $plan);
                         });
                     })
+                    ->when(!empty($name), function($q) use ($name) {
+                        $q->where('name', 'like', '%'.$name.'%');
+                    })
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
-                    // ->when(!empty($name), function($q) use ($name) {
-                    //     $q->where(function($query) use ($name) {
-                    //         $query->where('item_name', 'like', '%'.$name.'%');
-                    //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                    //     });
-                    // })
                     ->orderBy('project_id')
-                    ->paginate(10);
+                    ->paginate($limit);
 
-        return $activities;
+        return $budgets;
     }
 
     public function getAll(Request $req)
