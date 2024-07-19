@@ -105,7 +105,6 @@ class ApprovalController extends Controller
             $approval = new Approval();
             $approval->requisition_id   = $req['requisition_id'];
             $approval->procuring_id     = $req['procuring_id'];
-            $approval->deliver_date     = $req['deliver_date'];
             $approval->report_no        = $req['report_no'];
             $approval->report_date      = $req['report_date'];
             $approval->directive_no     = $req['directive_no'];
@@ -176,6 +175,41 @@ class ApprovalController extends Controller
                     'status'     => 1,
                     'message'    => 'Deleting successfully!!',
                     'id'         => $id
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function consider(Request $req, $id)
+    {
+        try {
+            $approval = Approval::find($id);
+            $approval->requisition_id   = $req['requisition_id'];
+            $approval->consider_no      = $req['consider_no'];
+            $approval->consider_date    = $req['consider_date'];
+            $approval->notice_date      = $req['notice_date'];
+            $approval->supplier_id      = $req['supplier_id'];
+            $approval->deliver_date     = $req['deliver_date'];
+            $approval->deliver_days     = $req['deliver_days'];
+
+            if($approval->save()) {
+                /** อัพเดตสถานะของรายการตาราง requisitions เป็น 3 (ประกาศผู้ชนะ) */
+                Requisition::find($approval->requisition_id)->update(['status' => 3]);
+
+                return [
+                    'status'    => 1,
+                    'message'   => 'Updating successfully!!',
+                    'approval'  => $approval
                 ];
             } else {
                 return [
