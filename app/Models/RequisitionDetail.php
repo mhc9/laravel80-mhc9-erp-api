@@ -20,4 +20,9 @@ class RequisitionDetail extends Model
     {
         return $this->belongsTo(Item::class, 'item_id', 'id');
     }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id', 'id');
+    }
 }

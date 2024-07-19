@@ -282,7 +282,7 @@ class RequisitionController extends Controller
     public function getDocument(Request $req, $id)
     {
         $requisition = Requisition::with('category','budget','details','project','division','division.department')
-                        ->with('details.item','details.item.unit')
+                        ->with('details.item','details.item','details.unit')
                         ->with('requester','requester.prefix','requester.position','requester.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
                         ->with('committees.employee.position','committees.employee.level')
@@ -321,6 +321,21 @@ class RequisitionController extends Controller
             $word->setValue('inspectorPosition#' . $cx, $committee->employee->position->name . ($committee->employee->level ? $committee->employee->level->name : ''));
             $cx++;
         }
+        
+        
+        $no = 1;
+        $word->cloneRow('item', sizeof($requisition->details));
+        foreach($requisition->details as $item => $detail) {
+            $word->setValue('no#' . $no, $no);
+            $word->setValue('item#' . $no, $detail->item->name . ' ' . $detail->description);
+            $word->setValue('amt#' . $no, number_format($detail->amount));
+            $word->setValue('unit#' . $no, $detail->unit->name);
+            $word->setValue('price#' . $no, number_format($detail->price));
+            $word->setValue('total#' . $no, number_format($detail->total));
+            $no++;
+        }
+
+        $word->setValue('deliverPlace', 'ศูนย์สุขภาพจิตที่ 9');
         /** ================================== CONTENT ================================== */
         
         /** ================================== SIGNATURE ================================== */
