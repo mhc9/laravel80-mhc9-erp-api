@@ -71,6 +71,7 @@ class RequisitionController extends Controller
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
+                            ->with('approvals','approvals.procuring','approvals.supplier')
                             ->when(!empty($pr_no), function($q) use ($pr_no) {
                                 $q->where('pr_no', 'like', '%'.$pr_no.'%');
                             })
@@ -104,6 +105,7 @@ class RequisitionController extends Controller
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
+                            ->with('approvals','approvals.procuring','approvals.supplier')
                             ->when(!empty($category), function($q) use ($category) {
                                 $q->where('category_id', $category);
                             })
@@ -122,7 +124,7 @@ class RequisitionController extends Controller
                     ->with('requester','requester.prefix','requester.position','requester.level')
                     ->with('committees','committees.employee','committees.employee.prefix')
                     ->with('committees.employee.position','committees.employee.level')
-                    ->with('approvals','approvals.procuring')
+                    ->with('approvals','approvals.procuring','approvals.supplier')
                     ->find($id);
     }
 
