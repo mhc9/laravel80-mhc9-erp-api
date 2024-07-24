@@ -27,6 +27,10 @@ Route::get('/requisitions/{id}/print-pr', 'App\Http\Controllers\RequisitionContr
 Route::get('/requisitions/{id}/document', 'App\Http\Controllers\RequisitionController@getDocument');
 Route::get('/requisitions/{id}/report', 'App\Http\Controllers\RequisitionController@getReport');
 
+/** PWM OT */
+Route::get('/invitations/report', [App\Http\Controllers\InvitationController::class, 'getReport']);
+
+/** PWM Car */
 Route::get('/cars', [App\Http\Controllers\CarController::class, 'index']);
 
 Route::get('/redirect', function (Request $request) {
