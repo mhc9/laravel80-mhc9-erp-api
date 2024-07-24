@@ -194,6 +194,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/approvals', 'App\Http\Controllers\ApprovalController@store');
     Route::post('/approvals/{id}/update', 'App\Http\Controllers\ApprovalController@update');
     Route::post('/approvals/{id}/delete', 'App\Http\Controllers\ApprovalController@destroy');
+    Route::post('/approvals/{id}/consider', 'App\Http\Controllers\ApprovalController@consider');
 
     /** Orders */
     Route::get('/orders', 'App\Http\Controllers\OrderController@getAll');
