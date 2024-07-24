@@ -117,7 +117,7 @@ class ApprovalController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'approval'  => $approval->load('requisition','procuring')
+                    'approval'  => $approval->load('requisition','procuring','supplier')
                 ];
             } else {
                 return [
@@ -149,7 +149,7 @@ class ApprovalController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'approval'  => $approval
+                    'approval'  => $approval->load('requisition','procuring','supplier')
                 ];
             } else {
                 return [
@@ -209,7 +209,7 @@ class ApprovalController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'approval'  => $approval
+                    'approval'  => $approval->load('requisition','procuring','supplier')
                 ];
             } else {
                 return [
