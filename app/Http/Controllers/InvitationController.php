@@ -260,7 +260,12 @@ class InvitationController extends Controller
         $word->setValue('docDate', convDbDateToLongThDate($invitation[0]->OTOrgDate));
         $word->setValue('requester', $invitation[0]->OTOrganism);
         $word->setValue('projectName', $invitation[0]->OTName);
-        $word->setValue('projectDate', convDbDateToLongThDate($invitation[0]->OTDateProject) . ($invitation[0]->OTDateProject2 ? ' ถึงวันที่ ' . convDbDateToLongThDate($invitation[0]->OTDateProject2) : ''));
+        $word->setValue(
+            'projectDate',
+            ($invitation[0]->OTDateProject2
+                ? 'ระหว่างวันที่ ' . convDbDateToLongThDate($invitation[0]->OTDateProject) . ' ถึงวันที่ ' . convDbDateToLongThDate($invitation[0]->OTDateProject2)
+                : 'ในวันที่ ' . convDbDateToLongThDate($invitation[0]->OTDateProject))
+        );
         $word->setValue('place', $invitation[0]->OTLocation);
 
         if (count($invitation) > 1) {
