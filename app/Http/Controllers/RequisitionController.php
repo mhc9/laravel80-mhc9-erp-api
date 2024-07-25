@@ -174,16 +174,70 @@ class RequisitionController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $division = Division::find($id);
-            $division->name             = $req['name'];
-            $division->department_id    = $req['department_id'];
-            $division->status           = $req['status'] ? 1 : 0;
+            $requisition = Requisition::find($id);
+            $requisition->pr_no         = $req['pr_no'];
+            $requisition->pr_date       = $req['pr_date'];
+            $requisition->order_type_id = $req['order_type_id'];
+            $requisition->category_id   = $req['category_id'];
+            $requisition->contract_desc = $req['contract_desc'];
+            $requisition->topic         = $req['topic'];
+            $requisition->year          = $req['year'];
+            $requisition->budget_id     = $req['budget_id'];
+            $requisition->project_id    = $req['project_id'];
+            $requisition->requester_id  = $req['requester_id'];
+            $requisition->division_id   = $req['division_id'];
+            $requisition->reason        = $req['reason'];
+            $requisition->item_count    = $req['item_count'];
+            $requisition->net_total     = currencyToNumber($req['net_total']);
+            $requisition->status        = 1;
 
-            if($division->save()) {
+            if($requisition->save()) {
+                /** Insert items to RequisitionDetail */
+                foreach($req['items'] as $item) {
+                    if (!array_key_exists('pr_id', $item)) {
+                        /** กรณีเป็นรายการใหม่ */
+                        $detail = new RequisitionDetail();
+                        $detail->pr_id          = $requisition->id;
+                        $detail->item_id        = $item['item_id'];
+                        $detail->description    = $item['description'];
+                        $detail->amount         = $item['amount'];
+                        $detail->price          = $item['price'];
+                        $detail->unit_id        = $item['unit_id'];
+                        $detail->total          = $item['total'];
+                        $detail->save();
+                    } else {
+                        /** กรณีเป็นรายการเดิม */
+                        /** ============= ตรวจสอบและอัพเดตเฉพาะรายการที่ถูกแก้ไข ============= */
+                        if (array_key_exists('updated', $item) && $item['updated']) {
+                            $detail = RequisitionDetail::find($item['id']);
+                            $detail->description    = $item['description'];
+                            $detail->amount         = $item['amount'];
+                            $detail->price          = $item['price'];
+                            $detail->unit_id        = $item['unit_id'];
+                            $detail->total          = $item['total'];
+                            $detail->save();
+                        }
+                        
+                        /** ============= ตรวจสอบและลบเฉพาะรายการที่ถูกลบ ============= */
+                        if (array_key_exists('removed', $item) && $item['removed']) {
+                            RequisitionDetail::find($item['id'])->delete();
+                        }
+                    }
+                }
+
+                /** Insert committees */
+                foreach($req['committees'] as $employee) {
+                    $committee = new Committee();
+                    $committee->employee_id         = $employee['employee_id'];
+                    $committee->requisition_id      = $requisition->id;
+                    $committee->committee_type_id   = 2;
+                    $committee->save();
+                }
+
                 return [
-                    'status'    => 1,
-                    'message'   => 'Updating successfully!!',
-                    'division'  => $division
+                    'status'        => 1,
+                    'message'       => 'Updating successfully!!',
+                    'requisition'   => $requisition
                 ];
             } else {
                 return [
