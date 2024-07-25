@@ -32,7 +32,7 @@ class RequisitionController extends Controller
         $limit      = $req->get('limit') ? $req->get('limit') : 10;
 
         $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project')
-                            ->with('division','division.department','details','details.item','details.item.unit')
+                            ->with('division','division.department','details','details.item','details.unit')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
@@ -66,7 +66,7 @@ class RequisitionController extends Controller
         $status     = $req->get('status');
 
         $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project')
-                            ->with('division','division.department','details','details.item','details.item.unit')
+                            ->with('division','division.department','details','details.item','details.unit')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
@@ -85,7 +85,7 @@ class RequisitionController extends Controller
     public function getById($id)
     {
         return Requisition::with('category','budget','budget.project','budget.project.plan','project')
-                    ->with('division','division.department','details','details.item','details.item.unit')
+                    ->with('division','division.department','details','details.item','details.unit')
                     ->with('requester','requester.prefix','requester.position','requester.level')
                     ->with('committees','committees.employee','committees.employee.prefix')
                     ->with('committees.employee.position','committees.employee.level')
@@ -227,7 +227,7 @@ class RequisitionController extends Controller
     public function printPR(Request $req, $id)
     {
         $requisition = Requisition::with('category','budget','details','project','division','division.department')
-                        ->with('details.item','details.item.unit')
+                        ->with('details.item','details.unit')
                         ->with('requester','requester.prefix','requester.position','requester.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
                         ->with('committees.employee.position','committees.employee.level')
