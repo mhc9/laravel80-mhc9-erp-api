@@ -192,7 +192,7 @@ class RequisitionController extends Controller
             $requisition->status        = 1;
 
             if($requisition->save()) {
-                /** Insert items to RequisitionDetail */
+                /** Update items to RequisitionDetail */
                 foreach($req['items'] as $item) {
                     if (!array_key_exists('pr_id', $item)) {
                         /** กรณีเป็นรายการใหม่ */
@@ -225,13 +225,19 @@ class RequisitionController extends Controller
                     }
                 }
 
-                /** Insert committees */
-                foreach($req['committees'] as $employee) {
-                    $committee = new Committee();
-                    $committee->employee_id         = $employee['employee_id'];
-                    $committee->requisition_id      = $requisition->id;
-                    $committee->committee_type_id   = 2;
-                    $committee->save();
+                /** Update committees */
+                foreach($req['committees'] as $committee) {
+                    if (!array_key_exists('requisition_id', $committee)) {
+                        $newCommittee = new Committee();
+                        $newCommittee->employee_id         = $committee['employee_id'];
+                        $newCommittee->requisition_id      = $requisition->id;
+                        $newCommittee->committee_type_id   = 2;
+                        $newCommittee->save();
+                    } else {
+                        if (array_key_exists('removed', $committee) && $committee['removed']) {
+                            Committee::find($committee['id'])->delete();
+                        }
+                    }
                 }
 
                 return [
