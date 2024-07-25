@@ -237,19 +237,23 @@ class InvitationController extends Controller
                             ->where('OTOrgDate', $doc_date)
                             ->get();
 
-        if ($invitation[0]->IsOutDmhOrg === 1) {
+        $template = '';
+        /** ตรวจสอบว่าเป็นหน่วยงานภายนอกกรมสุขภาพจิตหรือไม่ */
+        if ($invitation[0]->IsOutDmhOrg == '1') {
             if (count($invitation) > 1) {
-                $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/speakers/in-dmh2.docx'));
+                $template = 'out-dmh2.docx';
             } else {
-                $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/speakers/in-dmh1.docx'));
+                $template = 'out-dmh1.docx';
             }
         } else {
             if (count($invitation) > 1) {
-                $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/speakers/out-dmh2.docx'));
+                $template = 'in-dmh2.docx';
             } else {
-                $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/speakers/out-dmh1.docx'));
+                $template = 'in-dmh.docx';
             }
         }
+
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/speakers/' . $template));
 
         /** ================================== HEADER ================================== */
         $word->setValue('memoMonth', convDbDateToLongThMonth(date('Y-m-d')));
@@ -289,7 +293,7 @@ class InvitationController extends Controller
         // $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
         /** ================================== SIGNATURE ================================== */
 
-        $pathToSave = public_path('temp/in-dmh.docx');
+        $pathToSave = public_path('temp/' . $template);
         $filepath = $word->saveAs($pathToSave);
 
         return response()->download($pathToSave);
