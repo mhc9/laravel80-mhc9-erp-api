@@ -217,7 +217,7 @@ class RequisitionController extends Controller
                             $detail->total          = $item['total'];
                             $detail->save();
                         }
-                        
+
                         /** ============= ตรวจสอบและลบเฉพาะรายการที่ถูกลบ ============= */
                         if (array_key_exists('removed', $item) && $item['removed']) {
                             RequisitionDetail::find($item['id'])->delete();
@@ -256,20 +256,20 @@ class RequisitionController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            // $item = Item::find($id);
+            $requisition = Requisition::find($id);
 
-            // if($item->delete()) {
-            //     return [
-            //         'status'    => 1,
-            //         'message'   => 'Deleting successfully!!',
-            //         'item'      => $item
-            //     ];
-            // } else {
-            //     return [
-            //         'status'    => 0,
-            //         'message'   => 'Something went wrong!!'
-            //     ];
-            // }
+            if($requisition->delete()) {
+                return [
+                    'status'    => 1,
+                    'message'   => 'Deleting successfully!!',
+                    'id'        => $id
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,
