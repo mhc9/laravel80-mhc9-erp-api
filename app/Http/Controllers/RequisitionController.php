@@ -21,41 +21,6 @@ use App\Models\Member;
 
 class RequisitionController extends Controller
 {
-    public function formValidate (Request $request)
-    {
-        $rules = [
-            'name'          => 'required',
-            'department_id' => 'required',
-        ];
-
-        $messages = [
-            'name.required'             => 'กรุณาระบุชื่องาน',
-            'department_id.required'    => 'กรุณาเลือกกลุ่มงาน',
-        ];
-
-        $validator = \Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            $messageBag = $validator->getMessageBag();
-
-            // if (!$messageBag->has('start_date')) {
-            //     if ($this->isDateExistsValidation(convThDateToDbDate($request['start_date']), 'start_date') > 0) {
-            //         $messageBag->add('start_date', 'คุณมีการลาในวันที่ระบุแล้ว');
-            //     }
-            // }
-
-            return [
-                'success' => 0,
-                'errors' => $messageBag->toArray(),
-            ];
-        } else {
-            return [
-                'success' => 1,
-                'errors' => $validator->getMessageBag()->toArray(),
-            ];
-        }
-    }
-
     public function search(Request $req)
     {
         /** Get params from query string */
