@@ -256,12 +256,13 @@ class InvitationController extends Controller
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/speakers/' . $template));
 
         /** ================================== HEADER ================================== */
-        $word->setValue('memoMonth', convDbDateToLongThMonth(date('Y-m-d')));
+        $word->setValue('docNo', $invitation[0]->OTBH);
+        $word->setValue('docDate', convDbDateToLongThDate($invitation[0]->OTBHDate));
         /** ================================== HEADER ================================== */
         
         /** ================================== CONTENT ================================== */
-        $word->setValue('docNo', $invitation[0]->OTNumberOrg);
-        $word->setValue('docDate', convDbDateToLongThDate($invitation[0]->OTOrgDate));
+        $word->setValue('orgNo', $invitation[0]->OTNumberOrg);
+        $word->setValue('orgDate', convDbDateToLongThDate($invitation[0]->OTOrgDate));
         $word->setValue('replyTo', $invitation[0]->ReplyTo);
         $word->setValue('requester', $invitation[0]->OTOrganism);
         $word->setValue('projectName', $invitation[0]->OTName);
