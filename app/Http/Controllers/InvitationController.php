@@ -287,6 +287,8 @@ class InvitationController extends Controller
             $word->setValue('speaker', $invitation[0]->EmPerfix . $invitation[0]->EmName);
             $word->setValue('speakerPosition', $invitation[0]->PosName);
         }
+
+        $word->setValue('traveling', ($invitation[0]->OTCar || !empty($invitation[0]->OTCar)) ? 'เดินทางด้วยรถยนต์ส่วนบุคคลหมายเลขทะเบียน' . $invitation[0]->OTCar : '');
         /** ================================== CONTENT ================================== */
         
         /** ================================== SIGNATURE ================================== */
