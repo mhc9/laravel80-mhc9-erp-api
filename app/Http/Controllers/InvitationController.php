@@ -227,19 +227,21 @@ class InvitationController extends Controller
 
     public function getReport(Request $req)
     {
-        $doc_no = $req->get('doc_no');
-        $doc_date = $req->get('doc_date');
+        $doc_no         = str_replace('|', '/', $req->get('doc_no'));
+        $doc_date       = $req->get('doc_date');
+        $project_date   = $req->get('project_date');
 
         $invitation = Invitation::leftJoin('Employee', 'Employee.EmId', '=', 'OT.OTEmid')
                             ->leftJoin('Position', 'Employee.EmPosition', '=', 'Position.PosId')
                             ->where('OTType', 'วิทยากร')
-                            ->where('OTNumberOrg', $doc_no)
-                            ->where('OTOrgDate', $doc_date)
+                            ->where('OTBH', $doc_no)
+                            ->where('OTBHDate', $doc_date)
+                            ->where('OTDateProject', $project_date)
                             ->get();
 
         $template = '';
         /** ตรวจสอบว่าเป็นหน่วยงานภายนอกกรมสุขภาพจิตหรือไม่ */
-        if ($invitation[0]->IsOutDmhOrg == '1') {
+        if ($invitation[0]->IsOutDmhOrg == 1) {
             if (count($invitation) > 1) {
                 $template = 'out-dmh2.docx';
             } else {
