@@ -262,6 +262,7 @@ class InvitationController extends Controller
         /** ================================== CONTENT ================================== */
         $word->setValue('docNo', $invitation[0]->OTNumberOrg);
         $word->setValue('docDate', convDbDateToLongThDate($invitation[0]->OTOrgDate));
+        $word->setValue('replyTo', $invitation[0]->ReplyTo);
         $word->setValue('requester', $invitation[0]->OTOrganism);
         $word->setValue('projectName', $invitation[0]->OTName);
         $word->setValue(
