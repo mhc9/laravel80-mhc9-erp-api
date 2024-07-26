@@ -249,7 +249,7 @@ class InvitationController extends Controller
             if (count($invitation) > 1) {
                 $template = 'in-dmh2.docx';
             } else {
-                $template = 'in-dmh.docx';
+                $template = 'in-dmh1.docx';
             }
         }
 
