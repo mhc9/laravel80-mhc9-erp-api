@@ -40,7 +40,7 @@ class Requisition extends Model
 
     public function details()
     {
-        return $this->hasMany(RequisitionDetail::class, 'pr_id', 'id');
+        return $this->hasMany(RequisitionDetail::class, 'requisition_id', 'id');
     }
 
     public function committees()

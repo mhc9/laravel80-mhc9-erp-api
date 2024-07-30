@@ -13,7 +13,7 @@ class RequisitionDetail extends Model
 
     public function requisition()
     {
-        return $this->belongsTo(Requisition::class, 'pr_id', 'id');
+        return $this->belongsTo(Requisition::class, 'requisition_id', 'id');
     }
 
     public function item()
