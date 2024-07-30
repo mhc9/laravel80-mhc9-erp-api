@@ -18,6 +18,7 @@ use App\Models\Committee;
 use App\Models\Project;
 use App\Models\Employee;
 use App\Models\Member;
+use App\Models\Approval;
 
 class RequisitionController extends Controller
 {
@@ -268,8 +269,11 @@ class RequisitionController extends Controller
                 /** ลบรายการในตาราง detail */
                 RequisitionDetail::where('requisition_id', $id)->delete();
 
-                /** ลบรายการคณะกรรมต่างๆ */
+                /** ลบรายการคณะกรรมต่างๆ ในตาราง committees */
                 Committee::where('requisition_id', $id)->delete();
+
+                /** ลบรายการการอนุมัติในตาราง approvals */
+                Approval::where('requisition_id', $id)->delete();
 
                 return [
                     'status'    => 1,
