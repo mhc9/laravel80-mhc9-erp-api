@@ -133,13 +133,13 @@ class RequisitionController extends Controller
                 /** Insert items to RequisitionDetail */
                 foreach($req['items'] as $item) {
                     $detail = new RequisitionDetail();
-                    $detail->pr_id      = $requisition->id;
-                    $detail->item_id    = $item['item_id'];
-                    $detail->description = $item['description'];
-                    $detail->amount     = $item['amount'];
-                    $detail->price      = $item['price'];
-                    $detail->unit_id    = $item['unit_id'];
-                    $detail->total      = $item['total'];
+                    $detail->requisition_id = $requisition->id;
+                    $detail->item_id        = $item['item_id'];
+                    $detail->description    = $item['description'];
+                    $detail->amount         = $item['amount'];
+                    $detail->price          = $item['price'];
+                    $detail->unit_id        = $item['unit_id'];
+                    $detail->total          = $item['total'];
                     $detail->save();
                 }
 
@@ -197,7 +197,7 @@ class RequisitionController extends Controller
                     if (!array_key_exists('pr_id', $item)) {
                         /** กรณีเป็นรายการใหม่ */
                         $detail = new RequisitionDetail();
-                        $detail->pr_id          = $requisition->id;
+                        $detail->requisition_id = $requisition->id;
                         $detail->item_id        = $item['item_id'];
                         $detail->description    = $item['description'];
                         $detail->amount         = $item['amount'];
@@ -265,6 +265,12 @@ class RequisitionController extends Controller
             $requisition = Requisition::find($id);
 
             if($requisition->delete()) {
+                /** ลบรายการในตาราง detail */
+                RequisitionDetail::where('requisition_id', $id)->delete();
+
+                /** ลบรายการคณะกรรมต่างๆ */
+                Committee::where('requisition_id', $id)->delete();
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
