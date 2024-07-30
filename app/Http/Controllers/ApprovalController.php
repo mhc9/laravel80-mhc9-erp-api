@@ -109,6 +109,8 @@ class ApprovalController extends Controller
             $approval->report_date      = $req['report_date'];
             $approval->directive_no     = $req['directive_no'];
             $approval->directive_date   = $req['directive_date'];
+            $approval->deliver_date     = $req['deliver_date'];
+            // $approval->deliver_days     = $req['deliver_days'];
 
             if($approval->save()) {
                 /** อัพเดตสถานะของรายการตาราง requisitions เป็น 2 (แต่งตั้งผู้ตรวจรับ) */
@@ -117,7 +119,7 @@ class ApprovalController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'approval'  => $approval->load('requisition','procuring','supplier')
+                    'approval'  => Approval::with('requisition','procuring','supplier')->find($approval->id)
                 ];
             } else {
                 return [
@@ -144,6 +146,8 @@ class ApprovalController extends Controller
             $approval->report_date      = $req['report_date'];
             $approval->directive_no     = $req['directive_no'];
             $approval->directive_date   = $req['directive_date'];
+            $approval->deliver_date     = $req['deliver_date'];
+            // $approval->deliver_days     = $req['deliver_days'];
 
             if($approval->save()) {
                 return [
@@ -199,8 +203,6 @@ class ApprovalController extends Controller
             $approval->consider_date    = $req['consider_date'];
             $approval->notice_date      = $req['notice_date'];
             $approval->supplier_id      = $req['supplier_id'];
-            $approval->deliver_date     = $req['deliver_date'];
-            $approval->deliver_days     = $req['deliver_days'];
 
             if($approval->save()) {
                 /** อัพเดตสถานะของรายการตาราง requisitions เป็น 3 (ประกาศผู้ชนะ) */
