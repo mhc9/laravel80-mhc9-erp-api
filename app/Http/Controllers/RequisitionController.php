@@ -525,6 +525,7 @@ class RequisitionController extends Controller
         /** ================================== HEADER ================================== */
         $word->setValue('considerNo', $requisition->approvals[0]->consider_no);
         $word->setValue('considerDate', convDbDateToLongThDate($requisition->approvals[0]->consider_date));
+        $word->setValue('topic', $requisition->topic);
         /** ================================== HEADER ================================== */
         
         /** ================================== CONTENT ================================== */
