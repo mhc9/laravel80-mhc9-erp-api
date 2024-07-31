@@ -195,7 +195,7 @@ class RequisitionController extends Controller
             if($requisition->save()) {
                 /** Update items to RequisitionDetail */
                 foreach($req['items'] as $item) {
-                    if (!array_key_exists('pr_id', $item)) {
+                    if (!array_key_exists('requisition_id', $item)) {
                         /** กรณีเป็นรายการใหม่ */
                         $detail = new RequisitionDetail();
                         $detail->requisition_id = $requisition->id;
