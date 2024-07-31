@@ -340,7 +340,8 @@ class RequisitionController extends Controller
                             ->where('status', 1)
                             ->first();
 
-        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisition.docx'));
+        $template = 'form.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates//requisitions/' . $template));
 
         /** ================================== HEADER ================================== */
         $word->setValue('department', $requisition->division->department->name);
@@ -391,7 +392,7 @@ class RequisitionController extends Controller
         $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
         /** ================================== SIGNATURE ================================== */
 
-        $pathToSave = public_path('temp/requisition.docx');
+        $pathToSave = public_path('temp/' . $template);
         $filepath = $word->saveAs($pathToSave);
 
         return response()->download($pathToSave);
@@ -412,7 +413,8 @@ class RequisitionController extends Controller
         //                     ->where('status', 1)
         //                     ->first();
 
-        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisitionReport.docx'));
+        $template = 'report.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisitions/' . $template));
 
         /** ================================== HEADER ================================== */
         $word->setValue('department', $requisition->division->department->name);
@@ -448,7 +450,55 @@ class RequisitionController extends Controller
         // $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
         /** ================================== SIGNATURE ================================== */
 
-        $pathToSave = public_path('temp/requisitionReport.docx');
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
+    }
+
+    public function getDirective(Request $req, $id)
+    {
+        $requisition = Requisition::with('category','budget','details','project','division','division.department')
+                        ->with('details.item','details.item.unit')
+                        ->with('requester','requester.prefix','requester.position','requester.level')
+                        ->with('committees','committees.employee','committees.employee.prefix')
+                        ->with('committees.employee.position','committees.employee.level')
+                        ->with('approvals','approvals.procuring')
+                        ->find($id);
+
+        // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
+        //                     ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+        //                     ->where('status', 1)
+        //                     ->first();
+
+        $template = 'directive.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisitions/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('directiveNo', $requisition->approvals[0]->directive_no);
+        $word->setValue('directiveDate', convDbDateToLongThDate($requisition->approvals[0]->directive_date));
+        /** ================================== HEADER ================================== */
+        
+        /** ================================== CONTENT ================================== */
+        $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
+        $word->setValue('itemCount', $requisition->item_count);
+        
+        $cx = 1;
+        $word->cloneRow('inspector', sizeof($requisition->committees));
+        foreach($requisition->committees as $inspector => $committee) {
+            $word->setValue('inspector#' . $cx, $committee->employee->prefix->name.$committee->employee->firstname . ' ' . $committee->employee->lastname);
+            $word->setValue('inspectorPosition#' . $cx, $committee->employee->position->name . ($committee->employee->level ? $committee->employee->level->name : ''));
+            $cx++;
+        }
+        /** ================================== CONTENT ================================== */
+        
+        /** ================================== SIGNATURE ================================== */
+        // $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
+        // $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
+        // $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
+        /** ================================== SIGNATURE ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
         $filepath = $word->saveAs($pathToSave);
 
         return response()->download($pathToSave);
@@ -475,6 +525,49 @@ class RequisitionController extends Controller
         /** ================================== HEADER ================================== */
         $word->setValue('considerNo', $requisition->approvals[0]->consider_no);
         $word->setValue('considerDate', convDbDateToLongThDate($requisition->approvals[0]->consider_date));
+        /** ================================== HEADER ================================== */
+        
+        /** ================================== CONTENT ================================== */
+        $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
+        $word->setValue('item', $requisition->order_type_id == 1 ? $requisition->category->name : $requisition->contract_desc);
+        $word->setValue('itemCount', $requisition->item_count);
+        $word->setValue('supplier', $requisition->approvals[0]->supplier->name);
+        $word->setValue('netTotal', number_format($requisition->net_total));
+        $word->setValue('netTotalText', baht_text($requisition->net_total));
+        /** ================================== CONTENT ================================== */
+        
+        /** ================================== SIGNATURE ================================== */
+        // $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
+        // $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
+        // $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
+        /** ================================== SIGNATURE ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
+    }
+
+    public function getNotice(Request $req, $id)
+    {
+        $requisition = Requisition::with('category','budget','details','project','division','division.department')
+                        ->with('details.item','details.item.unit')
+                        ->with('requester','requester.prefix','requester.position','requester.level')
+                        ->with('committees','committees.employee','committees.employee.prefix')
+                        ->with('committees.employee.position','committees.employee.level')
+                        ->with('approvals','approvals.procuring')
+                        ->find($id);
+
+        // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
+        //                     ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+        //                     ->where('status', 1)
+        //                     ->first();
+
+        $template = 'notice.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisitions/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('noticeDate', convDbDateToLongThDate($requisition->approvals[0]->notice_date));
         /** ================================== HEADER ================================== */
         
         /** ================================== CONTENT ================================== */
