@@ -453,4 +453,48 @@ class RequisitionController extends Controller
 
         return response()->download($pathToSave);
     }
+
+    public function getConsider(Request $req, $id)
+    {
+        $requisition = Requisition::with('category','budget','details','project','division','division.department')
+                        ->with('details.item','details.item.unit')
+                        ->with('requester','requester.prefix','requester.position','requester.level')
+                        ->with('committees','committees.employee','committees.employee.prefix')
+                        ->with('committees.employee.position','committees.employee.level')
+                        ->with('approvals','approvals.procuring')
+                        ->find($id);
+
+        // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
+        //                     ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+        //                     ->where('status', 1)
+        //                     ->first();
+
+        $template = 'consideration.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisitions/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('considerNo', $requisition->approvals[0]->consider_no);
+        $word->setValue('considerDate', convDbDateToLongThDate($requisition->approvals[0]->consider_date));
+        /** ================================== HEADER ================================== */
+        
+        /** ================================== CONTENT ================================== */
+        $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
+        $word->setValue('item', $requisition->order_type_id == 1 ? $requisition->category->name : $requisition->contract_desc);
+        $word->setValue('itemCount', $requisition->item_count);
+        $word->setValue('supplier', $requisition->approvals[0]->supplier->name);
+        $word->setValue('netTotal', number_format($requisition->net_total));
+        $word->setValue('netTotalText', baht_text($requisition->net_total));
+        /** ================================== CONTENT ================================== */
+        
+        /** ================================== SIGNATURE ================================== */
+        // $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
+        // $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
+        // $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
+        /** ================================== SIGNATURE ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
+    }
 }

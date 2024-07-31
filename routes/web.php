@@ -26,6 +26,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/requisitions/{id}/print-pr', 'App\Http\Controllers\RequisitionController@printPR');
 Route::get('/requisitions/{id}/document', 'App\Http\Controllers\RequisitionController@getDocument');
 Route::get('/requisitions/{id}/report', 'App\Http\Controllers\RequisitionController@getReport');
+Route::get('/requisitions/{id}/consider', 'App\Http\Controllers\RequisitionController@getConsider');
+Route::get('/requisitions/{id}/notice', 'App\Http\Controllers\RequisitionController@getNotice');
 
 /** PWM OT */
 Route::get('/invitations/report', [App\Http\Controllers\InvitationController::class, 'getReport']);
