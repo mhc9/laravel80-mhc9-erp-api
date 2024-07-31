@@ -32,8 +32,8 @@ class RequisitionController extends Controller
         $status     = $req->get('status');
         $limit      = $req->get('limit') ? $req->get('limit') : 10;
 
-        $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project')
-                            ->with('division','division.department','details','details.item','details.unit')
+        $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project','division')
+                            ->with('division.department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
@@ -66,8 +66,8 @@ class RequisitionController extends Controller
         $requester  = $req->get('requester');
         $status     = $req->get('status');
 
-        $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project')
-                            ->with('division','division.department','details','details.item','details.unit')
+        $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project','division')
+                            ->with('division.department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
@@ -85,8 +85,8 @@ class RequisitionController extends Controller
 
     public function getById($id)
     {
-        return Requisition::with('category','budget','budget.project','budget.project.plan','project')
-                    ->with('division','division.department','details','details.item','details.unit')
+        return Requisition::with('category','budget','budget.project','budget.project.plan','project','division')
+                    ->with('division.department','details','details.unit','details.item','details.item.category')
                     ->with('requester','requester.prefix','requester.position','requester.level')
                     ->with('committees','committees.employee','committees.employee.prefix')
                     ->with('committees.employee.position','committees.employee.level')
@@ -156,7 +156,12 @@ class RequisitionController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Insertion successfully!!',
-                    'requisition'   => $requisition
+                    'requisition'   => $requisition->load('category','budget','budget.project','budget.project.plan','project','division',
+                                                        'division.department','details','details.unit','details.item','details.item.category',
+                                                        'requester','requester.prefix','requester.position','requester.level',
+                                                        'committees','committees.employee','committees.employee.prefix',
+                                                        'committees.employee.position','committees.employee.level',
+                                                        'approvals','approvals.procuring','approvals.supplier')
                 ];
             } else {
                 return [
@@ -244,7 +249,12 @@ class RequisitionController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
-                    'requisition'   => $requisition
+                    'requisition'   => $requisition->load('category','budget','budget.project','budget.project.plan','project','division',
+                                                        'division.department','details','details.unit','details.item','details.item.category',
+                                                        'requester','requester.prefix','requester.position','requester.level',
+                                                        'committees','committees.employee','committees.employee.prefix',
+                                                        'committees.employee.position','committees.employee.level',
+                                                        'approvals','approvals.procuring','approvals.supplier')
                 ];
             } else {
                 return [
