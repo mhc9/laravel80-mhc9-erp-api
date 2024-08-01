@@ -486,8 +486,15 @@ class RequisitionController extends Controller
         $cx = 1;
         $word->cloneRow('inspector', sizeof($requisition->committees));
         foreach($requisition->committees as $inspector => $committee) {
+            $word->setValue('no#' . $cx, sizeof($requisition->committees) > 1 ? $cx . '.' : '');
             $word->setValue('inspector#' . $cx, $committee->employee->prefix->name.$committee->employee->firstname . ' ' . $committee->employee->lastname);
             $word->setValue('inspectorPosition#' . $cx, $committee->employee->position->name . ($committee->employee->level ? $committee->employee->level->name : ''));
+
+            if (sizeof($requisition->committees) == 1) {
+                $word->setValue('committee#' . $cx, 'ผู้ตรวจรับพัสดุ');
+            } else {
+                $word->setValue('committee#' . $cx, $cx == 1 ? 'ประธานกรรรมการฯ' : 'กรรรมการฯ');
+            }
             $cx++;
         }
         /** ================================== CONTENT ================================== */
