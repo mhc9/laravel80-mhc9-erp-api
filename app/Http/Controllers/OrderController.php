@@ -163,8 +163,8 @@ class OrderController extends Controller
                     $detail->status         = 0;
                     $detail->save();
 
-                    /** อัพเดตสถานะของคำขอเป็น 1=ดำนเนิการแล้ว */
-                    Requisition::where('id', $order->requisition_id)->update(['status' => 1]);
+                    /** อัพเดตสถานะของคำขอเป็น 4=จัดซื้อแล้ว */
+                    Requisition::where('id', $order->requisition_id)->update(['status' => 4]);
                 }
 
                 return [
