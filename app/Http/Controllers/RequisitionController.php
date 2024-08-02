@@ -126,6 +126,7 @@ class RequisitionController extends Controller
             $requisition->requester_id  = $req['requester_id'];
             $requisition->division_id   = $req['division_id'];
             $requisition->reason        = $req['reason'];
+            $requisition->desired_date  = $req['desired_date'];
             $requisition->item_count    = $req['item_count'];
             $requisition->net_total     = currencyToNumber($req['net_total']);
             $requisition->status        = 1;
@@ -193,6 +194,7 @@ class RequisitionController extends Controller
             $requisition->requester_id  = $req['requester_id'];
             $requisition->division_id   = $req['division_id'];
             $requisition->reason        = $req['reason'];
+            $requisition->desired_date  = $req['desired_date'];
             $requisition->item_count    = $req['item_count'];
             $requisition->net_total     = currencyToNumber($req['net_total']);
             $requisition->status        = 1;
