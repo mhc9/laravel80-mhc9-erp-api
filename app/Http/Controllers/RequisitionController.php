@@ -123,6 +123,7 @@ class RequisitionController extends Controller
             $requisition->year          = $req['year'];
             $requisition->budget_id     = $req['budget_id'];
             $requisition->project_id    = $req['project_id'];
+            $requisition->project_name  = $req['project_name'];
             $requisition->requester_id  = $req['requester_id'];
             $requisition->division_id   = $req['division_id'];
             $requisition->reason        = $req['reason'];
@@ -191,6 +192,7 @@ class RequisitionController extends Controller
             $requisition->year          = $req['year'];
             $requisition->budget_id     = $req['budget_id'];
             $requisition->project_id    = $req['project_id'];
+            $requisition->project_name  = $req['project_name'];
             $requisition->requester_id  = $req['requester_id'];
             $requisition->division_id   = $req['division_id'];
             $requisition->reason        = $req['reason'];
