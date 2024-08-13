@@ -387,7 +387,8 @@ class RequisitionController extends Controller
             $no++;
         }
 
-        $word->setValue('deliverPlace', 'ศูนย์สุขภาพจิตที่ 9');
+        $word->setValue('desiredDate', convDbDateToLongThDate($requisition->desired_date));
+        $word->setValue('deliverPlace', array_any($requisition->details->toArray(), function($detail) { return in_array($detail['item_id'], [24]); }) ? 'สถานบริการน้ำมันเชื้อเพลิง' : 'ศูนย์สุขภาพจิตที่ 9');
         /** ================================== CONTENT ================================== */
         
         /** ================================== SIGNATURE ================================== */
