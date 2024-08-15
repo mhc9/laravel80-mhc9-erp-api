@@ -15,30 +15,16 @@ class BudgetPlanController extends Controller
     public function search(Request $req)
     {
         /** Get params from query string */
-        $project    = $req->get('project');
-        $plan       = $req->get('plan');
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = BudgetPlan::with('type','project','project.plan')
-                    ->when(!empty($project), function($q) use ($project) {
-                        $q->where('project_id', $project);
-                    })
-                    ->when(!empty($plan), function($q) use ($plan) {
-                        $q->whereHas('project.plan', function($sq) use ($plan) {
-                            $sq->where('plan_id', $plan);
-                        });
-                    })
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
-                    // ->when(!empty($name), function($q) use ($name) {
-                    //     $q->where(function($query) use ($name) {
-                    //         $query->where('item_name', 'like', '%'.$name.'%');
-                    //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                    //     });
-                    // })
-                    ->paginate(10);
+        $activities = BudgetPlan::when($status != '', function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
+                        ->when(!empty($name), function($q) use ($name) {
+                            $q->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->paginate(10);
 
         return $activities;
     }
@@ -46,27 +32,16 @@ class BudgetPlanController extends Controller
     public function getAll(Request $req)
     {
         /** Get params from query string */
-        $project    = $req->get('project');
-        $plan       = $req->get('plan');
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = BudgetPlan::with('type','project','project.plan')
-                    ->when(!empty($project), function($q) use ($project) {
-                        $q->where('project_id', $project);
-                    })
-                    ->when(!empty($plan), function($q) use ($plan) {
-                        $q->whereHas('project.plan', function($sq) use ($plan) {
-                            $sq->where('plan_id', $plan);
-                        });
-                    })
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
-                    // ->when(!empty($name), function($q) use ($name) {
-                    //     $q->where('name', 'like', '%'.$name.'%');
-                    // })
-                    ->get();
+        $activities = BudgetPlan::when($status != '', function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
+                        ->when(!empty($name), function($q) use ($name) {
+                            $q->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->get();
 
         return $activities;
     }
