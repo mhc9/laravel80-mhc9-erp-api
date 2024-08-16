@@ -74,15 +74,18 @@ class BudgetProjectController extends Controller
     public function store(Request $req)
     {
         try {
-            $budget = new BudgetProject();
-            $budget->name      = $req['name'];
-            $budget->status    = $req['status'] ? 1 : 0;
+            $project = new BudgetProject();
+            $project->name      = $req['name'];
+            $project->plan_id   = $req['plan_id'];
+            $project->project_type_id = $req['project_type_id'];
+            $project->year      = $req['year'];
+            $project->status    = $req['status'] ? 1 : 0;
 
-            if($budget->save()) {
+            if($project->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'Budget'    => $budget
+                    'project'   => $project
                 ];
             } else {
                 return [
@@ -101,15 +104,18 @@ class BudgetProjectController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $budget = BudgetProject::find($id);
-            $budget->name     = $req['name'];
-            $budget->status   = $req['status'] ? 1 : 0;
+            $project = BudgetProject::find($id);
+            $project->name      = $req['name'];
+            $project->plan_id   = $req['plan_id'];
+            $project->project_type_id = $req['project_type_id'];
+            $project->year      = $req['year'];
+            $project->status    = $req['status'] ? 1 : 0;
 
-            if($budget->save()) {
+            if($project->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'Budget'  => $budget
+                    'project'   => $project
                 ];
             } else {
                 return [
