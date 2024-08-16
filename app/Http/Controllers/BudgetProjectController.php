@@ -20,7 +20,8 @@ class BudgetProjectController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = BudgetProject::with('plan')
+        $activities = BudgetProject::select('budget_projects.*')->with('plan')
+                        ->leftJoin('budget_plans', 'budget_projects.plan_id', '=', 'budget_plans.id')
                         ->when(!empty($plan), function($q) use ($plan) {
                             $sq->where('plan_id', $plan);
                         })
@@ -30,6 +31,7 @@ class BudgetProjectController extends Controller
                         ->when($status != '', function($q) use ($status) {
                             $q->where('status', $status);
                         })
+                        ->orderBy('budget_plans.plan_no')
                         ->paginate(10);
 
         return $activities;
