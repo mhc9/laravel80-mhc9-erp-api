@@ -23,7 +23,10 @@ class BudgetController extends Controller
         $status     = $req->get('status');
         $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
-        $budgets = Budget::with('type','project','project.plan')
+        $budgets = Budget::select('budgets.*')
+                    ->with('type','project','project.plan')
+                    ->leftJoin('budget_projects','budgets.project_id','=','budget_projects.id')
+                    ->leftJoin('budget_plans','budget_projects.plan_id','=','budget_plans.id')
                     ->when(!empty($project), function($q) use ($project) {
                         $q->where('project_id', $project);
                     })
@@ -38,7 +41,8 @@ class BudgetController extends Controller
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
-                    ->orderBy('project_id')
+                    ->orderBy('budget_plans.plan_no')
+                    ->orderBy('budget_projects.name')
                     ->paginate($limit);
 
         return $budgets;
