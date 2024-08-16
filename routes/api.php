@@ -137,6 +137,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'getAll']);
     Route::get('/budget-plans/search', [App\Http\Controllers\BudgetPlanController::class, 'search']);
     Route::get('/budget-plans/{id}', [App\Http\Controllers\BudgetPlanController::class, 'getById']);
+    Route::get('/budget-plans/init/form', [App\Http\Controllers\BudgetPlanController::class, 'getInitialFormData']);
     Route::post('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'store']);
     Route::post('/budget-plans/{id}/update', [App\Http\Controllers\BudgetPlanController::class, 'update']);
     Route::post('/budget-plans/{id}/delete', [App\Http\Controllers\BudgetPlanController::class, 'destroy']);

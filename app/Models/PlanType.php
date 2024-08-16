@@ -4,15 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BudgetPlan extends Model
+class PlanType extends Model
 {
-    protected $table = 'budget_plans';
+    protected $table = 'plan_types';
     // protected $primaryKey = 'id';
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
-
-    public function type()
-    {
-        return $this->belongsTo(PlanType::class, 'plan_type_id', 'id');
-    }
 }

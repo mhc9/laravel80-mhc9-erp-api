@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Budget;
 use App\Models\BudgetPlan;
+use App\Models\PlanType;
 
 class BudgetPlanController extends Controller
 {
@@ -18,12 +19,14 @@ class BudgetPlanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = BudgetPlan::when($status != '', function($q) use ($status) {
+        $activities = BudgetPlan::with('type')
+                        ->when($status != '', function($q) use ($status) {
                             $q->where('status', $status);
                         })
                         ->when(!empty($name), function($q) use ($name) {
                             $q->where('name', 'like', '%'.$name.'%');
                         })
+                        ->orderBy('plan_no')
                         ->paginate(10);
 
         return $activities;
@@ -35,12 +38,14 @@ class BudgetPlanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = BudgetPlan::when($status != '', function($q) use ($status) {
+        $activities = BudgetPlan::with('type')
+                        ->when($status != '', function($q) use ($status) {
                             $q->where('status', $status);
                         })
                         ->when(!empty($name), function($q) use ($name) {
                             $q->where('name', 'like', '%'.$name.'%');
                         })
+                        ->orderBy('plan_no')
                         ->get();
 
         return $activities;
@@ -48,7 +53,14 @@ class BudgetPlanController extends Controller
 
     public function getById($id)
     {
-        return BudgetPlan::find($id);
+        return BudgetPlan::with('type')->find($id);
+    }
+
+    public function getInitialFormData()
+    {
+        return [
+            'types' => PlanType::all()
+        ];
     }
 
     public function store(Request $req)
