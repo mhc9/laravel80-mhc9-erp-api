@@ -66,15 +66,18 @@ class BudgetPlanController extends Controller
     public function store(Request $req)
     {
         try {
-            $budget = new BudgetPlan();
-            $budget->name      = $req['name'];
-            $budget->status    = $req['status'] ? 1 : 0;
+            $plan = new BudgetPlan();
+            $plan->plan_no      = $req['plan_no'];
+            $plan->name         = $req['name'];
+            $plan->year         = $req['year'];
+            $plan->plan_type_id = $req['plan_type_id'];
+            $plan->status       = $req['status'] ? 1 : 0;
 
-            if($budget->save()) {
+            if($plan->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'Budget'  => $budget
+                    'plan'  => $plan
                 ];
             } else {
                 return [
@@ -93,15 +96,18 @@ class BudgetPlanController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $budget = BudgetPlan::find($id);
-            $budget->name     = $req['name'];
-            $budget->status   = $req['status'] ? 1 : 0;
+            $plan = BudgetPlan::find($id);
+            $plan->plan_no      = $req['plan_no'];
+            $plan->name         = $req['name'];
+            $plan->year         = $req['year'];
+            $plan->plan_type_id = $req['plan_type_id'];
+            $plan->status       = $req['status'] ? 1 : 0;
 
-            if($budget->save()) {
+            if($plan->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'Budget'  => $budget
+                    'plan'      => $plan
                 ];
             } else {
                 return [
@@ -120,9 +126,9 @@ class BudgetPlanController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $budget = BudgetPlan::find($id);
+            $plan = BudgetPlan::find($id);
 
-            if($budget->delete()) {
+            if($plan->delete()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
