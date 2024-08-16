@@ -67,7 +67,7 @@ class BudgetProjectController extends Controller
     public function getInitialFormData()
     {
         return [
-            'plans' => BudgetPlan::where('year', 2567)->get()
+            'plans' => BudgetPlan::where('year', 2024)->orderBy('plan_no')->get()
         ];
     }
 
