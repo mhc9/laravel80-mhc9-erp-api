@@ -91,10 +91,10 @@ class BudgetController extends Controller
         try {
             $budget = new Budget();
             $budget->name       = $req['name'];
-            $budget->gfmis_id   = $req['gfmis_id'];
-            $budget->main_gfmis_id = $req['main_gfmis_id'];
             $budget->type_id    = $req['type_id'];
             $budget->project_id = $req['project_id'];
+            $budget->gfmis_id   = $req['gfmis_id'];
+            $budget->year       = $req['year'];
             $budget->status     = 1;
 
             if($budget->save()) {
@@ -122,10 +122,10 @@ class BudgetController extends Controller
         try {
             $budget = Budget::find($id);
             $budget->name       = $req['name'];
-            $budget->gfmis_id   = $req['gfmis_id'];
-            $budget->main_gfmis_id = $req['main_gfmis_id'];
             $budget->type_id    = $req['type_id'];
             $budget->project_id = $req['project_id'];
+            $budget->gfmis_id   = $req['gfmis_id'];
+            $budget->year       = $req['year'];
             $budget->status     = $req['status'] ? 1 : 0;
 
             if($budget->save()) {
