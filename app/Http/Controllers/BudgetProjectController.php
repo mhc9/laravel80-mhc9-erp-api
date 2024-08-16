@@ -64,6 +64,13 @@ class BudgetProjectController extends Controller
         return BudgetProject::find($id);
     }
 
+    public function getInitialFormData()
+    {
+        return [
+            'plans' => BudgetPlan::where('year', 2567)->get()
+        ];
+    }
+
     public function store(Request $req)
     {
         try {
