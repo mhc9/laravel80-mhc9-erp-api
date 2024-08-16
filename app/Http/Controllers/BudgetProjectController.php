@@ -32,6 +32,7 @@ class BudgetProjectController extends Controller
                             $q->where('status', $status);
                         })
                         ->orderBy('budget_plans.plan_no')
+                        ->orderBy('budget_projects.name')
                         ->paginate(10);
 
         return $activities;
