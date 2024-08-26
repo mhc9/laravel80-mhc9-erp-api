@@ -83,6 +83,7 @@ class ComsetController extends Controller
             $comset->status         = 1;
 
             if($comset->save()) {
+                /** ================== Equipments ================== */
                 if ($req->exists('equipments') && count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
                         $newEquipment = new ComsetEquipment();
@@ -97,6 +98,7 @@ class ComsetController extends Controller
                     }
                 }
 
+                /** ================== Assets ================== */
                 if ($req->exists('assets') && count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
                         $newAsset = new ComsetAsset();
@@ -135,11 +137,11 @@ class ComsetController extends Controller
             $comset->remark         = $req['remark'];
 
             if($comset->save()) {
+                /** ================== Equipments ================== */
                 if ($req->exists('equipments') && count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
-                        if (array_key_exists('id', $equipment)) {
-                            
-                        } else {
+                         /** ถ้า element ของ equipments ไม่มี property comset_id (รายการใหม่) */
+                        if (!array_key_exists('comset_id', $equipment)) {
                             $newEquipment = new ComsetEquipment();
                             $newEquipment->comset_id            = $comset->id;
                             $newEquipment->equipment_type_id    = $equipment['equipment_type_id'];
@@ -149,13 +151,31 @@ class ComsetController extends Controller
                             $newEquipment->description          = $equipment['description'];
                             $newEquipment->price                = $equipment['price'];
                             $newEquipment->save();
+                        } else {
+                            /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property updated ให้ทำการแก้ไขรายการ */
+                            if (array_key_exists('updated', $equipment) && $equipment['updated']) {
+                                $newEquipment = ComsetEquipment::find($equipment['id']);
+                                $newEquipment->equipment_type_id    = $equipment['equipment_type_id'];
+                                $newEquipment->brand_id             = $equipment['brand_id'];
+                                $newEquipment->model                = $equipment['model'];
+                                $newEquipment->capacity             = $equipment['capacity'];
+                                $newEquipment->description          = $equipment['description'];
+                                $newEquipment->price                = $equipment['price'];
+                                $newEquipment->save();
+                            }
+
+                            /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed ให้ทำการลบรายการ */
+                            if (array_key_exists('removed', $equipment) && $equipment['removed']) {
+                                ComsetEquipment::find($equipment['id'])->delete();
+                            }
                         }
                     }
                 }
 
+                /** ================== Assets ================== */
                 if ($req->exists('assets') && count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
-                        if (array_key_exists('id', $equipment)) {
+                        if (array_key_exists('id', $asset)) {
                             
                         } else {
                             $newAsset = new ComsetAsset();

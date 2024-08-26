@@ -206,7 +206,7 @@ class LoanController extends Controller
 
             if($loan->save()) {
                 foreach($req['courses'] as $course) {
-                    /** ถ้า element ของ courses ไม่มี property id (รายการใหม่) */
+                    /** ถ้า element ของ courses ไม่มี property loan_id (รายการใหม่) */
                     if (!array_key_exists('loan_id', $course)) {
                         $newCourse = new ProjectCourse();
                         $newCourse->seq_no         = $course['id'];
@@ -268,7 +268,7 @@ class LoanController extends Controller
                             $updated->total         = currencyToNumber($item['total']);
                             $updated->save();
                         }
-                        
+
                         if (array_key_exists('removed', $item) && $item['removed']) {
                             /** This is item to remove */
                             LoanDetail::find($item['id'])->delete();
