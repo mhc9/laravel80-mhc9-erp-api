@@ -111,7 +111,7 @@ class ComsetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'comset'    => $comset
+                    'comset'    => $comset->load('asset','asset.brand','equipments','equipments.type','equipments.brand')
                 ];
             } else {
                 return [
