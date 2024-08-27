@@ -50,7 +50,8 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/repairations/{id}/delete', 'App\Http\Controllers\RepairationController@destroy');
 
     /** Computer Sets */
-    Route::get('/comsets', 'App\Http\Controllers\ComsetController@search');
+    Route::get('/comsets', 'App\Http\Controllers\ComsetController@getAll');
+    Route::get('/comsets/search', 'App\Http\Controllers\ComsetController@search');
     Route::get('/comsets/{id}', 'App\Http\Controllers\ComsetController@getById');
     Route::get('/comsets/init/form', 'App\Http\Controllers\ComsetController@getInitialFormData');
     Route::post('/comsets', 'App\Http\Controllers\ComsetController@store');

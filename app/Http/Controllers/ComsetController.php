@@ -18,21 +18,18 @@ class ComsetController extends Controller
     public function search(Request $req)
     {
         /** Get params from query string */
-        // $type = $req->get('type');
-        // $group = $req->get('group');
+        $name = $req->get('name');
+        $status = $req->get('status');
 
         $comsets = Comset::with('asset','asset.brand')
                     ->with('equipments','equipments.type','equipments.brand')
                     ->with('assets')
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
-                    // ->when(!empty($name), function($q) use ($name) {
-                    //     $q->where(function($query) use ($name) {
-                    //         $query->where('item_name', 'like', '%'.$name.'%');
-                    //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                    //     });
-                    // })
+                    ->when(!empty($name), function($q) use ($name) {
+                        $q->where('name', 'like', '%'.$name.'%');
+                    })
+                    ->when(!empty($status), function($q) use ($status) {
+                        $q->where('status', $status);
+                    })
                     ->orderBy('name')
                     ->paginate(10);
 
@@ -51,7 +48,7 @@ class ComsetController extends Controller
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
-                    ->paginate(10);
+                    ->get();
 
         return $comsets;
     }
