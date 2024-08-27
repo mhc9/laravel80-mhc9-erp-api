@@ -91,6 +91,7 @@ class ComsetController extends Controller
                         $newEquipment->capacity             = $equipment['capacity'];
                         $newEquipment->description          = $equipment['description'];
                         $newEquipment->price                = $equipment['price'];
+                        $newEquipment->status               = $equipment['status'];
                         $newEquipment->save();
                     }
                 }
@@ -147,6 +148,7 @@ class ComsetController extends Controller
                             $newEquipment->capacity             = $equipment['capacity'];
                             $newEquipment->description          = $equipment['description'];
                             $newEquipment->price                = $equipment['price'];
+                            $newEquipment->status               = $equipment['status'];
                             $newEquipment->save();
                         } else {
                             /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property updated ให้ทำการแก้ไขรายการ */
@@ -158,6 +160,7 @@ class ComsetController extends Controller
                                 $newEquipment->capacity             = $equipment['capacity'];
                                 $newEquipment->description          = $equipment['description'];
                                 $newEquipment->price                = $equipment['price'];
+                                $newEquipment->status               = $equipment['status'];
                                 $newEquipment->save();
                             }
 
