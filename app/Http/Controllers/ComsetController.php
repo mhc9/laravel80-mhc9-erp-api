@@ -138,7 +138,7 @@ class ComsetController extends Controller
                 /** ================== Equipments ================== */
                 if ($req->exists('equipments') && count($req['equipments']) > 0) {
                     foreach ($req['equipments'] as $equipment) {
-                         /** ถ้า element ของ equipments ไม่มี property comset_id (รายการใหม่) */
+                        /** ถ้า element ของ equipments ไม่มี property comset_id (รายการใหม่) */
                         if (!array_key_exists('comset_id', $equipment)) {
                             $newEquipment = new ComsetEquipment();
                             $newEquipment->comset_id            = $comset->id;
