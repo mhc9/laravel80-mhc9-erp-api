@@ -277,4 +277,38 @@ class LoanContractController extends Controller
             ];
         }
     }
+
+    public function cancel(Request $req, $id)
+    {
+        try {
+            $contract = LoanContract::find($id);
+            $contract->deposited_date   = null;
+            $contract->refund_date      = null;
+            $contract->status           = 1;
+
+            if($contract->save()) {
+                /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=3 (3=อนุมัติแล้ว) */
+                Loan::find($contract->loan_id)->update(['status' => 3]);
+
+                return [
+                    'status'    => 1,
+                    'message'   => 'Cancelation successfully!!',
+                    'contract'  => $contract->load('details','details.expense','details.loanDetail','loan.department',
+                                        'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
+                                        'loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan',
+                                        'loan.courses','loan.courses.place','loan.courses.place.changwat')
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
 }
