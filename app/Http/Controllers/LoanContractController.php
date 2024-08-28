@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use Phattarachai\LineNotify\Facade\Line;
 use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
@@ -255,6 +256,9 @@ class LoanContractController extends Controller
             if($contract->save()) {
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=4 (4=เงินเข้าแล้ว) */
                 Loan::find($contract->loan_id)->update(['status' => 4]);
+
+                /** แจ้งเตือนไปในไลน์กลุ่ม "แจ้งเตือน09" */
+                Line::send('เงินยืมราชการเลขที่สัญญา ' . $contract->contract_no. ' จะเข้าบัญชีในวันที่ '.convDbDateToThDate($contract->deposited_date).' แจ้งเตือน ณ วันที่ '.convDbDateToThDate(date('Y-m-d')).' เวลา '.date('H:i').'น.');
 
                 return [
                     'status'    => 1,
