@@ -346,6 +346,7 @@ class LoanController extends Controller
         /** ================================== HEADER ================================== */
         
         /** ================================== CONTENT ================================== */
+        /** =================== รายละเอียดโครงการ =================== */
         $word->setValue('projectNo', $loan->project_no);
         $word->setValue('projectDate', convDbDateToLongThDate($loan->project_date));
         $word->setValue('projectName', $loan->project_name);
@@ -400,22 +401,38 @@ class LoanController extends Controller
             $word->cloneBlock('notHaveCourses', 1, true, true);
         } else {
             /** คิดแยกวันที่ */
-            $table = new Table([
+            /** Style ของตาราง */
+            $tableStyle = [
                 'borderSize' => 'none',
                 'width' => 93 * 50,
                 'indent' => new IndentWidth(700),
                 'unit' => TblWidth::PERCENT, //TWIP | PERCENT
-            ]);
+            ];
+            $couseFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 16, 'bold' => true];
+            $itemFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 14];
+
+            $table = new Table($tableStyle);
 
             foreach($loan->courses as $course => $cs) {
+                /** เพิ่มแถวในตาราง */
                 $table->addRow();
-                $table->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name);
+                $table
+                ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+                ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle);
+                
                 $items = array_filter($loan->details->toArray(), function($detail) use ($cs) { return $detail['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
-
                 foreach($items as $item => $detail) {
+                    /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
+                    $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+
+                    /** เพิ่มแถวในตาราง */
                     $table->addRow();
-                    $table->addCell(50 * 50, [])->addText('- ' . $detail['expense']['name'] . ' ' . $detail['description']);
-                    $table->addCell(50 * 50)->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท');
+                    $table
+                        ->addCell(50 * 50)
+                        ->addText('- ' . $detail['expense']['name'] . ' ' . $description, $itemFontStyle);
+                    $table
+                        ->addCell(50 * 50)
+                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle);
                 }
             }
 
@@ -427,8 +444,11 @@ class LoanController extends Controller
         $word->setValue('itemNetTotal', number_format($loan->item_total));
         $word->setValue('itemNetTotalText', baht_text($loan->item_total));
 
+        /** =================== รวมทั้งสิ้น =================== */
         $word->setValue('netTotal', number_format($loan->net_total));
         $word->setValue('netTotalText', baht_text($loan->net_total));
+
+        /** =================== ผู้ขอ =================== */
         $word->setValue('requester', $loan->employee->prefix->name.$loan->employee->firstname . ' ' . $loan->employee->lastname);
         $word->setValue('requesterPosition', $loan->employee->position->name . ($loan->employee->level ? $loan->employee->level->name : ''));
         /** ================================== CONTENT ================================== */

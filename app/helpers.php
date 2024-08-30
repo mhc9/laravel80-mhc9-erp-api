@@ -345,3 +345,20 @@ function array_every(array $array, callable $fn) {
     }
     return true;
 }
+
+function replaceExpensePattern($pattern = '', $replacement = '') {
+    list($p_amount, $p_time, $p_price) = explode('X', $pattern);
+    list($r_amount, $r_time, $r_price) = explode('*', $replacement);
+
+    return str_replace('...', $r_amount, $p_amount) . 'X' . str_replace('...', $r_time, $p_time) . 'X' . str_replace('...', $r_price, $p_price);
+}
+
+function replaceExpensePatternFromDesc($pattern = '', $replacement = '') {
+    if (strpos($replacement, '+') != false) {
+        $groups = array_map(function($group) use ($pattern) { return replaceExpensePattern($pattern, $group); }, explode('+', $replacement));
+
+        return $groups.join('+');
+    } else {
+        return replaceExpensePattern($pattern, $replacement);
+    }
+}
