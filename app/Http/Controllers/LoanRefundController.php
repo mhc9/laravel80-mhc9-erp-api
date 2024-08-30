@@ -238,7 +238,6 @@ class LoanRefundController extends Controller
             $refund->approved_date  = $req['approved_date'];
             $refund->bill_no        = $req['bill_no'];
             $refund->bill_date      = $req['bill_date'];
-            $refund->receipt_no     = $req['receipt_no'];
             $refund->status         = 'Y';
 
             if($refund->save()) {
@@ -253,6 +252,44 @@ class LoanRefundController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Approval successfully!!',
+                    'refund'    => $refund->load('details','details.contractDetail.expense','contract','contract.loan',
+                                                'contract.loan.budgets','contract.loan.budgets.budget','contract.loan.department',
+                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position',
+                                                'contract.loan.employee.level')
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function receipt(Request $req, $id)
+    {
+        try {
+            $refund = LoanRefund::find($id);
+            $refund->receipt_no     = $req['receipt_no'];
+            $refund->receipt_date   = $req['receipt_date'];
+
+            if($refund->save()) {
+                /** อัตเดต status ของตาราง loan_contracts เป็น 4=เคลียร์แล้ว **/
+                // $contract = LoanContract::find($req['contract_id']);
+                // $contract->status = 4;
+                // $contract->save();
+
+                /** อัตเดต status ของตาราง loans เป็น 5=เคลียร์แล้ว **/
+                // Loan::find($contract->loan_id)->update(['status' => 5]);
+
+                return [
+                    'status'    => 1,
+                    'message'   => 'Updating successfully!!',
                     'refund'    => $refund->load('details','details.contractDetail.expense','contract','contract.loan',
                                                 'contract.loan.budgets','contract.loan.budgets.budget','contract.loan.department',
                                                 'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position',
