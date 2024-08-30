@@ -336,7 +336,7 @@ class LoanController extends Controller
                             ->with('courses','courses.place','courses.place.changwat')
                             ->find($id);
 
-        $template = 'loan_form.docx';
+        $template = 'form.docx';
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
 
         /** ================================== HEADER ================================== */
@@ -349,7 +349,13 @@ class LoanController extends Controller
         /** =================== รายละเอียดโครงการ =================== */
         $word->setValue('projectNo', $loan->project_no);
         $word->setValue('projectDate', convDbDateToLongThDate($loan->project_date));
-        $word->setValue('projectName', $loan->project_name);
+
+        if ($loan->loan_type_id == 1) {
+            $word->setValue('projectName', 'กำหนดจัด' . $loan->project_name);
+        } else {
+            $word->setValue('projectName', 'เรื่อง ขออนุมัติเดินทางไปราชการเพื่อเข้าร่วม' . $loan->project_name);
+        }
+
         $word->setValue('projectSDate', convDbDateToLongThDate($loan->project_sdate));
         $word->setValue('projectEDate', convDbDateToLongThDate($loan->project_edate));
         $word->setValue('place', $loan->courses[0]->place->name . ' จังหวัด' .$loan->courses[0]->place->changwat->name);
@@ -370,7 +376,7 @@ class LoanController extends Controller
         $word->cloneRow('order', sizeof($orders));
         foreach($orders as $order => $detail) {
             $word->setValue('no#' . $orderNo, $orderNo);
-            $word->setValue('order#' . $orderNo, $detail['expense']['name'] . ' ' . $detail['description']);
+            $word->setValue('order#' . $orderNo, '- ' . $detail['expense']['name'] . ' ' . $detail['description']);
             $word->setValue('orderTotal#' . $orderNo, number_format($detail['total']));
             $orderNo++;
         }
@@ -394,7 +400,7 @@ class LoanController extends Controller
                 $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
 
                 $word->setValue('no#' . $itemNo, $itemNo);
-                $word->setValue('item#' . $itemNo, $detail['expense']['name'] . ' ' . $description);
+                $word->setValue('item#' . $itemNo, '- ' . $detail['expense']['name'] . ' ' . $description);
                 $word->setValue('itemTotal#' . $itemNo, number_format($detail['total']));
                 $itemNo++;
             }
@@ -446,6 +452,12 @@ class LoanController extends Controller
         $word->setValue('itemNetTotal', number_format($loan->item_total));
         $word->setValue('itemNetTotalText', baht_text($loan->item_total));
 
+        if (sizeof($loan->details) == 1) {
+            $word->cloneBlock('isProject', 0, true, true);
+        } else {
+            $word->cloneBlock('isProject', 1, true, true);
+        }
+
         /** =================== รวมทั้งสิ้น =================== */
         $word->setValue('netTotal', number_format($loan->net_total));
         $word->setValue('netTotalText', baht_text($loan->net_total));
@@ -453,6 +465,151 @@ class LoanController extends Controller
         /** =================== ผู้ขอ =================== */
         $word->setValue('requester', $loan->employee->prefix->name.$loan->employee->firstname . ' ' . $loan->employee->lastname);
         $word->setValue('requesterPosition', $loan->employee->position->name . ($loan->employee->level ? $loan->employee->level->name : ''));
+        /** ================================== CONTENT ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
+    }
+    
+    public function getContract(Request $req, $id)
+    {
+        $loan = Loan::with('details','details.expense','department')
+                            ->with('employee','employee.prefix','employee.position','employee.level')
+                            ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
+                            ->with('courses','courses.place','courses.place.changwat')
+                            ->find($id);
+
+        $template = 'contract.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('requester', $loan->employee->prefix->name.$loan->employee->firstname . ' ' . $loan->employee->lastname);
+        $word->setValue('requesterPosition', $loan->employee->position->name . ($loan->employee->level ? $loan->employee->level->name : ''));
+        $word->setValue('department', $loan->department->name);
+        $word->setValue('moneyType1', $loan->money_type_id == 1 ? '/' : '');
+        $word->setValue('moneyType2', $loan->money_type_id == 2 ? '/' : '');
+        $word->setValue('moneyType3', $loan->money_type_id == 3 ? '/' : '');
+        /** ================================== HEADER ================================== */
+        
+        /** ================================== CONTENT ================================== */
+        /** =================== รายละเอียดโครงการ =================== */
+        if ($loan->loan_type_id == 1) {
+            $word->setValue('projectName', 'เพื่อเป็นค่าใช้จ่ายใน' . $loan->project_name);
+        } else {
+            $word->setValue('projectName', 'ตามหนังสือ ' . $loan->department->name . ' ที่ ' . $loan->doc_no . ' ลงวันที่ ' . convDbDateToLongThDate($loan->doc_date) . 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $loan->project_name);
+        }
+
+        $word->setValue('projectSDate', convDbDateToLongThDate($loan->project_sdate));
+        $word->setValue('projectEDate', convDbDateToLongThDate($loan->project_edate));
+        $word->setValue('place', $loan->courses[0]->place->name . ' จังหวัด' .$loan->courses[0]->place->changwat->name);
+
+        /** =================== แผนงาน =================== */
+        $budgets = '';
+        foreach($loan->budgets as $data) {
+            $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
+        }
+
+        $word->setValue('budget', $budgets);
+        $word->setValue('budgetTotal', number_format($loan->budget_total));
+        $word->setValue('budgetTotalText', baht_text($loan->budget_total));
+
+        /** =================== รายการจัดซือจัดจ้าง =================== */
+        $orders = array_filter($loan->details->toArray(), function($detail) { return $detail['expense_group'] == 2; });
+        $orderNo = 1;
+        $word->cloneRow('order', sizeof($orders));
+        foreach($orders as $order => $detail) {
+            $word->setValue('no#' . $orderNo, $orderNo);
+            $word->setValue('order#' . $orderNo, '- ' . $detail['expense']['name'] . ' ' . $detail['description']);
+            $word->setValue('orderTotal#' . $orderNo, number_format($detail['total']));
+            $orderNo++;
+        }
+
+        $word->setValue('orderNetTotal', number_format($loan->order_total));
+        $word->setValue('orderNetTotalText', baht_text($loan->order_total));
+
+        if (!array_any($loan->details->toArray(), function($detail) { return $detail['expense_group'] == 2; })) {
+            $word->cloneBlock('haveOrders', 0, true, true);
+        } else {
+            $word->cloneBlock('haveOrders', 1, true, true);
+        }
+
+        /** =================== รายการค่าใช้จ่าย =================== */
+        if ($loan->expense_calc == 1) {
+            /** คิดรวม */
+            $items = array_filter($loan->details->toArray(), function($detail) { return $detail['expense_group'] == 1; });
+            $itemNo = 1;
+            $word->cloneRow('item', sizeof($items));
+            foreach($items as $item => $detail) {
+                $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+
+                $word->setValue('no#' . $itemNo, $itemNo);
+                $word->setValue('item#' . $itemNo, '- ' . $detail['expense']['name'] . ' ' . $description);
+                $word->setValue('itemTotal#' . $itemNo, number_format($detail['total']));
+                $itemNo++;
+            }
+
+            $word->cloneBlock('haveCourses', 0, true, true);
+            $word->cloneBlock('notHaveCourses', 1, true, true);
+        } else {
+            /** คิดแยกวันที่ */
+            /** Style ของตาราง */
+            $tableStyle = [
+                'borderSize' => 'none',
+                'width' => 93 * 50,
+                'indent' => new IndentWidth(700),
+                'unit' => TblWidth::PERCENT, //TWIP | PERCENT
+            ];
+            $couseFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 12, 'bold' => true];
+            $itemFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 12];
+
+            $table = new Table($tableStyle);
+
+            foreach($loan->courses as $course => $cs) {
+                /** เพิ่มแถวในตาราง */
+                $table->addRow();
+                $table
+                ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+                ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle, ['spaceAfter' => 0]);
+                
+                $items = array_filter($loan->details->toArray(), function($detail) use ($cs) { return $detail['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
+                foreach($items as $item => $detail) {
+                    /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
+                    $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+
+                    /** เพิ่มแถวในตาราง */
+                    $table->addRow();
+                    $table
+                        ->addCell(50 * 50)
+                        ->addText('- ' . $detail['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
+                    $table
+                        ->addCell(50 * 50)
+                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle, ['spaceAfter' => 0]);
+                }
+            }
+
+            $word->setComplexBlock('items', $table);
+            $word->cloneBlock('haveCourses', 1, true, true);
+            $word->cloneBlock('notHaveCourses', 0, true, true);
+        }
+
+        $word->setValue('itemNetTotal', number_format($loan->item_total));
+        $word->setValue('itemNetTotalText', baht_text($loan->item_total));
+
+        /** =================== รวมทั้งสิ้น =================== */
+        $word->setValue('netTotal', number_format($loan->net_total));
+        $word->setValue('netTotalText', baht_text($loan->net_total));
+
+        /** ===================  =================== */
+        $word->setValue('refundDays', $loan->loan_type_id == 1 ? 30 : 15);
+        $word->setValue('refundCondition', $loan->loan_type_id == 1 ? 'ได้รับเงิน' : 'เดินทางกลับจากราชการ');
+
+        if (sizeof($loan->details) == 1) {
+            $word->cloneBlock('isProject', 0, true, true);
+        } else {
+            $word->cloneBlock('isProject', 1, true, true);
+        }
         /** ================================== CONTENT ================================== */
 
         $pathToSave = public_path('temp/' . $template);
