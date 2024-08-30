@@ -32,6 +32,7 @@ Route::get('/requisitions/{id}/notice', 'App\Http\Controllers\RequisitionControl
 
 Route::get('/loans/{id}/form', [App\Http\Controllers\LoanController::class, 'getForm']);
 Route::get('/loans/{id}/contract', [App\Http\Controllers\LoanController::class, 'getContract']);
+Route::get('/loan-refunds/{id}/form', [App\Http\Controllers\LoanRefundController::class, 'getForm']);
 
 /** PWM OT */
 Route::get('/invitations/report', [App\Http\Controllers\InvitationController::class, 'getReport']);

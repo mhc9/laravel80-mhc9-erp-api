@@ -87,9 +87,9 @@ class LoanRefundController extends Controller
     public function getById($id)
     {
         return LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
-                ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
-                ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                ->find($id);
+                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
+                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                    ->find($id);
     }
 
     public function getInitialFormData()
@@ -307,5 +307,158 @@ class LoanRefundController extends Controller
                 'message'   => $ex->getMessage()
             ];
         }
+    }
+
+    public function getForm(Request $req, $id)
+    {
+        $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
+                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
+                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                    ->find($id);
+
+        $template = 'refund.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('department', $refund->contract->loan->department->name);
+        $word->setValue('docNo', $refund->doc_no);
+        $word->setValue('docDate', convDbDateToLongThDate($refund->doc_date));
+        /** ================================== HEADER ================================== */
+        
+        /** ================================== CONTENT ================================== */
+        /** =================== รายละเอียดโครงการ =================== */
+        $word->setValue('loanDocNo', $refund->contract->loan->doc_no);
+        $word->setValue('loanDocDate', convDbDateToLongThDate($refund->contract->loan->doc_date));
+
+        if ($refund->contract->loan->loan_type_id == 1) {
+            $word->setValue('objective', 'ได้ขออนุมัติยืมเงินราชการในการจัด' . $refund->contract->loan->project_name);
+        } else {
+            $word->setValue('objective', 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $refund->contract->loan->project_name);
+        }
+
+        $word->setValue('projectSDate', convDbDateToLongThDate($refund->contract->loan->project_sdate));
+        $word->setValue('projectEDate', convDbDateToLongThDate($refund->contract->loan->project_edate));
+        $word->setValue('place', $refund->contract->loan->courses[0]->place->name . ' จังหวัด' .$refund->contract->loan->courses[0]->place->changwat->name);
+
+        /** =================== แผนงาน =================== */
+        $budgets = '';
+        foreach($refund->contract->loan->budgets as $data) {
+            $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
+        }
+
+        $word->setValue('budget', $budgets);
+        $word->setValue('budgetTotal', number_format($refund->contract->loan->budget_total));
+        $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
+        $word->setValue('completed', $refund->contract->loan->loan_type_id == 1 ? 'ได้ดำเนินการจัดโครงการฯ เสร็จสิ้นแล้ว ' : '');
+
+        /** =================== รายการจัดซือจัดจ้าง =================== */
+        $orders = array_filter($refund->details->toArray(), function($detail) { return $detail['contract_detail']['expense_group'] == 2; });
+        $orderNo = 1;
+        $word->cloneRow('order', sizeof($orders));
+        foreach($orders as $order => $detail) {
+            $word->setValue('no#' . $orderNo, $orderNo);
+            $word->setValue('order#' . $orderNo, '- ' . $detail['contract_detail']['expense']['name'] . ' ' . $detail['description']);
+            $word->setValue('orderTotal#' . $orderNo, number_format($detail['total']));
+            $orderNo++;
+        }
+
+        $word->setValue('orderNetTotal', number_format($refund->order_total));
+        $word->setValue('orderNetTotalText', baht_text($refund->order_total));
+
+        if (!array_any($refund->details->toArray(), function($detail) { return $detail['contract_detail']['expense_group'] == 2; })) {
+            $word->cloneBlock('haveOrders', 0, true, true);
+        } else {
+            $word->cloneBlock('haveOrders', 1, true, true);
+        }
+
+        /** =================== รายการค่าใช้จ่าย =================== */
+        if ($refund->contract->loan->expense_calc == 1) {
+            /** คิดรวม */
+            $items = array_filter($refund->details->toArray(), function($detail) { return $detail['contract_detail']['expense_group'] == 1; });
+            $itemNo = 1;
+            $word->cloneRow('item', sizeof($items));
+            foreach($items as $item => $detail) {
+                $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description']) : '';
+
+                $word->setValue('no#' . $itemNo, $itemNo);
+                $word->setValue('item#' . $itemNo, '- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description);
+                $word->setValue('itemTotal#' . $itemNo, number_format($detail['total']));
+                $itemNo++;
+            }
+
+            $word->cloneBlock('haveCourses', 0, true, true);
+            $word->cloneBlock('notHaveCourses', 1, true, true);
+        } else {
+            /** คิดแยกวันที่ */
+            /** Style ของตาราง */
+            $tableStyle = [
+                'borderSize' => 'none',
+                'width' => 93 * 50,
+                'indent' => new IndentWidth(700),
+                'unit' => TblWidth::PERCENT, //TWIP | PERCENT
+            ];
+            $couseFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 16, 'bold' => true];
+            $itemFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 14];
+
+            $table = new Table($tableStyle);
+
+            foreach($refund->contract->loan->courses as $course => $cs) {
+                /** เพิ่มแถวในตาราง */
+                $table->addRow();
+                $table
+                ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+                ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle);
+                
+                $items = array_filter($refund->details->toArray(), function($detail) use ($cs) { return $detail['contract_detail']['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
+                foreach($items as $item => $detail) {
+                    /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
+                    $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description']) : '';
+
+                    /** เพิ่มแถวในตาราง */
+                    $table->addRow();
+                    $table
+                        ->addCell(50 * 50)
+                        ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description, $itemFontStyle);
+                    $table
+                        ->addCell(50 * 50)
+                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle);
+                }
+            }
+
+            $word->setComplexBlock('items', $table);
+            $word->cloneBlock('haveCourses', 1, true, true);
+            $word->cloneBlock('notHaveCourses', 0, true, true);
+        }
+
+        $word->setValue('itemNetTotal', number_format($refund->item_total));
+        $word->setValue('itemNetTotalText', baht_text($refund->item_total));
+
+        if (sizeof($refund->details) == 1) {
+            $word->cloneBlock('isProject', 0, true, true);
+        } else {
+            $word->cloneBlock('isProject', 1, true, true);
+        }
+
+        /** =================== รวมทั้งสิ้น =================== */
+        $word->setValue('netTotal', number_format($refund->net_total));
+        $word->setValue('netTotalText', baht_text($refund->net_total));
+
+        if ($refund->refund_type_id == 1) {
+            $word->setValue('refundType', 'และคืนเงินยืม จำนวนเงิน ' . number_format($refund->balance) . ' (' . baht_text($refund->balance) . ')');
+        } else if ($refund->refund_type_id == 2) {
+            $word->setValue('refundType', 'และเบิกเงินเพิ่ม จำนวนเงิน ' . number_format($refund->balance) . ' (' . baht_text($refund->balance) . ')');
+        } else {
+            $word->setValue('refundType', '');
+        }
+
+        /** =================== ผู้ขอ =================== */
+        $word->setValue('requester', $refund->contract->loan->employee->prefix->name.$refund->contract->loan->employee->firstname . ' ' . $refund->contract->loan->employee->lastname);
+        $word->setValue('requesterPosition', $refund->contract->loan->employee->position->name . ($refund->contract->loan->employee->level ? $refund->contract->loan->employee->level->name : ''));
+        /** ================================== CONTENT ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
     }
 }

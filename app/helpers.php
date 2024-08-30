@@ -357,7 +357,7 @@ function replaceExpensePatternFromDesc($pattern = '', $replacement = '') {
     if (strpos($replacement, '+') != false) {
         $groups = array_map(function($group) use ($pattern) { return replaceExpensePattern($pattern, $group); }, explode('+', $replacement));
 
-        return $groups.join('+');
+        return join('+', $groups);
     } else {
         return replaceExpensePattern($pattern, $replacement);
     }

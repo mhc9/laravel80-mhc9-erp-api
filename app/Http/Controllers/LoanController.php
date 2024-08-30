@@ -472,7 +472,7 @@ class LoanController extends Controller
 
         return response()->download($pathToSave);
     }
-    
+
     public function getContract(Request $req, $id)
     {
         $loan = Loan::with('details','details.expense','department')
