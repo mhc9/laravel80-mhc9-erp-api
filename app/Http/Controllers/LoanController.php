@@ -352,7 +352,7 @@ class LoanController extends Controller
         $word->setValue('projectName', $loan->project_name);
         $word->setValue('projectSDate', convDbDateToLongThDate($loan->project_sdate));
         $word->setValue('projectEDate', convDbDateToLongThDate($loan->project_edate));
-        $word->setValue('place', $loan->courses[0]->place->name . ' จ.' .$loan->courses[0]->place->changwat->name);
+        $word->setValue('place', $loan->courses[0]->place->name . ' จังหวัด' .$loan->courses[0]->place->changwat->name);
 
         /** =================== แผนงาน =================== */
         $budgets = '';
@@ -391,8 +391,10 @@ class LoanController extends Controller
             $itemNo = 1;
             $word->cloneRow('item', sizeof($items));
             foreach($items as $item => $detail) {
+                $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+
                 $word->setValue('no#' . $itemNo, $itemNo);
-                $word->setValue('item#' . $itemNo, $detail['expense']['name'] . ' ' . $detail['description']);
+                $word->setValue('item#' . $itemNo, $detail['expense']['name'] . ' ' . $description);
                 $word->setValue('itemTotal#' . $itemNo, number_format($detail['total']));
                 $itemNo++;
             }
