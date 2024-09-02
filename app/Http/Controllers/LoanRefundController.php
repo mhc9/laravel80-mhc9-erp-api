@@ -461,4 +461,65 @@ class LoanRefundController extends Controller
 
         return response()->download($pathToSave);
     }
+
+    public function getOver20(Request $req, $id)
+    {
+        $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
+                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
+                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                    ->find($id);
+
+        $template = 'over20.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('department', $refund->contract->loan->department->name);
+        $word->setValue('docNo', $refund->doc_no);
+        $word->setValue('docDate', convDbDateToLongThDate($refund->doc_date));
+        /** ================================== HEADER ================================== */
+        
+        /** ================================== CONTENT ================================== */
+        /** =================== รายละเอียดโครงการ =================== */
+        $word->setValue('loanDocNo', $refund->contract->loan->doc_no);
+        $word->setValue('loanDocDate', convDbDateToLongThDate($refund->contract->loan->doc_date));
+
+        if ($refund->contract->loan->loan_type_id == 1) {
+            $word->setValue('objective', 'ได้ขออนุมัติยืมเงินราชการในการจัด' . $refund->contract->loan->project_name);
+        } else {
+            $word->setValue('objective', 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $refund->contract->loan->project_name);
+        }
+
+        $word->setValue('projectSDate', convDbDateToLongThDate($refund->contract->loan->project_sdate));
+        $word->setValue('projectEDate', convDbDateToLongThDate($refund->contract->loan->project_edate));
+        $word->setValue('place', $refund->contract->loan->courses[0]->place->name . ' จังหวัด' .$refund->contract->loan->courses[0]->place->changwat->name);
+
+        /** =================== แผนงาน =================== */
+        $budgets = '';
+        foreach($refund->contract->loan->budgets as $data) {
+            $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
+        }
+
+        $word->setValue('budget', $budgets);
+        $word->setValue('budgetTotal', number_format($refund->contract->loan->budget_total));
+        $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
+        $word->setValue('over20Reason', $refund->over20_reason);
+
+        /** =================== รวมทั้งสิ้น =================== */
+        $word->setValue('netTotal', number_format($refund->net_total));
+        $word->setValue('netTotalText', baht_text($refund->net_total));
+
+        /** =================== ยอดคืน =================== */
+        $word->setValue('balance', number_format($refund->balance));
+        $word->setValue('balanceText', baht_text($refund->balance));
+
+        /** =================== ผู้ขอ =================== */
+        $word->setValue('requester', $refund->contract->loan->employee->prefix->name.$refund->contract->loan->employee->firstname . ' ' . $refund->contract->loan->employee->lastname);
+        $word->setValue('requesterPosition', $refund->contract->loan->employee->position->name . ($refund->contract->loan->employee->level ? $refund->contract->loan->employee->level->name : ''));
+        /** ================================== CONTENT ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
+    }
 }

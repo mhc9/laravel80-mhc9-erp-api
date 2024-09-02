@@ -40,6 +40,7 @@ Route::get('/loan-contracts/export', [App\Http\Controllers\LoanContractControlle
 
 /** LoanRefund */
 Route::get('/loan-refunds/{id}/form', [App\Http\Controllers\LoanRefundController::class, 'getForm']);
+Route::get('/loan-refunds/{id}/over20', [App\Http\Controllers\LoanRefundController::class, 'getOver20']);
 
 /** WPM OT */
 Route::get('/invitations/report', [App\Http\Controllers\InvitationController::class, 'getReport']);
