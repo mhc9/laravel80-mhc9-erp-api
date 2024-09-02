@@ -259,16 +259,22 @@ class LoanContractController extends Controller
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=4 (4=เงินเข้าแล้ว) */
                 Loan::find($contract->loan_id)->update(['status' => 4]);
 
+                $contract = $contract->load('details','details.expense','details.loanDetail','loan.department',
+                                                'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
+                                                'loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan',
+                                                'loan.courses','loan.courses.place','loan.courses.place.changwat');
+
                 /** แจ้งเตือนไปในไลน์กลุ่ม "แจ้งเตือน09" */
-                Line::send('เงินยืมราชการเลขที่สัญญา ' . $contract->contract_no. ' จะเข้าบัญชีในวันที่ '.convDbDateToThDate($contract->deposited_date).' แจ้งเตือน ณ วันที่ '.convDbDateToThDate(date('Y-m-d')).' เวลา '.date('H:i').'น.');
+                $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
+                $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
+                $lineMsg .= ' จะเข้าบัญชีในวันที่ ' .convDbDateToThDate($contract->deposited_date);
+                $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
+                Line::send($lineMsg);
 
                 return [
                     'status'    => 1,
                     'message'   => 'Depositing successfully!!',
-                    'contract'  => $contract->load('details','details.expense','details.loanDetail','loan.department',
-                                        'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
-                                        'loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan',
-                                        'loan.courses','loan.courses.place','loan.courses.place.changwat')
+                    'contract'  => $contract
                 ];
             } else {
                 return [
