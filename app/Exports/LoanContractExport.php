@@ -2,15 +2,24 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use App\Models\LoanContract;
 
-class LoanContractExport implements FromCollection
+class LoanContractExport implements FromView
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection()
+    public function view(): View
     {
-        //
+        $contracts = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
+                                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                                ->orderBy('approved_date')
+                                ->orderBy('contract_no')
+                                ->get();
+
+        return view('exports.loans.contract-report', [
+            'contracts' => $contracts
+        ]);
     }
 }

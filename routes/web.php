@@ -23,6 +23,7 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+/** Requisition */
 Route::get('/requisitions/{id}/print-pr', 'App\Http\Controllers\RequisitionController@printPR');
 Route::get('/requisitions/{id}/document', 'App\Http\Controllers\RequisitionController@getDocument');
 Route::get('/requisitions/{id}/report', 'App\Http\Controllers\RequisitionController@getReport');
@@ -30,14 +31,20 @@ Route::get('/requisitions/{id}/directive', 'App\Http\Controllers\RequisitionCont
 Route::get('/requisitions/{id}/consider', 'App\Http\Controllers\RequisitionController@getConsider');
 Route::get('/requisitions/{id}/notice', 'App\Http\Controllers\RequisitionController@getNotice');
 
+/** Loan */
 Route::get('/loans/{id}/form', [App\Http\Controllers\LoanController::class, 'getForm']);
 Route::get('/loans/{id}/contract', [App\Http\Controllers\LoanController::class, 'getContract']);
+
+/** Loan Contract */
+Route::get('/loan-contracts/export', [App\Http\Controllers\LoanContractController::class, 'export']);
+
+/** LoanRefund */
 Route::get('/loan-refunds/{id}/form', [App\Http\Controllers\LoanRefundController::class, 'getForm']);
 
-/** PWM OT */
+/** WPM OT */
 Route::get('/invitations/report', [App\Http\Controllers\InvitationController::class, 'getReport']);
 
-/** PWM Car */
+/** WPM Car */
 Route::get('/cars', [App\Http\Controllers\CarController::class, 'index']);
 
 Route::get('/redirect', function (Request $request) {

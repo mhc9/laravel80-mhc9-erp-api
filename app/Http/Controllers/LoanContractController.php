@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use Phattarachai\LineNotify\Facade\Line;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\LoanContractExport;
 use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
@@ -314,5 +316,10 @@ class LoanContractController extends Controller
                 'message'   => $ex->getMessage()
             ];
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new LoanContractExport, 'contract.xlsx');
     }
 }
