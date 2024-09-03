@@ -258,8 +258,8 @@ class LoanRefundController extends Controller
                     'message'   => 'Approval successfully!!',
                     'refund'    => $refund->load('details','details.contractDetail.expense','contract','contract.loan',
                                                 'contract.loan.budgets','contract.loan.budgets.budget','contract.loan.department',
-                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position',
-                                                'contract.loan.employee.level')
+                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.employee',
+                                                'contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                 ];
             } else {
                 return [
@@ -296,8 +296,8 @@ class LoanRefundController extends Controller
                     'message'   => 'Updating successfully!!',
                     'refund'    => $refund->load('details','details.contractDetail.expense','contract','contract.loan',
                                                 'contract.loan.budgets','contract.loan.budgets.budget','contract.loan.department',
-                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position',
-                                                'contract.loan.employee.level')
+                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.employee',
+                                                'contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                 ];
             } else {
                 return [
