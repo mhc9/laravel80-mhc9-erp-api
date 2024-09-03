@@ -37,9 +37,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only($this->username(), 'password');
-        // return response()->json($credentials);
 
-        if (!$token = auth()->attempt($credentials)) {
+        /**  Authentication user and set expired time to 1 day (by using setTTL(1440) method)*/
+        if (!$token = auth()->setTTL(1440)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
