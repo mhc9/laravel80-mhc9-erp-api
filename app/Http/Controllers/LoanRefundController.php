@@ -478,8 +478,8 @@ class LoanRefundController extends Controller
 
         /** ================================== HEADER ================================== */
         $word->setValue('department', $refund->contract->loan->department->name);
-        $word->setValue('docNo', $refund->doc_no);
-        $word->setValue('docDate', convDbDateToLongThDate($refund->doc_date));
+        $word->setValue('docNo', $refund->over20_no);
+        $word->setValue('docDate', convDbDateToLongThDate($refund->over20_date));
         /** ================================== HEADER ================================== */
         
         /** ================================== CONTENT ================================== */
