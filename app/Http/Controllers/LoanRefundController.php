@@ -126,6 +126,10 @@ class LoanRefundController extends Controller
             $refund->order_total    = currencyToNumber($req['order_total']);
             $refund->net_total      = currencyToNumber($req['net_total']);
             $refund->balance        = currencyToNumber($req['balance']);
+            $refund->is_over20      = $req['is_over20'];
+            $refund->over20_no      = $req['over20_no'];
+            $refund->over20_date    = $req['over20_date'];
+            $refund->over20_reason  = $req['over20_reason'];
             // $refund->remark         = $req['remark'];
             $refund->status         = 'N';
 
