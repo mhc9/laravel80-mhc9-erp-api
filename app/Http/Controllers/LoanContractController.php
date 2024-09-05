@@ -30,6 +30,9 @@ class LoanContractController extends Controller
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
                         ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
                         ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                        ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
+                            $q->where('employee_id', auth()->user()->employee_id);
+                        })
                         // ->when(!empty($plan), function($q) use ($plan) {
                         //     $q->whereHas('project.plan', function($sq) use ($plan) {
                         //         $sq->where('plan_id', $plan);
