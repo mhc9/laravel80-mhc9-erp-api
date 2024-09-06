@@ -135,6 +135,7 @@ class LoanContractController extends Controller
             $contract->contract_no      = $req['contract_no'];
             $contract->year             = $req['year'];
             $contract->loan_id          = $req['loan_id'];
+            $contract->employee_id      = $req['employee_id'];
             $contract->item_total       = currencyToNumber($req['item_total']);
             $contract->order_total      = currencyToNumber($req['order_total']);
             $contract->net_total        = currencyToNumber($req['net_total']);
@@ -188,6 +189,7 @@ class LoanContractController extends Controller
             $contract->contract_no      = $req['contract_no'];
             $contract->year             = $req['year'];
             $contract->loan_id          = $req['loan_id'];
+            $contract->employee_id      = $req['employee_id'];
             $contract->item_total       = currencyToNumber($req['item_total']);
             $contract->order_total      = currencyToNumber($req['order_total']);
             $contract->net_total        = currencyToNumber($req['net_total']);
