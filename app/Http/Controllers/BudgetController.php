@@ -43,6 +43,7 @@ class BudgetController extends Controller
                     // })
                     ->orderBy('budget_plans.plan_no')
                     ->orderBy('budget_projects.name')
+                    ->orderBy('budgets.budget_no')
                     ->paginate($limit);
 
         return $budgets;
