@@ -22,9 +22,8 @@ class LoanContractController extends Controller
     public function search(Request $req)
     {
         /** Get params from query string */
-        // $year       = $req->get('year');
-        // $plan       = $req->get('plan');
-        // $name       = $req->get('name');
+        $year       = $req->get('year');
+        $employee   = $req->get('employee');
         $status     = $req->get('status');
 
         $contracts = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
@@ -34,20 +33,15 @@ class LoanContractController extends Controller
                         ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
                             $q->where('employee_id', auth()->user()->employee_id);
                         })
-                        // ->when(!empty($plan), function($q) use ($plan) {
-                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                        //         $sq->where('plan_id', $plan);
-                        //     });
-                        // })
+                        ->when(!empty($employee), function($q) use ($employee) {
+                            $q->where('employee_id', $employee);
+                        })
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
+                        })
                         ->when(!empty($status), function($q) use ($status) {
                             $q->where('status', $status);
                         })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where(function($query) use ($name) {
-                        //         $query->where('item_name', 'like', '%'.$name.'%');
-                        //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                        //     });
-                        // })
                         ->orderBy('approved_date', 'DESC')
                         ->paginate(10);
 
