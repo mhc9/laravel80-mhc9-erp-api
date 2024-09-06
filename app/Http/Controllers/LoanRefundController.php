@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use PhpOffice\PhpWord\Element\Field;
+use PhpOffice\PhpWord\Element\Table;
+use PhpOffice\PhpWord\Element\TextRun;
+use PhpOffice\PhpWord\SimpleType\TblWidth;
+use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
 use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
@@ -319,8 +324,9 @@ class LoanRefundController extends Controller
     public function getForm(Request $req, $id)
     {
         $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
-                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
-                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place')
+                    ->with('contract.loan.courses.place.changwat','contract.loan.department','contract.loan.employee')
+                    ->with('contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                     ->find($id);
 
         $template = 'refund.docx';
@@ -416,7 +422,7 @@ class LoanRefundController extends Controller
                 ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
                 ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle);
                 
-                $items = array_filter($refund->details->toArray(), function($detail) use ($cs) { return $detail['contract_detail']['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
+                $items = array_filter($refund->details->toArray(), function($detail) use ($cs) { return $detail['contract_detail']['expense_group'] == 1 && $detail['contract_detail']['loan_detail']['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
                     /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
                     $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description']) : '';
