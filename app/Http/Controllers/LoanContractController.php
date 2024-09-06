@@ -14,6 +14,7 @@ use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
 use App\Models\Expense;
+use App\Models\Employee;
 use App\Models\Department;
 
 class LoanContractController extends Controller
@@ -119,11 +120,17 @@ class LoanContractController extends Controller
             ['id' => 3, 'name' => 'เงินยืมราชการ'],
         ];
 
+        $employees = Employee::with('prefix','position','level','memberOf')
+                        ->with('memberOf.duty','memberOf.department','memberOf.division')
+                        ->whereIn('status', [1,5,6])
+                        ->get();
+
         return [
             'departments'   => Department::all(),
             'expenses'      => Expense::all(),
             'loanTypes'     => $loanTypes,
             'moneyTypes'    => $moneyTypes,
+            'employees'     => $employees,
         ];
     }
 
