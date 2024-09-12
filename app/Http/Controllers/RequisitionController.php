@@ -38,6 +38,9 @@ class RequisitionController extends Controller
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
                             ->with('approvals','approvals.procuring','approvals.supplier')
+                            ->when((!auth()->user()->isAdmin() && !auth()->user()->isParcel()), function($q) {
+                                $q->where('requester_id', auth()->user()->employee_id);
+                            })
                             ->when(!empty($pr_no), function($q) use ($pr_no) {
                                 $q->where('pr_no', 'like', '%'.$pr_no.'%');
                             })

@@ -115,4 +115,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->permissions()->where('role_id', 4)->exists();
     }
+
+    public function isParcel()
+    {
+        return $this->permissions()->where('role_id', 3)->exists();
+    }
 }
