@@ -100,12 +100,22 @@ class LoanController extends Controller
             ['id' => 3, 'name' => 'เงินยืมราชการ'],
         ];
 
+        $statuses = [
+            ['id' => 1, 'name' => 'รอดำเนินการ'],
+            ['id' => 2, 'name' => 'ส่งสัญญาแล้ว'],
+            ['id' => 3, 'name' => 'อนุมัติแล้ว'],
+            ['id' => 4, 'name' => 'เงินเข้าแล้ว'],
+            ['id' => 5, 'name' => 'เคลียร์แล้ว'],
+            ['id' => 9, 'name' => 'ยกเลิก'],
+        ];
+
         return [
             'departments'   => Department::all(),
             'expenses'      => Expense::all(),
             'budgets'       => Budget::with('project','project.plan')->get(),
             'loanTypes'     => $loanTypes,
             'moneyTypes'    => $moneyTypes,
+            'statuses'      => $statuses
         ];
     }
 
