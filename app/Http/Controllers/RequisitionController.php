@@ -30,6 +30,7 @@ class RequisitionController extends Controller
         $division   = $req->get('division');
         $category   = $req->get('category');
         $status     = $req->get('status');
+        $year       = $req->get('year');
         $limit      = $req->get('limit') ? $req->get('limit') : 10;
 
         $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project','division')
@@ -52,6 +53,9 @@ class RequisitionController extends Controller
                             })
                             ->when(!empty($category), function($q) use ($category) {
                                 $q->where('category_id', $category);
+                            })
+                            ->when(!empty($year), function($q) use ($year) {
+                                $q->where('year', $year);
                             })
                             ->when($status != '', function($q) use ($status) {
                                 $q->where('status', $status);
@@ -99,10 +103,18 @@ class RequisitionController extends Controller
 
     public function getInitialFormData()
     {
-        $year = 2566;
+        $year           = 2566;
         $types          = AssetType::with('categories')->get();
         $categories     = AssetCategory::with('type')->get();
         $departments    = Department::with('divisions')->get();
+        $statuses       = [
+            ['id' => 1, 'name' => 'รอดำเนินการ'],
+            ['id' => 2, 'name' => 'แต่งตั้งผู้ตรวจรับ'],
+            ['id' => 3, 'name' => 'ประกาศผู้ชนะ'],
+            ['id' => 4, 'name' => 'จัดซื้อแล้ว'],
+            ['id' => 5, 'name' => 'ตรวจรับแล้ว'],
+            ['id' => 9, 'name' => 'ยกเลิก'],
+        ];
 
         return [
             'types'         => $types,
@@ -110,6 +122,7 @@ class RequisitionController extends Controller
             'departments'   => $departments,
             'divisions'     => Division::all(),
             'projects'      => Project::where('year', $year)->get(),
+            'statuses'      => $statuses,
         ];
     }
 
