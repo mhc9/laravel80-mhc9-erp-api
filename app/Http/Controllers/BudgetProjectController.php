@@ -23,10 +23,10 @@ class BudgetProjectController extends Controller
         $activities = BudgetProject::select('budget_projects.*')->with('plan')
                         ->leftJoin('budget_plans', 'budget_projects.plan_id', '=', 'budget_plans.id')
                         ->when(!empty($plan), function($q) use ($plan) {
-                            $sq->where('plan_id', $plan);
+                            $q->where('plan_id', $plan);
                         })
                         ->when(!empty($name), function($q) use ($name) {
-                            $query->where('name', 'like', '%'.$name.'%');
+                            $q->where('name', 'like', '%'.$name.'%');
                         })
                         ->when($status != '', function($q) use ($status) {
                             $q->where('status', $status);
@@ -77,16 +77,17 @@ class BudgetProjectController extends Controller
         try {
             $project = new BudgetProject();
             $project->name      = $req['name'];
-            $project->plan_id   = $req['plan_id'];
-            $project->project_type_id = $req['project_type_id'];
             $project->year      = $req['year'];
+            $project->project_type_id = $req['project_type_id'];
+            $project->plan_id   = $req['plan_id'];
+            $project->gfmis_id  = $req['gfmis_id'];
             $project->status    = $req['status'] ? 1 : 0;
 
             if($project->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'project'   => $project
+                    'project'   => $project->load('plan')
                 ];
             } else {
                 return [
@@ -107,16 +108,17 @@ class BudgetProjectController extends Controller
         try {
             $project = BudgetProject::find($id);
             $project->name      = $req['name'];
-            $project->plan_id   = $req['plan_id'];
-            $project->project_type_id = $req['project_type_id'];
             $project->year      = $req['year'];
+            $project->project_type_id = $req['project_type_id'];
+            $project->plan_id   = $req['plan_id'];
+            $project->gfmis_id  = $req['gfmis_id'];
             $project->status    = $req['status'] ? 1 : 0;
 
             if($project->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'project'   => $project
+                    'project'   => $project->load('plan')
                 ];
             } else {
                 return [
