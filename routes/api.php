@@ -27,6 +27,9 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function() {
 });
 
 Route::middleware('auth:api')->group(function() {
+    /** System */
+    Route::get('system', [App\Http\Controllers\SystemController::class, 'getAll']);
+
     /** Tasks */
     Route::get('/tasks', 'App\Http\Controllers\TaskController@getAll');
     Route::get('/tasks/search', 'App\Http\Controllers\TaskController@search');
