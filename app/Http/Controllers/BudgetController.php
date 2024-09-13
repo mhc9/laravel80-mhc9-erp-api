@@ -20,6 +20,7 @@ class BudgetController extends Controller
         $project    = $req->get('project');
         $plan       = $req->get('plan');
         $name       = $req->get('name');
+        $year       = $req->get('year');
         $status     = $req->get('status');
         $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
@@ -35,8 +36,11 @@ class BudgetController extends Controller
                             $sq->where('plan_id', $plan);
                         });
                     })
+                    ->when(!empty($year), function($q) use ($year) {
+                        $q->where('budgets.year', $year);
+                    })
                     ->when(!empty($name), function($q) use ($name) {
-                        $q->where('name', 'like', '%'.$name.'%');
+                        $q->where('budgets.name', 'like', '%'.$name.'%');
                     })
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
