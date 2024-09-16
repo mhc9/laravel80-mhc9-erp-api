@@ -163,7 +163,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/budgets', [App\Http\Controllers\BudgetController::class, 'store']);
     Route::post('/budgets/{id}/update', [App\Http\Controllers\BudgetController::class, 'update']);
     Route::post('/budgets/{id}/delete', [App\Http\Controllers\BudgetController::class, 'destroy']);
-    Route::post('/budgets/{id}/status', [App\Http\Controllers\BudgetController::class, 'status']);
+    Route::post('/budgets/{id}/toggle', [App\Http\Controllers\BudgetController::class, 'toggle']);
 
     /** projects */
     Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'getAll']);

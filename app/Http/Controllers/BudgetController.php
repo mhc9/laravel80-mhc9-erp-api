@@ -181,7 +181,7 @@ class BudgetController extends Controller
         }
     }
 
-    public function status(Request $req, $id)
+    public function toggle(Request $req, $id)
     {
         try {
             $budget = Budget::find($id);
