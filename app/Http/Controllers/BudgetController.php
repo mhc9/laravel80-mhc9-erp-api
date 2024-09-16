@@ -110,7 +110,7 @@ class BudgetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'budget'  => $budget->load('type','project','project.plan')
+                    'budget'    => $budget->load('type','project','project.plan')
                 ];
             } else {
                 return [
@@ -140,7 +140,7 @@ class BudgetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'budget'  => $budget->load('type','project','project.plan')
+                    'budget'    => $budget->load('type','project','project.plan')
                 ];
             } else {
                 return [
@@ -166,6 +166,32 @@ class BudgetController extends Controller
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
                     'id'        => $id
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function status(Request $req, $id)
+    {
+        try {
+            $budget = Budget::find($id);
+            $budget->status = $req['status'];
+
+            if($budget->save()) {
+                return [
+                    'status'    => 1,
+                    'message'   => 'Updating status successfully!!',
+                    'budget'    => $budget->load('type','project','project.plan')
                 ];
             } else {
                 return [
