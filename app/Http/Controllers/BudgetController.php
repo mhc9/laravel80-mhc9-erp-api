@@ -110,7 +110,7 @@ class BudgetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'Budget'  => $budget
+                    'budget'  => $budget->load('type','project','project.plan')
                 ];
             } else {
                 return [
@@ -135,13 +135,12 @@ class BudgetController extends Controller
             $budget->project_id = $req['project_id'];
             $budget->gfmis_id   = $req['gfmis_id'];
             $budget->year       = $req['year'];
-            $budget->status     = $req['status'] ? 1 : 0;
 
             if($budget->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'Budget'  => $budget
+                    'budget'  => $budget->load('type','project','project.plan')
                 ];
             } else {
                 return [
