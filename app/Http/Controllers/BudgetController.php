@@ -83,7 +83,7 @@ class BudgetController extends Controller
 
     public function getById($id)
     {
-        return Budget::find($id);
+        return Budget::with('type','project','project.plan')->find($id);
     }
 
     public function getInitialFormData()
