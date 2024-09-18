@@ -17,14 +17,18 @@ class BudgetPlanController extends Controller
     {
         /** Get params from query string */
         $name       = $req->get('name');
+        $year       = $req->get('year');
         $status     = $req->get('status');
 
         $activities = BudgetPlan::with('type')
-                        ->when($status != '', function($q) use ($status) {
-                            $q->where('status', $status);
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
                         })
                         ->when(!empty($name), function($q) use ($name) {
                             $q->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->when($status != '', function($q) use ($status) {
+                            $q->where('status', $status);
                         })
                         ->orderBy('plan_no')
                         ->paginate(10);
