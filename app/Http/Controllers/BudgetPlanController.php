@@ -20,7 +20,7 @@ class BudgetPlanController extends Controller
         $year       = $req->get('year');
         $status     = $req->get('status');
 
-        $activities = BudgetPlan::with('type')
+        $plans = BudgetPlan::with('type')
                         ->when(!empty($year), function($q) use ($year) {
                             $q->where('year', $year);
                         })
@@ -33,26 +33,30 @@ class BudgetPlanController extends Controller
                         ->orderBy('plan_no')
                         ->paginate(10);
 
-        return $activities;
+        return $plans;
     }
 
     public function getAll(Request $req)
     {
         /** Get params from query string */
         $name       = $req->get('name');
+        $year       = $req->get('year');
         $status     = $req->get('status');
 
-        $activities = BudgetPlan::with('type')
-                        ->when($status != '', function($q) use ($status) {
-                            $q->where('status', $status);
+        $plans = BudgetPlan::with('type')
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
                         })
                         ->when(!empty($name), function($q) use ($name) {
                             $q->where('name', 'like', '%'.$name.'%');
                         })
+                        ->when($status != '', function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         ->orderBy('plan_no')
                         ->get();
 
-        return $activities;
+        return $plans;
     }
 
     public function getById($id)

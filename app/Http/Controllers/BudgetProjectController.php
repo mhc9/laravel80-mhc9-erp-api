@@ -18,12 +18,16 @@ class BudgetProjectController extends Controller
         /** Get params from query string */
         $plan       = $req->get('plan');
         $name       = $req->get('name');
+        $year       = $req->get('year');
         $status     = $req->get('status');
 
-        $activities = BudgetProject::select('budget_projects.*')->with('plan')
+        $projects = BudgetProject::select('budget_projects.*')->with('plan')
                         ->leftJoin('budget_plans', 'budget_projects.plan_id', '=', 'budget_plans.id')
                         ->when(!empty($plan), function($q) use ($plan) {
                             $q->where('plan_id', $plan);
+                        })
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('budget_projects.year', $year);
                         })
                         ->when(!empty($name), function($q) use ($name) {
                             $q->where('name', 'like', '%'.$name.'%');
@@ -35,7 +39,7 @@ class BudgetProjectController extends Controller
                         ->orderBy('budget_projects.name')
                         ->paginate(10);
 
-        return $activities;
+        return $projects;
     }
 
     public function getAll(Request $req)
@@ -43,11 +47,15 @@ class BudgetProjectController extends Controller
         /** Get params from query string */
         $plan       = $req->get('plan');
         $name       = $req->get('name');
+        $year       = $req->get('year');
         $status     = $req->get('status');
 
-        $activities = BudgetProject::with('plan')
+        $projects = BudgetProject::with('plan')
                         ->when(!empty($plan), function($q) use ($plan) {
                             $sq->where('plan_id', $plan);
+                        })
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
                         })
                         ->when(!empty($name), function($q) use ($name) {
                             $query->where('name', 'like', '%'.$name.'%');
@@ -57,7 +65,7 @@ class BudgetProjectController extends Controller
                         })
                         ->get();
 
-        return $activities;
+        return $projects;
     }
 
     public function getById($id)
