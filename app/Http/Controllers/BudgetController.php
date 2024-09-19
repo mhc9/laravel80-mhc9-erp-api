@@ -11,6 +11,7 @@ use App\Models\Budget;
 use App\Models\BudgetType;
 use App\Models\BudgetPlan;
 use App\Models\BudgetProject;
+use App\Models\BudgetTypeDetail;
 
 class BudgetController extends Controller
 {
@@ -100,13 +101,20 @@ class BudgetController extends Controller
         try {
             $budget = new Budget();
             $budget->name       = $req['name'];
-            $budget->type_id    = $req['type_id'];
+            $budget->year       = $req['year'];
             $budget->project_id = $req['project_id'];
             $budget->gfmis_id   = $req['gfmis_id'];
-            $budget->year       = $req['year'];
             $budget->status     = 1;
 
             if($budget->save()) {
+                foreach($req['budget_types'] as $type) {
+                    $newBudgetType = new BudgetTypeDetail();
+                    $newBudgetType->budget_id       = $budget->id;
+                    $newBudgetType->budget_type_id  = $type['budget_type_id'];
+                    $newBudgetType->total           = $type['total'];
+                    $newBudgetType->save();
+                }
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
@@ -131,12 +139,19 @@ class BudgetController extends Controller
         try {
             $budget = Budget::find($id);
             $budget->name       = $req['name'];
-            $budget->type_id    = $req['type_id'];
+            $budget->year       = $req['year'];
             $budget->project_id = $req['project_id'];
             $budget->gfmis_id   = $req['gfmis_id'];
-            $budget->year       = $req['year'];
 
             if($budget->save()) {
+                foreach($req['budget_types'] as $type) {
+                    $newBudgetType = new BudgetTypeDetail();
+                    $newBudgetType->budget_id       = $budget->id;
+                    $newBudgetType->budget_type_id  = $type['budget_type_id'];
+                    $newBudgetType->total           = $type['total'];
+                    $newBudgetType->save();
+                }
+
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
