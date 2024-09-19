@@ -175,8 +175,13 @@ class BudgetController extends Controller
     {
         try {
             $budget = Budget::find($id);
+            /** Store deleted budget's id to variable */
+            $deletedId = $budget->id;
 
             if($budget->delete()) {
+                /** ลบข้อมูลในตาราง budget_type_details ด้วย */
+                BudgetTypeDetail::where('budget_id', $deletedId)->delete();
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
