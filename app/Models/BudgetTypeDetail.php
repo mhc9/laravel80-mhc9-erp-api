@@ -4,20 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Budget extends Model
+class BudgetTypeDetail extends Model
 {
-    protected $table = 'budgets';
+    protected $table = 'budget_type_details';
     // protected $primaryKey = 'id';
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
-    public function project()
+    public function budget()
     {
-        return $this->belongsTo(BudgetProject::class, 'project_id', 'id');
+        return $this->belongsTo(Budget::class, 'budget_id', 'id');
     }
 
-    public function details()
+    public function type()
     {
-        return $this->hasMany(BudgetTypeDetail::class, 'budget_id', 'id');
+        return $this->belongsTo(BudgetType::class, 'budget_type_id', 'id');
     }
 }
