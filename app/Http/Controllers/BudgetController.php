@@ -25,7 +25,7 @@ class BudgetController extends Controller
         $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
         $budgets = Budget::select('budgets.*')
-                    ->with('type','project','project.plan')
+                    ->with('project','project.plan','details','details.type')
                     ->leftJoin('budget_projects','budgets.project_id','=','budget_projects.id')
                     ->leftJoin('budget_plans','budget_projects.plan_id','=','budget_plans.id')
                     ->when(!empty($project), function($q) use ($project) {
@@ -61,7 +61,7 @@ class BudgetController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = Budget::with('type','project','project.plan')
+        $activities = Budget::with('project','project.plan','details','details.type')
                     ->when(!empty($project), function($q) use ($project) {
                         $q->where('project_id', $project);
                     })
@@ -83,7 +83,7 @@ class BudgetController extends Controller
 
     public function getById($id)
     {
-        return Budget::with('type','project','project.plan')->find($id);
+        return Budget::with('project','project.plan','details','details.type')->find($id);
     }
 
     public function getInitialFormData()
@@ -110,7 +110,7 @@ class BudgetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'budget'    => $budget->load('type','project','project.plan')
+                    'budget'    => $budget->load('project','project.plan','details','details.type')
                 ];
             } else {
                 return [
@@ -140,7 +140,7 @@ class BudgetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'budget'    => $budget->load('type','project','project.plan')
+                    'budget'    => $budget->load('project','project.plan','details','details.type')
                 ];
             } else {
                 return [
@@ -191,7 +191,7 @@ class BudgetController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating status successfully!!',
-                    'budget'    => $budget->load('type','project','project.plan')
+                    'budget'    => $budget->load('project','project.plan','details','details.type')
                 ];
             } else {
                 return [
