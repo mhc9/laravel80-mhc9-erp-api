@@ -25,9 +25,9 @@ class BudgetActivityController extends Controller
         $status     = $req->get('status');
         $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
-        $activities = BudgetActivity::select('budgets.*')
-                        ->with('project','project.plan','details','details.type')
-                        ->leftJoin('budget_projects','budgets.project_id','=','budget_projects.id')
+        $activities = BudgetActivity::select('budget_activities.*')
+                        ->with('project','project.plan','budgets','budgets.type')
+                        ->leftJoin('budget_projects','budget_activities.project_id','=','budget_projects.id')
                         ->leftJoin('budget_plans','budget_projects.plan_id','=','budget_plans.id')
                         ->when(!empty($project), function($q) use ($project) {
                             $q->where('project_id', $project);
@@ -38,17 +38,17 @@ class BudgetActivityController extends Controller
                             });
                         })
                         ->when(!empty($year), function($q) use ($year) {
-                            $q->where('budgets.year', $year);
+                            $q->where('budget_activities.year', $year);
                         })
                         ->when(!empty($name), function($q) use ($name) {
-                            $q->where('budgets.name', 'like', '%'.$name.'%');
+                            $q->where('budget_activities.name', 'like', '%'.$name.'%');
                         })
                         // ->when($status != '', function($q) use ($status) {
                         //     $q->where('status', $status);
                         // })
                         ->orderBy('budget_plans.plan_no')
                         ->orderBy('budget_projects.name')
-                        ->orderBy('budgets.budget_no')
+                        ->orderBy('budget_activities.activity_no')
                         ->paginate($limit);
 
         return $activities;
@@ -62,7 +62,7 @@ class BudgetActivityController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $activities = BudgetActivity::with('project','project.plan','details','details.type')
+        $activities = BudgetActivity::with('project','project.plan','budgets','budgets.type')
                         ->when(!empty($project), function($q) use ($project) {
                             $q->where('project_id', $project);
                         })
@@ -84,7 +84,7 @@ class BudgetActivityController extends Controller
 
     public function getById($id)
     {
-        return BudgetActivity::with('project','project.plan','details','details.type')->find($id);
+        return BudgetActivity::with('project','project.plan','budgets','budgets.type')->find($id);
     }
 
     public function getInitialFormData()
@@ -119,7 +119,7 @@ class BudgetActivityController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'activity'  => $activity->load('project','project.plan','details','details.type')
+                    'activity'  => $activity->load('project','project.plan','budgets','budgets.type')
                 ];
             } else {
                 return [
@@ -172,7 +172,7 @@ class BudgetActivityController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'activity'  => $activity->load('project','project.plan','details','details.type')
+                    'activity'  => $activity->load('project','project.plan','budgets','budgets.type')
                 ];
             } else {
                 return [
@@ -196,7 +196,7 @@ class BudgetActivityController extends Controller
             $deletedId = $activity->id;
 
             if($activity->delete()) {
-                /** ลบข้อมูลในตาราง budget_type_details ด้วย */
+                /** ลบข้อมูลในตาราง budgets ด้วย */
                 Budget::where('budget_activity_id', $deletedId)->delete();
 
                 return [
@@ -228,7 +228,7 @@ class BudgetActivityController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating status successfully!!',
-                    'activity'  => $activity->load('project','project.plan','details','details.type')
+                    'activity'  => $activity->load('project','project.plan','budgets','budgets.type')
                 ];
             } else {
                 return [

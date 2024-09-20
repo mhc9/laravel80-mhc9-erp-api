@@ -16,8 +16,8 @@ class BudgetActivity extends Model
         return $this->belongsTo(BudgetProject::class, 'project_id', 'id');
     }
 
-    public function details()
+    public function budgets()
     {
-        return $this->hasMany(BudgetTypeDetail::class, 'budget_id', 'id');
+        return $this->hasMany(Budget::class, 'activity_id', 'id');
     }
 }
