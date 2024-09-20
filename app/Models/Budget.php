@@ -11,9 +11,9 @@ class Budget extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
-    public function budget()
+    public function activity()
     {
-        return $this->belongsTo(BudgetActivity::class, 'budget_id', 'id');
+        return $this->belongsTo(BudgetActivity::class, 'activity_id', 'id');
     }
 
     public function type()
