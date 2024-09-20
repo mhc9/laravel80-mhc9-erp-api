@@ -101,6 +101,7 @@ class BudgetController extends Controller
         try {
             $budget = new Budget();
             $budget->name       = $req['name'];
+            $budget->budget_no  = $req['budget_no'];
             $budget->year       = $req['year'];
             $budget->project_id = $req['project_id'];
             $budget->gfmis_id   = $req['gfmis_id'];
@@ -139,6 +140,7 @@ class BudgetController extends Controller
         try {
             $budget = Budget::find($id);
             $budget->name       = $req['name'];
+            $budget->budget_no  = $req['budget_no'];
             $budget->year       = $req['year'];
             $budget->project_id = $req['project_id'];
             $budget->gfmis_id   = $req['gfmis_id'];
