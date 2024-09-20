@@ -108,9 +108,9 @@ class BudgetActivityController extends Controller
             $activity->status       = 1;
 
             if($activity->save()) {
-                foreach($req['budget_types'] as $type) {
+                foreach($req['budgets'] as $type) {
                     $newBudget = new Budget();
-                    $newBudget->budget_activity_id = $activity->id;
+                    $newBudget->activity_id     = $activity->id;
                     $newBudget->budget_type_id  = $type['budget_type_id'];
                     $newBudget->total           = $type['total'];
                     $newBudget->save();
@@ -146,12 +146,12 @@ class BudgetActivityController extends Controller
             $activity->gfmis_id     = $req['gfmis_id'];
 
             if($activity->save()) {
-                foreach($req['budget_types'] as $item) {
+                foreach($req['budgets'] as $item) {
                     if (empty($item['budget_id'])) {
                         $newBudget = new Budget();
-                        $newBudget->budget_activity_id  = $activity->id;
-                        $newBudget->budget_type_id      = $item['budget_type_id'];
-                        $newBudget->total               = $item['total'];
+                        $newBudget->activity_id     = $activity->id;
+                        $newBudget->budget_type_id  = $item['budget_type_id'];
+                        $newBudget->total           = $item['total'];
                         $newBudget->save();
                     } else {
                         /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag updated หรือไม่ */
