@@ -115,7 +115,7 @@ class LoanController extends Controller
         return [
             'departments'   => Department::all(),
             'expenses'      => Expense::all(),
-            'budgets'       => Budget::with('project','project.plan')->get(),
+            'budgets'       => Budget::with('activity','type')->get(),
             'loanTypes'     => $loanTypes,
             'moneyTypes'    => $moneyTypes,
             'statuses'      => $statuses
