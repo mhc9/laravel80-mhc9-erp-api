@@ -146,12 +146,27 @@ class BudgetController extends Controller
             $budget->gfmis_id   = $req['gfmis_id'];
 
             if($budget->save()) {
-                foreach($req['budget_types'] as $type) {
-                    $newBudgetType = new BudgetTypeDetail();
-                    $newBudgetType->budget_id       = $budget->id;
-                    $newBudgetType->budget_type_id  = $type['budget_type_id'];
-                    $newBudgetType->total           = $type['total'];
-                    $newBudgetType->save();
+                foreach($req['budget_types'] as $item) {
+                    if (empty($item['budget_id'])) {
+                        $newBudgetType = new BudgetTypeDetail();
+                        $newBudgetType->budget_id       = $budget->id;
+                        $newBudgetType->budget_type_id  = $item['budget_type_id'];
+                        $newBudgetType->total           = $item['total'];
+                        $newBudgetType->save();
+                    } else {
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag updated หรือไม่ */
+                        if (array_key_exists('updated', $item) && $item['updated']) {
+                            $updated = BudgetTypeDetail::find($item['id']);
+                            $updated->budget_type_id  = $item['budget_type_id'];
+                            $updated->total           = $item['total'];
+                            $updated->save();
+                        }
+
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
+                        if (array_key_exists('removed', $item) && $item['removed']) {
+                            BudgetTypeDetail::find($item['id'])->delete();
+                        }
+                    }
                 }
 
                 return [
