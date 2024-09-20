@@ -30,7 +30,8 @@ class LoanController extends Controller
 
         $loans = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
+                        ->with('budgets','budgets.budget','budgets.budget.activity')
+                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
                         ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
                             $q->where('employee_id', auth()->user()->employee_id);
@@ -57,7 +58,8 @@ class LoanController extends Controller
 
         $loans = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
+                        ->with('budgets','budgets.budget','budgets.budget.activity')
+                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
                         ->when(!empty($project), function($q) use ($project) {
                             $q->where('project_id', $project);
@@ -82,7 +84,8 @@ class LoanController extends Controller
     {
         return Loan::with('details','details.expense','department')
                     ->with('employee','employee.prefix','employee.position','employee.level')
-                    ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
+                    ->with('budgets','budgets.budget','budgets.budget.activity')
+                    ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                     ->with('courses','courses.place','courses.place.changwat')
                     ->find($id);
     }

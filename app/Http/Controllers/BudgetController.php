@@ -69,7 +69,9 @@ class BudgetController extends Controller
 
     public function getInitialFormData(Request $req)
     {
-        return [];
+        return [
+            'types' => BudgetType::all(),
+        ];
     }
 
     public function store(Request $req)
