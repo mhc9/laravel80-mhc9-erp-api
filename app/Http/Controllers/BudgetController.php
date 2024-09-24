@@ -20,12 +20,16 @@ class BudgetController extends Controller
         /** Get params from query string */
         $project    = $req->get('project');
         $plan       = $req->get('plan');
+        $type       = $req->get('type');
         $name       = $req->get('name');
         $year       = $req->get('year');
         $status     = $req->get('status');
         $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
         $budgets = Budget::with('activity','activity.project','activity.project.plan','type')
+                    ->when(!empty($type), function($q) use ($type) {
+                        $q->where('budget_type_id', $type);
+                    })
                     ->when(!empty($plan), function($q) use ($plan) {
                         $q->whereHas('activity.project.plan', function($sq) use ($plan) {
                             $sq->where('plan_id', $plan);
