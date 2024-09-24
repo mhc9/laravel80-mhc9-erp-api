@@ -30,7 +30,7 @@ class LoanController extends Controller
 
         $loans = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.activity')
+                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                         ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
                         ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
@@ -58,7 +58,7 @@ class LoanController extends Controller
 
         $loans = Loan::with('details','details.expense','department')
                         ->with('employee','employee.prefix','employee.position','employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.activity')
+                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                         ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                         ->with('courses','courses.place','courses.place.changwat')
                         ->when(!empty($project), function($q) use ($project) {
@@ -84,7 +84,7 @@ class LoanController extends Controller
     {
         return Loan::with('details','details.expense','department')
                     ->with('employee','employee.prefix','employee.position','employee.level')
-                    ->with('budgets','budgets.budget','budgets.budget.activity')
+                    ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                     ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                     ->with('courses','courses.place','courses.place.changwat')
                     ->find($id);
@@ -182,7 +182,11 @@ class LoanController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'loan'  => $loan
+                    'loan'      => $loan->load('details','details.expense','department',
+                                                'employee','employee.prefix','employee.position','employee.level',
+                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
+                                                'budgets.budget.activity.project','budgets.budget.activity.project.plan',
+                                                'courses','courses.place','courses.place.changwat')
                 ];
             } else {
                 return [
@@ -299,7 +303,8 @@ class LoanController extends Controller
                     'message'   => 'Updating successfully!!',
                     'loan'      => $loan->load('details','details.expense','department',
                                                 'employee','employee.prefix','employee.position','employee.level',
-                                                'budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan',
+                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
+                                                'budgets.budget.activity.project','budgets.budget.activity.project.plan',
                                                 'courses','courses.place','courses.place.changwat')
                 ];
             } else {
