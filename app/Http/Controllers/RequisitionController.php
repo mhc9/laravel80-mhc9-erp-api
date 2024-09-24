@@ -33,12 +33,12 @@ class RequisitionController extends Controller
         $year       = $req->get('year');
         $limit      = $req->get('limit') ? $req->get('limit') : 10;
 
-        $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project','division')
-                            ->with('division.department','details','details.unit','details.item','details.item.category')
+        $requisitions = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+                            ->with('division','division.department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
-                            ->with('approvals','approvals.procuring','approvals.supplier')
+                            ->with('approvals','approvals.procuring','approvals.supplier','project','category')
                             ->when((!auth()->user()->isAdmin() && !auth()->user()->isParcel()), function($q) {
                                 $q->where('requester_id', auth()->user()->employee_id);
                             })
@@ -73,12 +73,12 @@ class RequisitionController extends Controller
         $requester  = $req->get('requester');
         $status     = $req->get('status');
 
-        $requisitions = Requisition::with('category','budget','budget.project','budget.project.plan','project','division')
-                            ->with('division.department','details','details.unit','details.item','details.item.category')
+        $requisitions = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+                            ->with('division','division.department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
-                            ->with('approvals','approvals.procuring','approvals.supplier')
+                            ->with('approvals','approvals.procuring','approvals.supplier','project','category')
                             ->when(!empty($category), function($q) use ($category) {
                                 $q->where('category_id', $category);
                             })
@@ -92,12 +92,12 @@ class RequisitionController extends Controller
 
     public function getById($id)
     {
-        return Requisition::with('category','budget','budget.project','budget.project.plan','project','division')
-                    ->with('division.department','details','details.unit','details.item','details.item.category')
+        return Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+                    ->with('division','division.department','details','details.unit','details.item','details.item.category')
                     ->with('requester','requester.prefix','requester.position','requester.level')
                     ->with('committees','committees.employee','committees.employee.prefix')
                     ->with('committees.employee.position','committees.employee.level')
-                    ->with('approvals','approvals.procuring','approvals.supplier')
+                    ->with('approvals','approvals.procuring','approvals.supplier','project','category')
                     ->find($id);
     }
 
@@ -174,12 +174,12 @@ class RequisitionController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Insertion successfully!!',
-                    'requisition'   => $requisition->load('category','budget','budget.project','budget.project.plan','project','division',
-                                                        'division.department','details','details.unit','details.item','details.item.category',
+                    'requisition'   => $requisition->load('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
+                                                        'division','division.department','details','details.unit','details.item','details.item.category',
                                                         'requester','requester.prefix','requester.position','requester.level',
                                                         'committees','committees.employee','committees.employee.prefix',
                                                         'committees.employee.position','committees.employee.level',
-                                                        'approvals','approvals.procuring','approvals.supplier')
+                                                        'approvals','approvals.procuring','approvals.supplier','project','category')
                 ];
             } else {
                 return [
@@ -269,12 +269,12 @@ class RequisitionController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
-                    'requisition'   => $requisition->load('category','budget','budget.project','budget.project.plan','project','division',
-                                                        'division.department','details','details.unit','details.item','details.item.category',
+                    'requisition'   => $requisition->load('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
+                                                        'division','division.department','details','details.unit','details.item','details.item.category',
                                                         'requester','requester.prefix','requester.position','requester.level',
                                                         'committees','committees.employee','committees.employee.prefix',
                                                         'committees.employee.position','committees.employee.level',
-                                                        'approvals','approvals.procuring','approvals.supplier')
+                                                        'approvals','approvals.procuring','approvals.supplier','project','category')
                 ];
             } else {
                 return [
