@@ -76,8 +76,12 @@ class BudgetController extends Controller
 
     public function getInitialFormData(Request $req)
     {
+        $year = $req->get('year');
+
         return [
-            'types' => BudgetType::all(),
+            'types'     => BudgetType::all(),
+            'plans'     => BudgetPlan::where('year', $year)->orderBy('plan_no')->get(),
+            'projects'  => BudgetProject::where('year', $year)->get(),
         ];
     }
 
