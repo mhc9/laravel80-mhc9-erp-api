@@ -25,22 +25,26 @@ class BudgetController extends Controller
         $status     = $req->get('status');
         $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
-        $budgets = Budget::select('budgets.*')
-                    ->leftJoin('budget_activities','budgets.activity_id','=','budget_activities.id')
-                    ->with('activity','activity.project','activity.project.plan','type')
-                    // ->when(!empty($project), function($q) use ($project) {
-                    //     $q->where('project_id', $project);
-                    // })
-                    // ->when(!empty($plan), function($q) use ($plan) {
-                    //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                    //         $sq->where('plan_id', $plan);
-                    //     });
-                    // })
+        $budgets = Budget::with('activity','activity.project','activity.project.plan','type')
+                    ->when(!empty($plan), function($q) use ($plan) {
+                        $q->whereHas('activity.project.plan', function($sq) use ($plan) {
+                            $sq->where('plan_id', $plan);
+                        });
+                    })
+                    ->when(!empty($project), function($q) use ($project) {
+                        $q->whereHas('activity', function($sq) use ($project) {
+                            $sq->where('project_id', $project);
+                        });
+                    })
                     ->when(!empty($name), function($q) use ($name) {
-                        $q->where('budget_activities.name', 'like', '%'.$name.'%');
+                        $q->whereHas('activity', function($sq) use ($name) {
+                            $sq->where('name', 'like', '%'.$name.'%');
+                        });
                     })
                     ->when(!empty($year), function($q) use ($year) {
-                        $q->where('budget_activities.year', $year);
+                        $q->whereHas('activity', function($sq) use ($year) {
+                            $sq->where('year', $year);
+                        });
                     })
                     ->paginate($limit);
 
