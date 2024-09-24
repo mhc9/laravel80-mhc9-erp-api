@@ -25,10 +25,9 @@ class LoanRefundController extends Controller
     public function search(Request $req)
     {
         /** Get params from query string */
-        // $year       = $req->get('year');
-        // $plan       = $req->get('plan');
-        // $name       = $req->get('name');
-        // $status     = $req->get('status');
+        $type       = $req->get('type');
+        $year       = $req->get('year');
+        $status     = $req->get('status');
 
         $contracts = LoanRefund::with('details','details.contractDetail.expense','contract','contract.loan','contract.loan.department')
                         ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
@@ -37,20 +36,15 @@ class LoanRefundController extends Controller
                         })
                         // ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
                         // ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                        // ->when(!empty($plan), function($q) use ($plan) {
-                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                        //         $sq->where('plan_id', $plan);
-                        //     });
-                        // })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where(function($query) use ($name) {
-                        //         $query->where('item_name', 'like', '%'.$name.'%');
-                        //         $query->orWhere('en_name', 'like', '%'.$name.'%');
-                        //     });
-                        // })
+                        ->when(!empty($type), function($q) use ($type) {
+                            $q->where('refund_type_id', $type);
+                        })
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
+                        })
+                        ->when(!empty($status), function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         ->orderBy('doc_date', 'DESC')
                         ->paginate(10);
 
