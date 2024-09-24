@@ -93,22 +93,13 @@ class LoanRefundController extends Controller
 
     public function getInitialFormData()
     {
-        $loanTypes = [
-            ['id' => 1, 'name' => 'ยืมเงินโครงการ'],
-            ['id' => 2, 'name' => 'ยืมเงินเดินทางไปราชการ'],
-        ];
-
-        $moneyTypes = [
-            ['id' => 1, 'name' => 'เงินทดลองราชการ'],
-            ['id' => 2, 'name' => 'เงินยืมนอกงบประมาณ'],
-            ['id' => 3, 'name' => 'เงินยืมราชการ'],
+        $statuses = [
+            ['id' => 'N', 'name' => 'ยังไม่เคลียร์'],
+            ['id' => 'Y', 'name' => 'เคลียร์แล้ว	'],
         ];
 
         return [
-            'departments'   => Department::all(),
-            'expenses'      => Expense::all(),
-            'loanTypes'     => $loanTypes,
-            'moneyTypes'    => $moneyTypes,
+            'statuses'   => $statuses,
         ];
     }
 
