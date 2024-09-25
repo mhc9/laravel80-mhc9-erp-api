@@ -26,6 +26,7 @@ class EmployeeController extends Controller
         $name       = $req->get('name');
         $department = $req->get('department');
         $status     = $req->get('status');
+        $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
         $memberLists = [];
         if (!empty($department)) {
@@ -49,7 +50,7 @@ class EmployeeController extends Controller
                         ->when(!empty($status), function($q) use ($status) {
                             $q->where('status', $status);
                         })
-                        ->paginate(10);
+                        ->paginate($limit);
 
         return $employees;
     }
