@@ -25,7 +25,7 @@ class ResetPasswordController extends Controller
         }
 
         $user = User::where('email', $request->email);
-        $user->update(['password' => Hash::make($request->password)]);
+        $user->update(['password' => bcrypt($request->password)]);
 
         $token = $user->first()->createToken('myapptoken')->plainTextToken;
 
