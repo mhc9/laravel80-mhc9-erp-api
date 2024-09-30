@@ -23,16 +23,19 @@ Route::post('/verify/pin', [App\Http\Controllers\ForgotPasswordController::class
 Route::post( '/reset-password', [App\Http\Controllers\ResetPasswordController::class, 'resetPassword']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function() {
-    Route::post('register', 'App\Http\Controllers\AuthController@register');
-    Route::post('login', 'App\Http\Controllers\AuthController@login')->name('login');
-    Route::post('logout', 'App\Http\Controllers\AuthController@logout');
-    Route::post('refresh', 'App\Http\Controllers\AuthController@refresh');
-    Route::get('me', 'App\Http\Controllers\AuthController@me');
+    Route::post('/register', [App\Http\Controllers\AuthController::class, 'register']);
+    Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');
+    Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout']);
+    Route::post('/refresh', [App\Http\Controllers\AuthController::class, 'refresh']);
+    Route::get('/me', [App\Http\Controllers\AuthController::class, 'me']);
 });
 
 Route::middleware('auth:api')->group(function() {
     /** System */
     Route::get('system', [App\Http\Controllers\SystemController::class, 'getAll']);
+
+    /** Users */
+    Route::post( '/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
 
     /** Tasks */
     Route::get('/tasks', 'App\Http\Controllers\TaskController@getAll');
