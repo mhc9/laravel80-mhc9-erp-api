@@ -30,7 +30,7 @@ class ForgotPasswordController extends Controller
 
         if ($verify) {
             $verify2 = DB::table('password_resets')->where([
-                ['email', $requestall()['email']],
+                ['email', $request->all()['email']],
             ]);
 
             if ($verify2->exists()) {
@@ -38,7 +38,7 @@ class ForgotPasswordController extends Controller
             }
 
             $token = random_int(100000, 999999);
-            $password_reset = DB::('password_resets')->insert([
+            $password_reset = DB::table('password_resets')->insert([
                 'email'         => $request->all()['email'],
                 'token'         => $token,
                 'created_at'    => Carbon::now(),
@@ -47,7 +47,7 @@ class ForgotPasswordController extends Controller
             if ($password_reset) {
                 Mail::to($request->all()['email'])->send(new ResetPassword($token));
 
-                return new JsonReponse([
+                return new JsonResponse([
                     'success' => true,
                     'message' => "Please check your email for a 6 digit pin",
                 ], 200);
