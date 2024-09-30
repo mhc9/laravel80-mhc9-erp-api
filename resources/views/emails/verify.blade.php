@@ -1,5 +1,5 @@
 @component('mail::message')
-# Introduction
+# Verify Email
 
 Thank you for signing up. 
 Your six-digit code is {{$pin}}
