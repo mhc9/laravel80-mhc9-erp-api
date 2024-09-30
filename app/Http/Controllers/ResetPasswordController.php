@@ -53,12 +53,9 @@ class ResetPasswordController extends Controller
         $user = User::where('email', $request->email);
         $user->update(['password' => bcrypt($request->password), 'is_new' => 0]);
 
-        $token = $user->first()->createToken('myapptoken')->plainTextToken;
-
         return new JsonResponse([
             'success'   => true, 
-            'message'   => "Your password has been reset", 
-            'token'     => $token
+            'message'   => "Your password has been reset",
         ], 200);
     }
 }
