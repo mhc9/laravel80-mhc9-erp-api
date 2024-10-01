@@ -33,7 +33,7 @@ class LoanContractController extends Controller
 
         $contracts = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
                         ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                         ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
                             $q->where('employee_id', auth()->user()->employee_id);
@@ -63,7 +63,7 @@ class LoanContractController extends Controller
 
         $activities = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
                         ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
                         ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                         ->when(!empty($project), function($q) use ($project) {
                             $q->where('project_id', $project);
@@ -89,7 +89,7 @@ class LoanContractController extends Controller
     {
         return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
                 ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
                 ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ->find($id);
     }
@@ -98,7 +98,7 @@ class LoanContractController extends Controller
     {
         return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
                 ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
                 ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ->with('refund')
                 ->where('year', $year)
@@ -272,7 +272,7 @@ class LoanContractController extends Controller
 
                 $contract = $contract->load('details','details.expense','details.loanDetail','loan.department',
                                                 'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
-                                                'loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan',
+                                                'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
                                                 'loan.courses','loan.courses.place','loan.courses.place.changwat');
 
                 /** แจ้งเตือนไปในไลน์กลุ่ม "แจ้งเตือน09" */
@@ -318,7 +318,7 @@ class LoanContractController extends Controller
                     'message'   => 'Cancelation successfully!!',
                     'contract'  => $contract->load('details','details.expense','details.loanDetail','loan.department',
                                         'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
-                                        'loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan',
+                                        'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
                                         'loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ];
             } else {
