@@ -143,7 +143,12 @@ class LoanRefundController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'refund'    => $refund
+                    'refund'    => $refund->load('details','details.contractDetail.expense','details.contractDetail.loanDetail',
+                                                'contract','contract.details','contract.details.expense','contract.details.loanDetail',
+                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget',
+                                                'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
+                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
+                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                 ];
             } else {
                 return [
@@ -178,7 +183,12 @@ class LoanRefundController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'refund'    => $refund
+                    'refund'    => $refund->load('details','details.contractDetail.expense','details.contractDetail.loanDetail',
+                                                'contract','contract.details','contract.details.expense','contract.details.loanDetail',
+                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget',
+                                                'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
+                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
+                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                 ];
             } else {
                 return [
