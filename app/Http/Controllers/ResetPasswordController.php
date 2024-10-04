@@ -56,6 +56,7 @@ class ResetPasswordController extends Controller
         return new JsonResponse([
             'success'   => true, 
             'message'   => "Your password has been reset",
+            'user'      => $user->first()->load('permissions','employee','employee.position')
         ], 200);
     }
 }
