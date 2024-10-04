@@ -23,13 +23,15 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get('/manual-user', [App\Http\Controllers\ManualController::class, 'index']);
+
 /** Requisition */
-Route::get('/requisitions/{id}/print-pr', 'App\Http\Controllers\RequisitionController@printPR');
-Route::get('/requisitions/{id}/document', 'App\Http\Controllers\RequisitionController@getDocument');
-Route::get('/requisitions/{id}/report', 'App\Http\Controllers\RequisitionController@getReport');
-Route::get('/requisitions/{id}/directive', 'App\Http\Controllers\RequisitionController@getDirective');
-Route::get('/requisitions/{id}/consider', 'App\Http\Controllers\RequisitionController@getConsider');
-Route::get('/requisitions/{id}/notice', 'App\Http\Controllers\RequisitionController@getNotice');
+Route::get('/requisitions/{id}/print-pr', [App\Http\Controllers\RequisitionController::class, 'printPR']);
+Route::get('/requisitions/{id}/document', [App\Http\Controllers\RequisitionController::class, 'getDocument']);
+Route::get('/requisitions/{id}/report', [App\Http\Controllers\RequisitionController::class, 'getReport']);
+Route::get('/requisitions/{id}/directive', [App\Http\Controllers\RequisitionController::class, 'getDirective']);
+Route::get('/requisitions/{id}/consider', [App\Http\Controllers\RequisitionController::class, 'getConsider']);
+Route::get('/requisitions/{id}/notice', [App\Http\Controllers\RequisitionController::class, 'getNotice']);
 
 /** Loan */
 Route::get('/loans/{id}/form', [App\Http\Controllers\LoanController::class, 'getForm']);
