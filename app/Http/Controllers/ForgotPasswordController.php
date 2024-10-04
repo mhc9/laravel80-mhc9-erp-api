@@ -26,15 +26,13 @@ class ForgotPasswordController extends Controller
             ]);
         }
 
-        $verify = User::where('email', $request->all()['email'])->exists();
+        $existed = User::where('email', $request->all()['email'])->exists();
 
-        if ($verify) {
-            $verify2 = DB::table('password_resets')->where([
-                ['email', $request->all()['email']],
-            ]);
+        if ($existed) {
+            $verified = DB::table('password_resets')->where('email', $request->all()['email']);
 
-            if ($verify2->exists()) {
-                $verify2->delete();
+            if ($verified->exists()) {
+                $verified->delete();
             }
 
             $token = random_int(100000, 999999);
