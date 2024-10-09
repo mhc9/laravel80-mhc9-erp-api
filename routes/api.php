@@ -34,8 +34,17 @@ Route::middleware('auth:api')->group(function() {
     /** System */
     Route::get('system', [App\Http\Controllers\SystemController::class, 'getAll']);
 
+    /** Password */
+    Route::get( '/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
+
     /** Users */
-    Route::post( '/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
+    Route::get( '/users/search', [App\Http\Controllers\UserController::class, 'search']);
+    Route::get( '/users', [App\Http\Controllers\UserController::class, 'getAll']);
+    Route::get( '/users/{id}', [App\Http\Controllers\UserController::class, 'getById']);
+    Route::post( '/users/{id}', [App\Http\Controllers\UserController::class, 'store']);
+    Route::post( '/users/{id}/update', [App\Http\Controllers\UserController::class, 'update']);
+    Route::post( '/users/{id}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
+    Route::post( '/users/{id}/send-mail', [App\Http\Controllers\UserController::class, 'sendMail']);
 
     /** Tasks */
     Route::get('/tasks', 'App\Http\Controllers\TaskController@getAll');
