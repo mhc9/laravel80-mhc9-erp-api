@@ -71,7 +71,10 @@ class UserController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'user'      => $user
+                    'user'      => $user->load('permissions','permissions.role','employee',
+                                                'employee.prefix','employee.position','employee.level',
+                                                'employee.memberOf','employee.memberOf.duty',
+                                                'employee.memberOf.department','employee.memberOf.division')
                 ];
             } else {
                 return [
@@ -98,7 +101,10 @@ class UserController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'user'      => $user
+                    'user'      => $user->load('permissions','permissions.role','employee',
+                                                'employee.prefix','employee.position','employee.level',
+                                                'employee.memberOf','employee.memberOf.duty',
+                                                'employee.memberOf.department','employee.memberOf.division')
                 ];
             } else {
                 return [
@@ -141,21 +147,32 @@ class UserController extends Controller
 
     public function sendMail(Request $req, $id)
     {
-        $user = User::find($id);
+        try {
+            $user = User::find($id);
 
-        if ($user) {
-            Mail::to($user->email)->send(new InitialUser($user->email, '1234'));
-            $user->update(['is_activated' => 1]);
+            if ($user) {
+                Mail::to($user->email)->send(new InitialUser($user->email, '1234'));
+                $user->update(['is_activated' => 1]);
 
-            return new JsonResponse([
-                'success' => true,
-                'message' => "Email was sent to your user!!",
-            ], 200);
-        } else {
-            return new JsonResponse([
-                'success' => false, 
-                'message' => "This email does not exist"
-            ], 400);
+                return new JsonResponse([
+                    'status'    => 1,
+                    'message'   => "Email was sent to your user!!",
+                    'user'      => $user->load('permissions','permissions.role','employee',
+                                                'employee.prefix','employee.position','employee.level',
+                                                'employee.memberOf','employee.memberOf.duty',
+                                                'employee.memberOf.department','employee.memberOf.division')
+                ], 200);
+            } else {
+                return new JsonResponse([
+                    'status'    => 0,
+                    'message'   => "This email does not exist"
+                ], 400);
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
         }
     }
 }
