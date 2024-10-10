@@ -35,7 +35,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('system', [App\Http\Controllers\SystemController::class, 'getAll']);
 
     /** Password */
-    Route::get( '/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
+    Route::post( '/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
 
     /** Users */
     Route::get( '/users/search', [App\Http\Controllers\UserController::class, 'search']);
