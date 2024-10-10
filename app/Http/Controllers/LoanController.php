@@ -350,7 +350,8 @@ class LoanController extends Controller
     {
         $loan = Loan::with('details','details.expense','department')
                             ->with('employee','employee.prefix','employee.position','employee.level')
-                            ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
+                            ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
+                            ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                             ->with('courses','courses.place','courses.place.changwat')
                             ->find($id);
 
@@ -381,7 +382,7 @@ class LoanController extends Controller
         /** =================== แผนงาน =================== */
         $budgets = '';
         foreach($loan->budgets as $data) {
-            $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
+            $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
         }
 
         $word->setValue('budget', $budgets);
@@ -495,7 +496,8 @@ class LoanController extends Controller
     {
         $loan = Loan::with('details','details.expense','department')
                             ->with('employee','employee.prefix','employee.position','employee.level')
-                            ->with('budgets','budgets.budget','budgets.budget.project','budgets.budget.project.plan')
+                            ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
+                            ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                             ->with('courses','courses.place','courses.place.changwat')
                             ->find($id);
 
@@ -526,7 +528,7 @@ class LoanController extends Controller
         /** =================== แผนงาน =================== */
         $budgets = '';
         foreach($loan->budgets as $data) {
-            $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
+            $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
         }
 
         $word->setValue('budget', $budgets);
