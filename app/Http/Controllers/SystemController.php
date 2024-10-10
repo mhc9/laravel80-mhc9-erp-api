@@ -13,9 +13,7 @@ class SystemController extends Controller
 {
     public function getAll(Request $req)
     {
-        return [
-            'budgetYear' => BudgetYear::where('actived', 1)->first(),
-        ];
+        return BudgetYear::where('actived', 1)->first();
     }
 
     // public function getById($id)
