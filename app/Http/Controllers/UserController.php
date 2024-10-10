@@ -145,6 +145,7 @@ class UserController extends Controller
 
         if ($user) {
             Mail::to($user->email)->send(new InitialUser($user->email, '1234'));
+            $user->update(['is_activated' => 1]);
 
             return new JsonResponse([
                 'success' => true,

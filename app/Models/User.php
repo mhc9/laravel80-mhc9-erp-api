@@ -18,6 +18,12 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
+    /** MySQL */
+    protected $fillable = [
+        'is_new',
+        'is_activated',
+    ];
+
     /** MSSQLServer */
     // protected $fillable = [
     //     'UsName',
