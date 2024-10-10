@@ -15,28 +15,22 @@ class UserController extends Controller
     public function search(Request $req)
     {
         /** Get params from query string */
-        // $name = $req->get('name');
-        // $status = $req->get('status');
+        $name = $req->get('name');
+        $status = $req->get('status');
 
-        // $users = User::with('type','group')
-        //             ->when(!empty($type), function($q) use ($type) {
-        //                 $q->where('plan_type_id', $type);
-        //             })
-        //             ->when(!empty($group), function($q) use ($group) {
-        //                 $q->where('group_id', $group);
-        //             })
-        //             ->when($status != '', function($q) use ($status) {
-        //                 $q->where('status', $status);
-        //             })
-        //             ->when(!empty($name), function($q) use ($name) {
-        //                 $q->where(function($query) use ($name) {
-        //                     $query->where('item_name', 'like', '%'.$name.'%');
-        //                     $query->orWhere('en_name', 'like', '%'.$name.'%');
-        //                 });
-        //             })
-        //             ->paginate(10);
+        $users = User::with('permissions','permissions.role','employee')
+                    ->with('employee.prefix','employee.position','employee.level')
+                    ->with('employee.memberOf','employee.memberOf.duty')
+                    ->with('employee.memberOf.department','employee.memberOf.division')
+                    // ->when($status != '', function($q) use ($status) {
+                    //     $q->where('status', $status);
+                    // })
+                    // ->when(!empty($name), function($q) use ($name) {
+                    //     $q->where('name', 'like', '%'.$name.'%');
+                    // })
+                    ->paginate(10);
 
-        // return $users;
+        return $users;
     }
 
     public function getAll(Request $req)
@@ -51,7 +45,7 @@ class UserController extends Controller
                     ->when(!empty($name), function($q) use ($name) {
                         $q->where('name', 'like', '%'.$name.'%');
                     })
-                    ->paginate(10);
+                    ->get();
 
         return $users;
     }
@@ -59,6 +53,11 @@ class UserController extends Controller
     public function getById($id)
     {
         return User::find($id);
+    }
+
+    public function getInitialFormData()
+    {
+        return [];
     }
 
     public function store(Request $req)

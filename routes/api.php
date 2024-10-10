@@ -41,6 +41,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get( '/users/search', [App\Http\Controllers\UserController::class, 'search']);
     Route::get( '/users', [App\Http\Controllers\UserController::class, 'getAll']);
     Route::get( '/users/{id}', [App\Http\Controllers\UserController::class, 'getById']);
+    Route::get('/users/init/form', [App\Http\Controllers\UserController::class, 'getInitialFormData']);
     Route::post( '/users/{id}', [App\Http\Controllers\UserController::class, 'store']);
     Route::post( '/users/{id}/update', [App\Http\Controllers\UserController::class, 'update']);
     Route::post( '/users/{id}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
