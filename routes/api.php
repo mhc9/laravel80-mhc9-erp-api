@@ -289,6 +289,36 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/places', [App\Http\Controllers\PlaceController::class, 'store']);
     Route::post('/places/{id}/update', [App\Http\Controllers\PlaceController::class, 'update']);
     Route::post('/places/{id}/delete', [App\Http\Controllers\PlaceController::class, 'destroy']);
+
+    /** Vehicles */
+    Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
+    Route::get( '/vehicles', [App\Http\Controllers\VehicleController::class, 'getAll']);
+    Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
+    Route::get('/vehicles/init/form', [App\Http\Controllers\VehicleController::class, 'getInitialFormData']);
+    Route::post( '/vehicles', [App\Http\Controllers\VehicleController::class, 'store']);
+    Route::post( '/vehicles/{id}/update', [App\Http\Controllers\VehicleController::class, 'update']);
+    Route::post( '/vehicles/{id}/delete', [App\Http\Controllers\VehicleController::class, 'destroy']);
+    Route::post( '/vehicles/{id}/send-mail', [App\Http\Controllers\VehicleController::class, 'sendMail']);
+
+    /** Drivers */
+    Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
+    Route::get( '/drivers', [App\Http\Controllers\DriverController::class, 'getAll']);
+    Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById']);
+    Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData']);
+    Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store']);
+    Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
+    Route::post( '/drivers/{id}/delete', [App\Http\Controllers\DriverController::class, 'destroy']);
+    Route::post( '/drivers/{id}/send-mail', [App\Http\Controllers\DriverController::class, 'sendMail']);
+
+    /** Reservations */
+    Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
+    Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
+    Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById']);
+    Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData']);
+    Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
+    Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
+    Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
+    Route::post( '/reservations/{id}/send-mail', [App\Http\Controllers\ReservationController::class, 'sendMail']);
 });
 
 Route::get('/db-connection', function () {
