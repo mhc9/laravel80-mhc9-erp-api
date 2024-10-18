@@ -20,4 +20,9 @@ class Reservation extends Model
     {
         return $this->belongsTo(Driver::class, 'driver_id', 'id');
     }
+
+    public function type()
+    {
+        return $this->belongsTo(ReservationType::class, 'type_id', 'id');
+    }
 }

@@ -18,7 +18,7 @@ class ReservationController extends Controller
         // $name = $req->get('name');
         // $status = $req->get('status');
 
-        $reservations = Reservation::with('vehicle','driver')
+        $reservations = Reservation::with('vehicle','driver','type')
                     // ->when(!empty($type), function($q) use ($type) {
                     //     $q->where('plan_type_id', $type);
                     // })
@@ -47,7 +47,7 @@ class ReservationController extends Controller
         // $name = $req->get('name');
         // $status = $req->get('status');
 
-        $reservations = Reservation::with('vehicle','driver')
+        $reservations = Reservation::with('vehicle','driver','type')
                     // ->when(!empty($type), function($q) use ($type) {
                     //     $q->where('plan_type_id', $type);
                     // })
