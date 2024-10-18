@@ -69,10 +69,11 @@ class ReservationController extends Controller
             $reservation = new Reservation();
             $reservation->reserve_date      = $req['reserve_date'];
             $reservation->reserve_time      = $req['reserve_time'];
+            $reservation->type_id           = $req['type_id'];
             $reservation->contact_name      = $req['contact_name'];
             $reservation->contact_tel       = $req['contact_tel'];
             $reservation->destination       = $req['destination'];
-            $reservation->coordinates       = $req['coordinates'];
+            $reservation->coordinate       = $req['coordinate'];
             $reservation->passengers        = $req['passengers'];
             $reservation->remark            = $req['remark'];
             $reservation->status            = 1;
