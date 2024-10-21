@@ -11,18 +11,13 @@ class Reservation extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
-    public function vehicle()
-    {
-        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
-    }
-
-    public function driver()
-    {
-        return $this->belongsTo(Driver::class, 'driver_id', 'id');
-    }
-
     public function type()
     {
         return $this->belongsTo(ReservationType::class, 'type_id', 'id');
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(ReservationAssignment::class, 'reservation_id', 'id');
     }
 }

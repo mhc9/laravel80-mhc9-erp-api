@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Reservation;
+use App\Models\ReservationAssignment;
 use App\Models\Driver;
 use App\Models\Vehicle;
 
@@ -20,7 +21,7 @@ class ReservationController extends Controller
         // $status = $req->get('status');
         $limit = $req->has('limit') ? $req->get('limit') : 10;
 
-        $reservations = Reservation::with('vehicle','driver','type')
+        $reservations = Reservation::with('type','assignments')
                                     ->when(!empty($date), function($q) use ($date) {
                                         $q->where('reserve_date', $date);
                                     })
@@ -49,7 +50,7 @@ class ReservationController extends Controller
         // $name = $req->get('name');
         // $status = $req->get('status');
 
-        $reservations = Reservation::with('vehicle','driver','type')
+        $reservations = Reservation::with('type','assignments')
                     // ->when(!empty($type), function($q) use ($type) {
                     //     $q->where('plan_type_id', $type);
                     // })
@@ -93,7 +94,7 @@ class ReservationController extends Controller
             $reservation->contact_name      = $req['contact_name'];
             $reservation->contact_tel       = $req['contact_tel'];
             $reservation->destination       = $req['destination'];
-            $reservation->coordinate       = $req['coordinate'];
+            $reservation->coordinate        = $req['coordinate'];
             $reservation->passengers        = $req['passengers'];
             $reservation->remark            = $req['remark'];
             $reservation->status            = 1;
@@ -102,7 +103,7 @@ class ReservationController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Insertion successfully!!',
-                    'reservation'   => $reservation
+                    'reservation'   => $reservation->load('type','assignments')
                 ];
             } else {
                 return [
@@ -155,6 +156,39 @@ class ReservationController extends Controller
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
                     'id'        => $id
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function assign(Request $req, $id)
+    {
+        try {
+            $reservation = Reservation::find($id);
+            $reservation->status  = 2;
+            /** สถานะรายการ: 1=รอดำเนินการ,2=จัดรถแล้ว,3=เสร็จแล้ว,9=ยกเลิก */
+
+            if($reservation->save()) {
+                $assignment = new ReservationAssignment();
+                $assignment->reservation_id = $reservation->id;
+                $assignment->driver_id      = $req['driver_id'];
+                $assignment->vehicle_id     = $req['vehicle_id'];
+                $assignment->remark         = $req['remark'];
+
+                return [
+                    'status'        => 1,
+                    'message'       => 'Updating successfully!!',
+                    'reservation'   => $reservation->load('type','assignments')
                 ];
             } else {
                 return [
