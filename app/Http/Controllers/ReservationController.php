@@ -184,6 +184,7 @@ class ReservationController extends Controller
                 $assignment->driver_id      = $req['driver_id'];
                 $assignment->vehicle_id     = $req['vehicle_id'];
                 $assignment->remark         = $req['remark'];
+                $assignment->save();
 
                 return [
                     'status'        => 1,
