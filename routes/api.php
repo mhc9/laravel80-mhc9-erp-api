@@ -309,7 +309,7 @@ Route::middleware('auth:api')->group(function() {
     // Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
     // Route::post( '/drivers/{id}/delete', [App\Http\Controllers\DriverController::class, 'destroy']);
     // Route::post( '/drivers/{id}/send-mail', [App\Http\Controllers\DriverController::class, 'sendMail']);
-
+    
     /** Reservations */
     // Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
     // Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
@@ -321,6 +321,7 @@ Route::middleware('auth:api')->group(function() {
 });
 
 Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search'])->middleware('api.key');
+Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById'])->middleware('api.key');
 Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search'])->middleware('api.key');
 Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll'])->middleware('api.key');
 Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById'])->middleware('api.key');

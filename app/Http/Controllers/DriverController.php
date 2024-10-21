@@ -57,7 +57,7 @@ class DriverController extends Controller
 
     public function getById($id)
     {
-        return Unit::find($id);
+        return Driver::find($id)->with('member_of','assignments','assignments.reservation');
     }
 
     public function store(Request $req)
