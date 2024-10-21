@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Reservation;
+use App\Models\Driver;
 use App\Models\Vehicle;
 
 class ReservationController extends Controller
@@ -72,6 +73,14 @@ class ReservationController extends Controller
     public function getById($id)
     {
         return Unit::find($id);
+    }
+
+    public function getInitialFormData()
+    {
+        return [
+            'drivers'   => Driver::all(),
+            'vehicles'  => Vehicle::all(),
+        ];
     }
 
     public function store(Request $req)
