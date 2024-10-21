@@ -301,25 +301,31 @@ Route::middleware('auth:api')->group(function() {
     Route::post( '/vehicles/{id}/send-mail', [App\Http\Controllers\VehicleController::class, 'sendMail']);
 
     /** Drivers */
-    Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
-    Route::get( '/drivers', [App\Http\Controllers\DriverController::class, 'getAll']);
-    Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById']);
-    Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData']);
-    Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store']);
-    Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
-    Route::post( '/drivers/{id}/delete', [App\Http\Controllers\DriverController::class, 'destroy']);
-    Route::post( '/drivers/{id}/send-mail', [App\Http\Controllers\DriverController::class, 'sendMail']);
+    // Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
+    // Route::get( '/drivers', [App\Http\Controllers\DriverController::class, 'getAll']);
+    // Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById']);
+    // Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData']);
+    // Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store']);
+    // Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
+    // Route::post( '/drivers/{id}/delete', [App\Http\Controllers\DriverController::class, 'destroy']);
+    // Route::post( '/drivers/{id}/send-mail', [App\Http\Controllers\DriverController::class, 'sendMail']);
 
     /** Reservations */
-    Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
-    Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
-    Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById']);
-    Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData']);
-    Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
-    Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
-    Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
-    Route::post( '/reservations/{id}/send-mail', [App\Http\Controllers\ReservationController::class, 'sendMail']);
+    // Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
+    // Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
+    // Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById']);
+    // Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData']);
+    // Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
+    // Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
+    // Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
 });
+
+Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search'])->middleware('api.key');
+Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search'])->middleware('api.key');
+Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll'])->middleware('api.key');
+Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById'])->middleware('api.key');
+Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData'])->middleware('api.key');
+Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->middleware('api.key');
 
 Route::get('/db-connection', function () {
     try {
