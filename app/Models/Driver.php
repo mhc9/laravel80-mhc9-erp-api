@@ -15,4 +15,9 @@ class Driver extends Model
     {
         return $this->belongsTo(VehicleOwner::class, 'member_of', 'id');
     }
+
+    public function assignments()
+    {
+        return $this->hasMany(ReservationAssignment::class, 'driver_id', 'id');
+    }
 }
