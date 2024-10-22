@@ -291,14 +291,14 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/places/{id}/delete', [App\Http\Controllers\PlaceController::class, 'destroy']);
 
     /** Vehicles */
-    Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
-    Route::get( '/vehicles', [App\Http\Controllers\VehicleController::class, 'getAll']);
-    Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
-    Route::get('/vehicles/init/form', [App\Http\Controllers\VehicleController::class, 'getInitialFormData']);
-    Route::post( '/vehicles', [App\Http\Controllers\VehicleController::class, 'store']);
-    Route::post( '/vehicles/{id}/update', [App\Http\Controllers\VehicleController::class, 'update']);
-    Route::post( '/vehicles/{id}/delete', [App\Http\Controllers\VehicleController::class, 'destroy']);
-    Route::post( '/vehicles/{id}/send-mail', [App\Http\Controllers\VehicleController::class, 'sendMail']);
+    // Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
+    // Route::get( '/vehicles', [App\Http\Controllers\VehicleController::class, 'getAll']);
+    // Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
+    // Route::get('/vehicles/init/form', [App\Http\Controllers\VehicleController::class, 'getInitialFormData']);
+    // Route::post( '/vehicles', [App\Http\Controllers\VehicleController::class, 'store']);
+    // Route::post( '/vehicles/{id}/update', [App\Http\Controllers\VehicleController::class, 'update']);
+    // Route::post( '/vehicles/{id}/delete', [App\Http\Controllers\VehicleController::class, 'destroy']);
+    // Route::post( '/vehicles/{id}/send-mail', [App\Http\Controllers\VehicleController::class, 'sendMail']);
 
     /** Drivers */
     // Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
@@ -309,7 +309,7 @@ Route::middleware('auth:api')->group(function() {
     // Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
     // Route::post( '/drivers/{id}/delete', [App\Http\Controllers\DriverController::class, 'destroy']);
     // Route::post( '/drivers/{id}/send-mail', [App\Http\Controllers\DriverController::class, 'sendMail']);
-    
+
     /** Reservations */
     // Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
     // Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
@@ -320,8 +320,15 @@ Route::middleware('auth:api')->group(function() {
     // Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
 });
 
+/** Vehicles */
+Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search'])->middleware('api.key');
+Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById'])->middleware('api.key');
+
+/** Drivers */
 Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search'])->middleware('api.key');
 Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById'])->middleware('api.key');
+
+/** Reservations */
 Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search'])->middleware('api.key');
 Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll'])->middleware('api.key');
 Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById'])->middleware('api.key');
@@ -329,6 +336,7 @@ Route::get('/reservations/init/form', [App\Http\Controllers\ReservationControlle
 Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->middleware('api.key');
 Route::post( '/reservations/{id}/assign', [App\Http\Controllers\ReservationController::class, 'assign'])->middleware('api.key');
 
+/** Check db connection */
 Route::get('/db-connection', function () {
     try {
         $dbconnect = \DB::connection()->getPDO();
