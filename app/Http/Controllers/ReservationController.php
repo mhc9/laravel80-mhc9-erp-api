@@ -204,4 +204,31 @@ class ReservationController extends Controller
             ];
         }
     }
+
+    public function status(Request $req, $id)
+    {
+        try {
+            $reservation = Reservation::find($id);
+            $reservation->status = $req['status'];
+            /** สถานะรายการ: 1=รอดำเนินการ,2=จัดรถแล้ว,3=เสร็จแล้ว,9=ยกเลิก */
+
+            if($reservation->save()) {
+                return [
+                    'status'        => 1,
+                    'message'       => 'Updating successfully!!',
+                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.vehicle')
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
 }
