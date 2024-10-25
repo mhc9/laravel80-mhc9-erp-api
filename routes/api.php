@@ -327,6 +327,7 @@ Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'g
 /** Drivers */
 Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search'])->middleware('api.key');
 Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById'])->middleware('api.key');
+Route::get( '/drivers/{id}/assignments/{date}', [App\Http\Controllers\DriverController::class, 'getAssignments'])->middleware('api.key');
 
 /** Reservations */
 Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search'])->middleware('api.key');

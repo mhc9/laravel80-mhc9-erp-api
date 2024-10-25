@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Driver;
+use App\Models\ReservationAssignment;
 
 class DriverController extends Controller
 {
@@ -58,6 +59,21 @@ class DriverController extends Controller
     public function getById($id)
     {
         return Driver::with('member_of','assignments','assignments.reservation','assignments.reservation.type')->find($id);
+    }
+    
+    public function getAssignments($id, $date)
+    {
+        $assignments = ReservationAssignment::with('reservation','reservation.type')
+                                            ->where('driver_id', $id)
+                                            ->whereHas('reservation', function($q) use ($date) {
+                                                $q->where('reserve_date', $date);
+                                            })
+                                            ->get();
+
+        $driver = Driver::with('member_of')->where('id', $id)->first();
+        $driver['assignments'] = $assignments;
+
+        return $driver;
     }
 
     public function store(Request $req)
