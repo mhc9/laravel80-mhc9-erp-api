@@ -79,8 +79,8 @@ class ReservationController extends Controller
     public function getInitialFormData()
     {
         return [
-            'drivers'   => Driver::all(),
-            'vehicles'  => Vehicle::all(),
+            'drivers'   => Driver::with('member_of')->get(),
+            'vehicles'  => Vehicle::with('type','owner')->get(),
         ];
     }
 
