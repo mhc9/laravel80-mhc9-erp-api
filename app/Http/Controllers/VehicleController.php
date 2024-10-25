@@ -33,7 +33,7 @@ class VehicleController extends Controller
                     //         $query->orWhere('en_name', 'like', '%'.$name.'%');
                     //     });
                     // })
-                    ->paginate(10);
+                    ->paginate(6);
 
         return $vehicles;
     }
