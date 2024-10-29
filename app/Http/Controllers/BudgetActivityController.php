@@ -87,11 +87,13 @@ class BudgetActivityController extends Controller
         return BudgetActivity::with('project','project.plan','budgets','budgets.type')->find($id);
     }
 
-    public function getInitialFormData()
+    public function getInitialFormData(Request $req)
     {
+        $year = $req->get('year');
+
         return [
-            'plans'     => BudgetPlan::orderBy('plan_type_id')->orderBy('plan_no')->get(),
-            'projects'  => BudgetProject::all(),
+            'plans'     => BudgetPlan::where('year', $year)->orderBy('plan_type_id')->orderBy('plan_no')->get(),
+            'projects'  => BudgetProject::where('year', $year)->get(),
             'types'     => BudgetType::all(),
         ];
     }
