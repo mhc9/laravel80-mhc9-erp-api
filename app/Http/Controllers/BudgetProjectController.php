@@ -73,10 +73,12 @@ class BudgetProjectController extends Controller
         return BudgetProject::find($id);
     }
 
-    public function getInitialFormData()
+    public function getInitialFormData(Request $req)
     {
+        $year = $req->get('year');
+
         return [
-            'plans' => BudgetPlan::where('year', 2024)->orderBy('plan_no')->get()
+            'plans' => BudgetPlan::where('year', $year)->orderBy('plan_no')->get()
         ];
     }
 
