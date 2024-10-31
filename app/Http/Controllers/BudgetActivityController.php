@@ -199,7 +199,7 @@ class BudgetActivityController extends Controller
 
             if($activity->delete()) {
                 /** ลบข้อมูลในตาราง budgets ด้วย */
-                Budget::where('budget_activity_id', $deletedId)->delete();
+                Budget::where('activity_id', $deletedId)->delete();
 
                 return [
                     'status'    => 1,
