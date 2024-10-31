@@ -149,7 +149,7 @@ class BudgetActivityController extends Controller
 
             if($activity->save()) {
                 foreach($req['budgets'] as $item) {
-                    if (empty($item['budget_id'])) {
+                    if (empty($item['activity_id'])) {
                         $newBudget = new Budget();
                         $newBudget->activity_id     = $activity->id;
                         $newBudget->budget_type_id  = $item['budget_type_id'];
