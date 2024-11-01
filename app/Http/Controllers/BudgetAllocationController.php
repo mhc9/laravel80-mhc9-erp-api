@@ -77,6 +77,17 @@ class BudgetAllocationController extends Controller
         return $allocations;
     }
 
+    public function getByBudget(Request $req, $budgetId)
+    {
+        $allocations = BudgetAllocation::with('budget','budget.type','budget.activity')
+                        ->whereHas('budget', function($q) use ($budgetId) {
+                            $q->where('id', $budgetId);
+                        })
+                        ->get();
+
+        return $allocations;
+    }
+
     public function getById($id)
     {
         return BudgetAllocation::with('budget','budget.type','budget.activity')->find($id);

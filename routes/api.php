@@ -186,6 +186,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-allocations', [App\Http\Controllers\BudgetAllocationController::class, 'getAll']);
     Route::get('/budget-allocations/search', [App\Http\Controllers\BudgetAllocationController::class, 'search']);
     Route::get('/budget-allocations/{id}', [App\Http\Controllers\BudgetAllocationController::class, 'getById']);
+    Route::get('/budget-allocations/budget/{id}', [App\Http\Controllers\BudgetAllocationController::class, 'getByBudget']);
     Route::get('/budget-allocations/init/form', [App\Http\Controllers\BudgetAllocationController::class, 'getInitialFormData']);
     Route::post('/budget-allocations', [App\Http\Controllers\BudgetAllocationController::class, 'store']);
     Route::post('/budget-allocations/{id}/update', [App\Http\Controllers\BudgetAllocationController::class, 'update']);
