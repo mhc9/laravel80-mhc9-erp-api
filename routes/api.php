@@ -182,6 +182,15 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/budget-activities/{id}/delete', [App\Http\Controllers\BudgetActivityController::class, 'destroy']);
     Route::post('/budget-activities/{id}/toggle', [App\Http\Controllers\BudgetActivityController::class, 'toggle']);
 
+    /** budget-allocations */
+    Route::get('/budget-allocations', [App\Http\Controllers\BudgetAllocationController::class, 'getAll']);
+    Route::get('/budget-allocations/search', [App\Http\Controllers\BudgetAllocationController::class, 'search']);
+    Route::get('/budget-allocations/{id}', [App\Http\Controllers\BudgetAllocationController::class, 'getById']);
+    Route::get('/budget-allocations/init/form', [App\Http\Controllers\BudgetAllocationController::class, 'getInitialFormData']);
+    Route::post('/budget-allocations', [App\Http\Controllers\BudgetAllocationController::class, 'store']);
+    Route::post('/budget-allocations/{id}/update', [App\Http\Controllers\BudgetAllocationController::class, 'update']);
+    Route::post('/budget-allocations/{id}/delete', [App\Http\Controllers\BudgetAllocationController::class, 'destroy']);
+
     /** budgets */
     Route::get('/budgets', [App\Http\Controllers\BudgetController::class, 'getAll']);
     Route::get('/budgets/search', [App\Http\Controllers\BudgetController::class, 'search']);
