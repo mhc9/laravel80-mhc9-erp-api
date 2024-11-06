@@ -300,6 +300,15 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/places/{id}/update', [App\Http\Controllers\PlaceController::class, 'update']);
     Route::post('/places/{id}/delete', [App\Http\Controllers\PlaceController::class, 'destroy']);
 
+    /** Agencies */
+    Route::get('/agencies', [App\Http\Controllers\AgencyController::class, 'getAll']);
+    Route::get('/agencies/search', [App\Http\Controllers\AgencyController::class, 'search']);
+    Route::get('/agencies/{id}', [App\Http\Controllers\AgencyController::class, 'getById']);
+    Route::get('/agencies/init/form', [App\Http\Controllers\AgencyController::class, 'getInitialFormData']);
+    Route::post('/agencies', [App\Http\Controllers\AgencyController::class, 'store']);
+    Route::post('/agencies/{id}/update', [App\Http\Controllers\AgencyController::class, 'update']);
+    Route::post('/agencies/{id}/delete', [App\Http\Controllers\AgencyController::class, 'destroy']);
+
     /** Vehicles */
     // Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
     // Route::get( '/vehicles', [App\Http\Controllers\VehicleController::class, 'getAll']);
