@@ -26,25 +26,26 @@ class BudgetAllocationController extends Controller
         $status     = $req->get('status');
         $limit      = $req->filled('limit') ? $req->get('limit') : 10;
 
-        $allocations = BudgetAllocation::with('budget','budget.type','budget.activity') //'project','project.plan',
-                        // ->when(!empty($project), function($q) use ($project) {
-                        //     $q->where('project_id', $project);
-                        // })
-                        // ->when(!empty($plan), function($q) use ($plan) {
-                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                        //         $sq->where('plan_id', $plan);
-                        //     });
-                        // })
-                        // ->when(!empty($year), function($q) use ($year) {
-                        //     $q->where('budget_activities.year', $year);
-                        // })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where('budget_activities.name', 'like', '%'.$name.'%');
-                        // })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
-                        ->paginate($limit);
+        $allocations = BudgetAllocation::with('agency','budget','budget.type','budget.activity')
+                                        ->with('budget.activity.project','budget.activity.project.plan')
+                                        // ->when(!empty($project), function($q) use ($project) {
+                                        //     $q->where('project_id', $project);
+                                        // })
+                                        // ->when(!empty($plan), function($q) use ($plan) {
+                                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
+                                        //         $sq->where('plan_id', $plan);
+                                        //     });
+                                        // })
+                                        // ->when(!empty($year), function($q) use ($year) {
+                                        //     $q->where('budget_activities.year', $year);
+                                        // })
+                                        // ->when(!empty($name), function($q) use ($name) {
+                                        //     $q->where('budget_activities.name', 'like', '%'.$name.'%');
+                                        // })
+                                        // ->when($status != '', function($q) use ($status) {
+                                        //     $q->where('status', $status);
+                                        // })
+                                        ->paginate($limit);
 
         return $allocations;
     }
@@ -58,45 +59,49 @@ class BudgetAllocationController extends Controller
         $year       = $req->get('year');
         $status     = $req->get('status');
 
-        $allocations = BudgetAllocation::with('budget','budget.type','budget.activity','budget.activity.project','budget.activity.project.plan')
-                        ->when(!empty($year), function($q) use ($year) {
-                            $q->whereHas('budget.activity', function($sq) use ($year) {
-                                $sq->where('year', $year);
-                            });
-                        })
-                        // ->when(!empty($project), function($q) use ($project) {
-                        //     $q->where('project_id', $project);
-                        // })
-                        // ->when(!empty($plan), function($q) use ($plan) {
-                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                        //         $sq->where('plan_id', $plan);
-                        //     });
-                        // })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where('name', 'like', '%'.$name.'%');
-                        // })
-                        ->get();
+        $allocations = BudgetAllocation::with('agency','budget','budget.type','budget.activity')
+                                        ->with('budget.activity.project','budget.activity.project.plan')
+                                        ->when(!empty($year), function($q) use ($year) {
+                                            $q->whereHas('budget.activity', function($sq) use ($year) {
+                                                $sq->where('year', $year);
+                                            });
+                                        })
+                                        // ->when(!empty($project), function($q) use ($project) {
+                                        //     $q->where('project_id', $project);
+                                        // })
+                                        // ->when(!empty($plan), function($q) use ($plan) {
+                                        //     $q->whereHas('project.plan', function($sq) use ($plan) {
+                                        //         $sq->where('plan_id', $plan);
+                                        //     });
+                                        // })
+                                        // ->when($status != '', function($q) use ($status) {
+                                        //     $q->where('status', $status);
+                                        // })
+                                        // ->when(!empty($name), function($q) use ($name) {
+                                        //     $q->where('name', 'like', '%'.$name.'%');
+                                        // })
+                                        ->get();
 
         return $allocations;
     }
 
     public function getByBudget(Request $req, $budgetId)
     {
-        $allocations = BudgetAllocation::with('budget','budget.type','budget.activity','budget.activity.project','budget.activity.project.plan')
-                        ->whereHas('budget', function($q) use ($budgetId) {
-                            $q->where('id', $budgetId);
-                        })
-                        ->get();
+        $allocations = BudgetAllocation::with('agency','budget','budget.type','budget.activity')
+                                        ->with('budget.activity.project','budget.activity.project.plan')
+                                        ->whereHas('budget', function($q) use ($budgetId) {
+                                            $q->where('id', $budgetId);
+                                        })
+                                        ->get();
 
         return $allocations;
     }
 
     public function getById($id)
     {
-        return BudgetAllocation::with('budget','budget.type','budget.activity')->find($id);
+        return BudgetAllocation::with('agency','budget','budget.type','budget.activity')
+                                ->with('budget.activity.project','budget.activity.project.plan')
+                                ->find($id);
     }
 
     public function getInitialFormData(Request $req)
@@ -131,7 +136,8 @@ class BudgetAllocationController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'allocation'  => $allocation->load('budget','budget.type','budget.activity')
+                    'allocation'  => $allocation->load('agency','budget','budget.type','budget.activity',
+                                                        'budget.activity.project','budget.activity.project.plan')
                 ];
             } else {
                 return [
@@ -165,7 +171,8 @@ class BudgetAllocationController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'allocation'  => $allocation->load('budget','budget.type','budget.activity')
+                    'allocation'  => $allocation->load('agency','budget','budget.type','budget.activity',
+                                                        'budget.activity.project','budget.activity.project.plan')
                 ];
             } else {
                 return [

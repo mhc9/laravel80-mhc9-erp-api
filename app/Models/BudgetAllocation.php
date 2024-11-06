@@ -15,4 +15,9 @@ class BudgetAllocation extends Model
     {
         return $this->belongsTo(Budget::class, 'budget_id', 'id');
     }
+
+    public function agency()
+    {
+        return $this->belongsTo(Agency::class, 'agency_id', 'id');
+    }
 }
