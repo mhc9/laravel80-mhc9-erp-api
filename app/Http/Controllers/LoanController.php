@@ -113,7 +113,7 @@ class LoanController extends Controller
         ];
 
         return [
-            'departments'   => Department::all(),
+            'departments'   => Department::with('divisions')->get(),
             'expenses'      => Expense::all(),
             'budgets'       => Budget::with('activity','type')->get(),
             'loanTypes'     => $loanTypes,
@@ -132,10 +132,11 @@ class LoanController extends Controller
             $loan->money_type_id    = $req['money_type_id'];
             $loan->year             = $req['year'];
             $loan->department_id    = $req['department_id'];
-            // $loan->division_id      = $req['division_id'];
+            $loan->division_id      = $req['division_id'];
             $loan->employee_id      = $req['employee_id'];
             $loan->project_no       = $req['project_no'];
             $loan->project_date     = $req['project_date'];
+            $loan->project_owner    = $req['project_owner'];
             $loan->project_name     = $req['project_name'];
             $loan->project_sdate    = $req['project_sdate'];
             $loan->project_edate    = $req['project_edate'];
@@ -212,10 +213,11 @@ class LoanController extends Controller
             $loan->money_type_id    = $req['money_type_id'];
             $loan->year             = $req['year'];
             $loan->department_id    = $req['department_id'];
-            // $loan->division_id      = $req['division_id'];
+            $loan->division_id      = $req['division_id'];
             $loan->employee_id      = $req['employee_id'];
             $loan->project_no       = $req['project_no'];
             $loan->project_date     = $req['project_date'];
+            $loan->project_owner    = $req['project_owner'];
             $loan->project_name     = $req['project_name'];
             $loan->project_sdate    = $req['project_sdate'];
             $loan->project_edate    = $req['project_edate'];
