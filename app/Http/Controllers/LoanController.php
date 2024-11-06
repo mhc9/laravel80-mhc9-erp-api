@@ -28,7 +28,7 @@ class LoanController extends Controller
         $year       = $req->get('year');
         $status     = $req->get('status');
 
-        $loans = Loan::with('details','details.expense','department')
+        $loans = Loan::with('details','details.expense','department','division')
                         ->with('employee','employee.prefix','employee.position','employee.level')
                         ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                         ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
@@ -56,7 +56,7 @@ class LoanController extends Controller
         $name       = $req->get('name');
         $status     = $req->get('status');
 
-        $loans = Loan::with('details','details.expense','department')
+        $loans = Loan::with('details','details.expense','department','division')
                         ->with('employee','employee.prefix','employee.position','employee.level')
                         ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                         ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
@@ -82,7 +82,7 @@ class LoanController extends Controller
 
     public function getById($id)
     {
-        return Loan::with('details','details.expense','department')
+        return Loan::with('details','details.expense','department','division')
                     ->with('employee','employee.prefix','employee.position','employee.level')
                     ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                     ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
