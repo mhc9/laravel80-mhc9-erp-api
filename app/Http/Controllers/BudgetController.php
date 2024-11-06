@@ -50,6 +50,9 @@ class BudgetController extends Controller
                             $sq->where('year', $year);
                         });
                     })
+                    ->whereHas('activity', function($q) {
+                        $q->orderBy('activity_no');
+                    })
                     ->paginate($limit);
 
         return $budgets;
