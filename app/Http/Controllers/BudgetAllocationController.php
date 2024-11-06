@@ -114,11 +114,13 @@ class BudgetAllocationController extends Controller
     {
         try {
             $allocation = new BudgetAllocation();
-            $allocation->budget_id    = $req['budget_id'];
-            $allocation->doc_no       = $req['doc_no'];
-            $allocation->doc_date     = $req['doc_date'];
-            $allocation->total        = $req['total'];
-            $allocation->description  = $req['description'];
+            $allocation->budget_id      = $req['budget_id'];
+            $allocation->doc_no         = $req['doc_no'];
+            $allocation->doc_date       = $req['doc_date'];
+            $allocation->allocate_type_id = $req['allocate_type_id'];
+            $allocation->agency_id      = $req['agency_id'];
+            $allocation->description    = $req['description'];
+            $allocation->total          = $req['total'];
 
             if($allocation->save()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
@@ -149,11 +151,13 @@ class BudgetAllocationController extends Controller
     {
         try {
             $allocation = BudgetAllocation::find($id);
-            $allocation->budget_id    = $req['budget_id'];
-            $allocation->doc_no       = $req['doc_no'];
-            $allocation->doc_date     = $req['doc_date'];
-            $allocation->total        = $req['total'];
-            $allocation->description  = $req['description'];
+            $allocation->budget_id      = $req['budget_id'];
+            $allocation->doc_no         = $req['doc_no'];
+            $allocation->doc_date       = $req['doc_date'];
+            $allocation->allocate_type_id = $req['allocate_type_id'];
+            $allocation->agency_id      = $req['agency_id'];
+            $allocation->description    = $req['description'];
+            $allocation->total          = $req['total'];
 
             if($allocation->save()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
