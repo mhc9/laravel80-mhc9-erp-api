@@ -129,9 +129,10 @@ class BudgetAllocationController extends Controller
 
             if($allocation->save()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
-                // $budget = Budget::find($req['budget_id']);
-                // $budget->total = $budget->total + $req['total'];
-                // $budget->save();
+                $budget = Budget::find($req['budget_id']);
+                $budget->latest_total = $req['total'];
+                $budget->total = $req['allocate_type_id'] == '1' ? $budget->total + $req['total'] : $budget->total - $req['total'];
+                $budget->save();
 
                 return [
                     'status'    => 1,
