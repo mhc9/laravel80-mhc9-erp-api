@@ -350,7 +350,7 @@ class LoanController extends Controller
 
     public function getForm(Request $req, $id)
     {
-        $loan = Loan::with('details','details.expense','department')
+        $loan = Loan::with('details','details.expense','department','division')
                             ->with('employee','employee.prefix','employee.position','employee.level')
                             ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                             ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
@@ -361,7 +361,7 @@ class LoanController extends Controller
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
 
         /** ================================== HEADER ================================== */
-        $word->setValue('department', $loan->department->name);
+        $word->setValue('department', $loan->division ? $loan->division->name : $loan->department->name);
         $word->setValue('docNo', $loan->doc_no);
         $word->setValue('docDate', convDbDateToLongThDate($loan->doc_date));
         /** ================================== HEADER ================================== */
@@ -370,6 +370,7 @@ class LoanController extends Controller
         /** =================== รายละเอียดโครงการ =================== */
         $word->setValue('projectNo', $loan->project_no);
         $word->setValue('projectDate', convDbDateToLongThDate($loan->project_date));
+        $word->setValue('projectOwner', $loan->project_owner);
 
         if ($loan->loan_type_id == 1) {
             $word->setValue('projectName', 'กำหนดจัด' . $loan->project_name);
@@ -496,7 +497,7 @@ class LoanController extends Controller
 
     public function getContract(Request $req, $id)
     {
-        $loan = Loan::with('details','details.expense','department')
+        $loan = Loan::with('details','details.expense','department','division')
                             ->with('employee','employee.prefix','employee.position','employee.level')
                             ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
                             ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
