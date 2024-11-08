@@ -510,7 +510,7 @@ class LoanController extends Controller
         /** ================================== HEADER ================================== */
         $word->setValue('requester', $loan->employee->prefix->name.$loan->employee->firstname . ' ' . $loan->employee->lastname);
         $word->setValue('requesterPosition', $loan->employee->position->name . ($loan->employee->level ? $loan->employee->level->name : ''));
-        $word->setValue('department', $loan->department->name);
+        // $word->setValue('department', $loan->department->name);
         $word->setValue('moneyType1', $loan->money_type_id == 1 ? '/' : '');
         $word->setValue('moneyType2', $loan->money_type_id == 2 ? '/' : '');
         $word->setValue('moneyType3', $loan->money_type_id == 3 ? '/' : '');
@@ -521,7 +521,7 @@ class LoanController extends Controller
         if ($loan->loan_type_id == 1) {
             $word->setValue('projectName', 'เพื่อเป็นค่าใช้จ่ายใน' . $loan->project_name);
         } else {
-            $word->setValue('projectName', 'ตามหนังสือ ' . $loan->department->name . ' ที่ ' . $loan->doc_no . ' ลงวันที่ ' . convDbDateToLongThDate($loan->doc_date) . 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $loan->project_name);
+            $word->setValue('projectName', 'ตามหนังสือ ' . ($loan->division ? $loan->division->name : $loan->department->name) . ' ที่ ' . $loan->doc_no . ' ลงวันที่ ' . convDbDateToLongThDate($loan->doc_date) . 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $loan->project_name);
         }
 
         $word->setValue('projectSDate', convDbDateToLongThDate($loan->project_sdate));
