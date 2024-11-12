@@ -204,7 +204,7 @@ class TaskController extends Controller
                 $reporter = Employee::with('prefix','position','level')->find($task->reporter_id);
 
                 /** แจ้งเตือนไปในไลน์ */
-                Line::send('คุณ'.$reporter->firstname.' '.$reporter->lastname.' ได้แจ้ง'.$task->problem.' เมื่อ '.convDbDateToThDate($task->task_date).' เวลา '.$task->task_time.'น.');
+                // Line::send('คุณ'.$reporter->firstname.' '.$reporter->lastname.' ได้แจ้ง'.$task->problem.' เมื่อ '.convDbDateToThDate($task->task_date).' เวลา '.$task->task_time.'น.');
 
                 return [
                     'status'    => 1,
