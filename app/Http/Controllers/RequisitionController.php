@@ -348,11 +348,11 @@ class RequisitionController extends Controller
 
     public function getDocument(Request $req, $id)
     {
-        $requisition = Requisition::with('category','budget','details','project','division','division.department')
-                        ->with('details.item','details.item','details.unit')
+        $requisition = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+                        ->with('details','project','division','division.department','details.item','details.item','details.unit')
                         ->with('requester','requester.prefix','requester.position','requester.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
-                        ->with('committees.employee.position','committees.employee.level')
+                        ->with('committees.employee.position','committees.employee.level','category')
                         ->find($id);
 
         $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
@@ -375,13 +375,13 @@ class RequisitionController extends Controller
         $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('reason', $requisition->reason);
-        $word->setValue('year', $requisition->year);
-        $word->setValue('budget', $requisition->budget->project->plan->name . ' ' . $requisition->budget->project->name  . ' ' . $requisition->budget->name);
+        $word->setValue('year', $requisition->year+543);
+        $word->setValue('budget', $requisition->budget->activity->project->plan->name . ' ' . $requisition->budget->activity->project->name  . ' ' . $requisition->budget->activity->name);
         $word->setValue('netTotal', number_format($requisition->net_total));
         $word->setValue('netTotalText', baht_text($requisition->net_total));
         $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
         $word->setValue('requesterPosition', $requisition->requester->position->name . ($requisition->requester->level ? $requisition->requester->level->name : ''));
-        
+
         $cx = 1;
         $word->cloneRow('inspector', sizeof($requisition->committees));
         foreach($requisition->committees as $inspector => $committee) {
@@ -389,8 +389,7 @@ class RequisitionController extends Controller
             $word->setValue('inspectorPosition#' . $cx, $committee->employee->position->name . ($committee->employee->level ? $committee->employee->level->name : ''));
             $cx++;
         }
-        
-        
+
         $no = 1;
         $word->cloneRow('item', sizeof($requisition->details));
         foreach($requisition->details as $item => $detail) {
@@ -406,7 +405,7 @@ class RequisitionController extends Controller
         $word->setValue('desiredDate', convDbDateToLongThDate($requisition->desired_date));
         $word->setValue('deliverPlace', array_any($requisition->details->toArray(), function($detail) { return in_array($detail['item_id'], [24]); }) ? 'สถานบริการน้ำมันเชื้อเพลิง' : 'ศูนย์สุขภาพจิตที่ 9');
         /** ================================== CONTENT ================================== */
-        
+
         /** ================================== SIGNATURE ================================== */
         $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
         $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
