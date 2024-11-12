@@ -677,7 +677,7 @@ class LoanController extends Controller
             }
 
             /** เพิ่มรายการลงในตาราง */
-        $word->setComplexBlock('items', $itemTable);
+            $word->setComplexBlock('items', $itemTable);
 
             $word->cloneBlock('haveCourses', 1, true, true);        // 0=มี 1 รุ่น, 1=มีมากกว่า 1 รุ่น
             $word->cloneBlock('notHaveCourses', 0, true, true);     // 0=มีมากกว่า 1 รุ่น, 1=มี 1 รุ่น
