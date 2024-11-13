@@ -89,7 +89,7 @@ class LoanRefundController extends Controller
                         ->with('contract','contract.details','contract.details.expense','contract.details.loanDetail')
                         ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget')
                         ->with('contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan')
-                        ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.department')
+                        ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.department','contract.loan.division')
                         ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                         ->find($id);
     }
