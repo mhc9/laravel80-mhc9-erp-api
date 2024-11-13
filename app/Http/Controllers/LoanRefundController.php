@@ -323,7 +323,7 @@ class LoanRefundController extends Controller
     {
         $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
                     ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place')
-                    ->with('contract.loan.courses.place.changwat','contract.loan.department','contract.loan.employee')
+                    ->with('contract.loan.courses.place.changwat','contract.loan.department','contract.loan.division','contract.loan.employee')
                     ->with('contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                     ->find($id);
 
@@ -331,7 +331,7 @@ class LoanRefundController extends Controller
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
 
         /** ================================== HEADER ================================== */
-        $word->setValue('department', $refund->contract->loan->department->name);
+        $word->setValue('department', $refund->contract->loan->division ? $refund->contract->loan->division->name : $refund->contract->loan->department->name);
         $word->setValue('docNo', $refund->doc_no);
         $word->setValue('docDate', convDbDateToLongThDate($refund->doc_date));
         /** ================================== HEADER ================================== */
@@ -354,7 +354,7 @@ class LoanRefundController extends Controller
         /** =================== แผนงาน =================== */
         $budgets = '';
         foreach($refund->contract->loan->budgets as $data) {
-            $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
+            $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
         }
 
         $word->setValue('budget', $budgets);
@@ -362,16 +362,37 @@ class LoanRefundController extends Controller
         $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
         $word->setValue('completed', $refund->contract->loan->loan_type_id == 1 ? 'ได้ดำเนินการจัดโครงการฯ เสร็จสิ้นแล้ว ' : '');
 
+        /** Style ของตาราง */
+        $tableStyle = [
+            'borderSize' => 'none',
+            'width' => 93 * 50,
+            'indent' => new IndentWidth(700),
+            'unit' => TblWidth::PERCENT, //TWIP | PERCENT
+        ];
+        $couseFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 14, 'bold' => true];
+        $itemFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 14];
+
         /** =================== รายการจัดซือจัดจ้าง =================== */
         $orders = array_filter($refund->details->toArray(), function($detail) { return $detail['contract_detail']['expense_group'] == 2; });
-        $orderNo = 1;
-        $word->cloneRow('order', sizeof($orders));
+        $orderTable = new Table($tableStyle);
+
         foreach($orders as $order => $detail) {
-            $word->setValue('no#' . $orderNo, $orderNo);
-            $word->setValue('order#' . $orderNo, '- ' . $detail['contract_detail']['expense']['name'] . ' ' . $detail['description']);
-            $word->setValue('orderTotal#' . $orderNo, number_format($detail['total']));
-            $orderNo++;
+            $orderTable->addRow();
+            $orderTable
+                ->addCell(50 * 50)
+                ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $detail['description'], $itemFontStyle, ['spaceAfter' => 0]);
+            $orderTable
+                ->addCell(50 * 50)
+                ->addText('เป็นเงิน  ' . number_format($detail['total']) . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         }
+
+        /** เพิ่มแถวยอดรวมเป็นเงิน */
+        $orderTable->addRow();
+        $orderTable
+            ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+            ->addText('รวมเป็นเงิน ' . number_format($refund->order_total) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+
+        $word->setComplexBlock('orders', $orderTable);
 
         $word->setValue('orderNetTotal', number_format($refund->order_total));
         $word->setValue('orderNetTotalText', baht_text($refund->order_total));
@@ -383,66 +404,71 @@ class LoanRefundController extends Controller
         }
 
         /** =================== รายการค่าใช้จ่าย =================== */
+        $itemTable = new Table($tableStyle);
+        $courseTotal = 0;
+
         if ($refund->contract->loan->expense_calc == 1) {
             /** คิดรวม */
             $items = array_filter($refund->details->toArray(), function($detail) { return $detail['contract_detail']['expense_group'] == 1; });
-            $itemNo = 1;
-            $word->cloneRow('item', sizeof($items));
             foreach($items as $item => $detail) {
                 $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description']) : '';
 
-                $word->setValue('no#' . $itemNo, $itemNo);
-                $word->setValue('item#' . $itemNo, '- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description);
-                $word->setValue('itemTotal#' . $itemNo, number_format($detail['total']));
-                $itemNo++;
+                $itemTable->addRow();
+                $itemTable
+                    ->addCell(50 * 50)
+                    ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
+                $itemTable
+                    ->addCell(50 * 50)
+                    ->addText('เป็นเงิน  ' . number_format($detail['total']) . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+
+                /** คำนวณยอดรวมเป็นเงิน */
+                $courseTotal += $detail['total'];
             }
 
-            $word->cloneBlock('haveCourses', 0, true, true);
-            $word->cloneBlock('notHaveCourses', 1, true, true);
+            /** เพิ่มแถวยอดรวมเป็นเงิน */
+            $itemTable->addRow();
+            $itemTable
+                ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+                ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         } else {
             /** คิดแยกวันที่ */
-            /** Style ของตาราง */
-            $tableStyle = [
-                'borderSize' => 'none',
-                'width' => 93 * 50,
-                'indent' => new IndentWidth(700),
-                'unit' => TblWidth::PERCENT, //TWIP | PERCENT
-            ];
-            $couseFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 16, 'bold' => true];
-            $itemFontStyle = ['name' => 'TH SarabunIT๙', 'size' => 14];
-
-            $table = new Table($tableStyle);
-
             foreach($refund->contract->loan->courses as $course => $cs) {
+                $courseTotal = 0;
+
                 /** เพิ่มแถวในตาราง */
-                $table->addRow();
-                $table
-                ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle);
-                
+                $itemTable->addRow();
+                $itemTable
+                    ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+                    ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle);
+
                 $items = array_filter($refund->details->toArray(), function($detail) use ($cs) { return $detail['contract_detail']['expense_group'] == 1 && $detail['contract_detail']['loan_detail']['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
                     /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
                     $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description']) : '';
 
                     /** เพิ่มแถวในตาราง */
-                    $table->addRow();
-                    $table
+                    $itemTable->addRow();
+                    $itemTable
                         ->addCell(50 * 50)
-                        ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description, $itemFontStyle);
-                    $table
+                        ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
+                    $itemTable
                         ->addCell(50 * 50)
-                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle);
-                }
-            }
+                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
-            $word->setComplexBlock('items', $table);
-            $word->cloneBlock('haveCourses', 1, true, true);
-            $word->cloneBlock('notHaveCourses', 0, true, true);
+                    /** คำนวณยอดรวมเป็นเงิน */
+                    $courseTotal += $detail['total'];
+                }
+
+                /** เพิ่มแถวยอดรวมเป็นเงิน */
+                $itemTable->addRow();
+                $itemTable
+                    ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+                    ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+            }
         }
 
-        $word->setValue('itemNetTotal', number_format($refund->item_total));
-        $word->setValue('itemNetTotalText', baht_text($refund->item_total));
+        /** เพิ่มรายการลงในตาราง */
+        $word->setComplexBlock('items', $itemTable);
 
         if (sizeof($refund->details) == 1) {
             $word->cloneBlock('isProject', 0, true, true);
@@ -450,10 +476,11 @@ class LoanRefundController extends Controller
             $word->cloneBlock('isProject', 1, true, true);
         }
 
-        /** =================== รวมทั้งสิ้น =================== */
+        /** =================== ยอดรวมทั้งสิ้น =================== */
         $word->setValue('netTotal', number_format($refund->net_total));
         $word->setValue('netTotalText', baht_text($refund->net_total));
 
+        /** =================== เงื่อนไขการคืนเงิน =================== */
         if ($refund->refund_type_id == 1) {
             $word->setValue('refundType', 'และคืนเงินยืม จำนวนเงิน ' . number_format($refund->balance) . ' (' . baht_text($refund->balance) . ')');
         } else if ($refund->refund_type_id == 2) {
