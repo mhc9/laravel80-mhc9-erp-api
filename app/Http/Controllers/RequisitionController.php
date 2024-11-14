@@ -141,6 +141,7 @@ class RequisitionController extends Controller
             $requisition->project_id    = $req['project_id'];
             $requisition->project_name  = $req['project_name'];
             $requisition->requester_id  = $req['requester_id'];
+            $requisition->department_id = $req['department_id'];
             $requisition->division_id   = $req['division_id'];
             $requisition->reason        = $req['reason'];
             $requisition->desired_date  = $req['desired_date'];
@@ -210,6 +211,7 @@ class RequisitionController extends Controller
             $requisition->project_id    = $req['project_id'];
             $requisition->project_name  = $req['project_name'];
             $requisition->requester_id  = $req['requester_id'];
+            $requisition->department_id = $req['department_id'];
             $requisition->division_id   = $req['division_id'];
             $requisition->reason        = $req['reason'];
             $requisition->desired_date  = $req['desired_date'];
