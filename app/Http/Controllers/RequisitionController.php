@@ -101,6 +101,19 @@ class RequisitionController extends Controller
                     ->find($id);
     }
 
+    public function getByIdWithHeadOfDepart($id)
+    {
+        $requisition = $this->getById($id);
+
+        return [
+            'requisition'   => $requisition,
+            'headOfDepart'  => Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
+                                        ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+                                        ->where('status', 1)
+                                        ->first()
+        ];
+    }
+
     public function getInitialFormData()
     {
         $year           = 2566;
