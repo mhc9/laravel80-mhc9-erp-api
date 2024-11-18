@@ -76,9 +76,9 @@ class ReservationController extends Controller
         return Unit::find($id);
     }
 
-    public function getInitialFormData()
+    public function getInitialFormData(Request $req)
     {
-        $date = '2024-11-27';
+        $date = $req->get('date');
 
         return [
             'drivers'   => $date == '2024-11-27' ? Driver::with('member_of')->get() : Driver::with('member_of')->whereNotIn('id', [13,14,15,16])->get(),
