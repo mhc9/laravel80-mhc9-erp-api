@@ -88,16 +88,17 @@ class ReservationController extends Controller
     {
         try {
             $reservation = new Reservation();
-            $reservation->reserve_date      = $req['reserve_date'];
-            $reservation->reserve_time      = $req['reserve_time'];
-            $reservation->type_id           = $req['type_id'];
-            $reservation->contact_name      = $req['contact_name'];
-            $reservation->contact_tel       = $req['contact_tel'];
-            $reservation->destination       = $req['destination'];
-            $reservation->coordinate        = $req['coordinate'];
-            $reservation->passengers        = $req['passengers'];
-            $reservation->remark            = $req['remark'];
-            $reservation->status            = 1;
+            $reservation->reserve_date  = $req['reserve_date'];
+            $reservation->reserve_time  = $req['reserve_time'];
+            $reservation->type_id       = $req['type_id'];
+            $reservation->contact_name  = $req['contact_name'];
+            $reservation->contact_tel   = $req['contact_tel'];
+            $reservation->destination   = $req['destination'];
+            $reservation->coordinate    = $req['coordinate'];
+            $reservation->passengers    = $req['passengers'];
+            $reservation->vehicles      = $req['vehicles'];
+            $reservation->remark        = $req['remark'];
+            $reservation->status        = 1;
 
             if($reservation->save()) {
                 return [
@@ -122,15 +123,23 @@ class ReservationController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $unit = Unit::find($id);
-            $unit->name     = $req['name'];
-            $unit->status   = $req['status'] ? 1 : 0;
+            $reservation = Reservation::find($id);
+            $reservation->reserve_date  = $req['reserve_date'];
+            $reservation->reserve_time  = $req['reserve_time'];
+            $reservation->type_id       = $req['type_id'];
+            $reservation->contact_name  = $req['contact_name'];
+            $reservation->contact_tel   = $req['contact_tel'];
+            $reservation->destination   = $req['destination'];
+            $reservation->coordinate    = $req['coordinate'];
+            $reservation->passengers    = $req['passengers'];
+            $reservation->vehicles      = $req['vehicles'];
+            $reservation->remark        = $req['remark'];
 
-            if($unit->save()) {
+            if($reservation->save()) {
                 return [
-                    'status'    => 1,
-                    'message'   => 'Updating successfully!!',
-                    'unit'      => $unit
+                    'status'        => 1,
+                    'message'       => 'Updating successfully!!',
+                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.vehicle')
                 ];
             } else {
                 return [
@@ -149,9 +158,9 @@ class ReservationController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $unit = Unit::find($id);
+            $reservation = Reservation::find($id);
 
-            if($unit->delete()) {
+            if($reservation->delete()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
