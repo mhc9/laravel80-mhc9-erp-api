@@ -78,8 +78,10 @@ class ReservationController extends Controller
 
     public function getInitialFormData()
     {
+        $date = '2024-11-27';
+
         return [
-            'drivers'   => Driver::with('member_of')->get(),
+            'drivers'   => $date == '2024-11-27' ? Driver::with('member_of')->get() : Driver::with('member_of')->whereNotIn('id', [13,14,15,16])->get(),
             'vehicles'  => Vehicle::with('type','owner')->get(),
         ];
     }
@@ -188,12 +190,14 @@ class ReservationController extends Controller
             /** สถานะรายการ: 1=รอดำเนินการ,2=จัดรถแล้ว,3=เสร็จแล้ว,9=ยกเลิก */
 
             if($reservation->save()) {
-                $assignment = new ReservationAssignment();
-                $assignment->reservation_id = $reservation->id;
-                $assignment->driver_id      = $req['driver_id'];
-                $assignment->vehicle_id     = $req['vehicle_id'];
-                $assignment->remark         = $req['remark'];
-                $assignment->save();
+                foreach($req['assignments'] as $ass) {
+                    $assignment = new ReservationAssignment();
+                    $assignment->reservation_id = $reservation->id;
+                    $assignment->driver_id      = $ass['driver_id'];
+                    $assignment->vehicle_id     = $ass['vehicle_id'];
+                    $assignment->remark         = $ass['remark'];
+                    $assignment->save();
+                }
 
                 return [
                     'status'        => 1,
