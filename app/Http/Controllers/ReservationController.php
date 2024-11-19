@@ -21,7 +21,7 @@ class ReservationController extends Controller
         // $status = $req->get('status');
         $limit = $req->has('limit') ? $req->get('limit') : 10;
 
-        $reservations = Reservation::with('type','assignments','assignments.driver','assignments.vehicle')
+        $reservations = Reservation::with('type','assignments','assignments.driver','assignments.driver.member_of','assignments.vehicle')
                                     ->when(!empty($date), function($q) use ($date) {
                                         $q->where('reserve_date', $date);
                                     })
@@ -50,7 +50,7 @@ class ReservationController extends Controller
         // $name = $req->get('name');
         // $status = $req->get('status');
 
-        $reservations = Reservation::with('type','assignments','assignments.driver','assignments.vehicle')
+        $reservations = Reservation::with('type','assignments','assignments.driver','assignments.driver.member_of','assignments.vehicle')
                     // ->when(!empty($type), function($q) use ($type) {
                     //     $q->where('plan_type_id', $type);
                     // })
@@ -106,7 +106,7 @@ class ReservationController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Insertion successfully!!',
-                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.vehicle')
+                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.driver.member_of','assignments.vehicle')
                 ];
             } else {
                 return [
@@ -141,7 +141,7 @@ class ReservationController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
-                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.vehicle')
+                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.driver.member_of','assignments.vehicle')
                 ];
             } else {
                 return [
@@ -202,7 +202,7 @@ class ReservationController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
-                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.vehicle')
+                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.driver.member_of','assignments.vehicle')
                 ];
             } else {
                 return [
@@ -229,7 +229,7 @@ class ReservationController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
-                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.vehicle')
+                    'reservation'   => $reservation->load('type','assignments','assignments.driver','assignments.driver.member_of','assignments.vehicle')
                 ];
             } else {
                 return [
