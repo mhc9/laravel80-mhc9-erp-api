@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Reservation;
@@ -103,6 +104,9 @@ class ReservationController extends Controller
             $reservation->status        = 1;
 
             if($reservation->save()) {
+                /** Log info */
+                Log::channel('daily')->info('Add new reservation ID:' .$reservation->id);
+
                 return [
                     'status'        => 1,
                     'message'       => 'Insertion successfully!!',
@@ -138,6 +142,9 @@ class ReservationController extends Controller
             $reservation->remark        = $req['remark'];
 
             if($reservation->save()) {
+                /** Log info */
+                Log::channel('daily')->info('Update reservation ID:' .$id);
+
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
@@ -163,6 +170,9 @@ class ReservationController extends Controller
             $reservation = Reservation::find($id);
 
             if($reservation->delete()) {
+                /** Log info */
+                Log::channel('daily')->info('Delete reservation ID:' .$id);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
@@ -199,6 +209,9 @@ class ReservationController extends Controller
                     $assignment->save();
                 }
 
+                /** Log info */
+                Log::channel('daily')->info('Add new assignment of reservation ID:' .$id);
+
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
@@ -226,6 +239,9 @@ class ReservationController extends Controller
             /** สถานะรายการ: 1=รอดำเนินการ,2=จัดรถแล้ว,3=เสร็จแล้ว,9=ยกเลิก */
 
             if($reservation->save()) {
+                /** Log info */
+                Log::channel('daily')->info('Update reservation\'s status ID:' .$id. ' to ' .$req['status']);
+
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',

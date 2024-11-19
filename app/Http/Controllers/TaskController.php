@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use Phattarachai\LineNotify\Facade\Line;
@@ -206,6 +207,9 @@ class TaskController extends Controller
                 /** แจ้งเตือนไปในไลน์ */
                 // Line::send('คุณ'.$reporter->firstname.' '.$reporter->lastname.' ได้แจ้ง'.$task->problem.' เมื่อ '.convDbDateToThDate($task->task_date).' เวลา '.$task->task_time.'น.');
 
+                /** Log info */
+                Log::channel('daily')->info('Add new task ID:' .$task->id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
@@ -308,6 +312,9 @@ class TaskController extends Controller
             $task = Task::find($id);
 
             if($task->delete()) {
+                /** Log info */
+                Log::channel('daily')->info('Delete task ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',

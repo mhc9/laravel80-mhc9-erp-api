@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Item;
@@ -70,6 +71,9 @@ class ItemController extends Controller
     {
         try {
             if($item = $this->itemService->store($request)) {
+                /** Log info */
+                Log::channel('daily')->info('Add item ID:' .$item->id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
@@ -101,6 +105,9 @@ class ItemController extends Controller
             $item->description  = $req['description'];
 
             if($item->save()) {
+                /** Log info */
+                Log::channel('daily')->info('Update item ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
@@ -124,6 +131,9 @@ class ItemController extends Controller
     {
         try {
             if($this->itemService->delete($id)) {
+                /** Log info */
+                Log::channel('daily')->info('Delete item ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!'
