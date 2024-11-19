@@ -70,7 +70,7 @@ class DriverController extends Controller
                                             })
                                             ->get();
 
-        $driver = Driver::with('member_of')->where('id', $id)->first();
+        $driver = Driver::with('member_of','vehicles')->where('id', $id)->first();
         $driver['assignments'] = $assignments;
 
         return $driver;

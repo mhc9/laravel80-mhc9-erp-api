@@ -20,4 +20,9 @@ class Driver extends Model
     {
         return $this->hasMany(ReservationAssignment::class, 'driver_id', 'id');
     }
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class, 'driver_id', 'id');
+    }
 }
