@@ -100,7 +100,7 @@ class ReservationAssignmentController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Insertion successfully!!',
-                    'assignment'    => $assignment
+                    'assignment'    => $assignment->load('driver','vehicle')
                 ];
             } else {
                 return [
@@ -130,7 +130,7 @@ class ReservationAssignmentController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
-                    'assignment'    => $assignment
+                    'assignment'    => $assignment->load('driver','vehicle')
                 ];
             } else {
                 return [
