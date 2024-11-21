@@ -74,7 +74,7 @@ class ReservationController extends Controller
 
     public function getById($id)
     {
-        return Unit::find($id);
+        return Reservation::with('type','assignments','assignments.driver','assignments.driver.member_of','assignments.vehicle')->find($id);
     }
 
     public function getInitialFormData(Request $req)
