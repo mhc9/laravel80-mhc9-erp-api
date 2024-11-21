@@ -546,7 +546,8 @@ class LoanController extends Controller
         if ($loan->loan_type_id == 1) {
             $word->setValue('projectName', 'เพื่อเป็นค่าใช้จ่ายใน' . $loan->project_name);
         } else {
-            $word->setValue('projectName', 'ตามหนังสือ ' . ($loan->division ? $loan->division->name : $loan->department->name) . ' ที่ ' . $loan->doc_no . ' ลงวันที่ ' . convDbDateToLongThDate($loan->doc_date) . 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $loan->project_name);
+            // $word->setValue('projectName', 'ตามหนังสือ ' . ($loan->division ? $loan->division->name : $loan->department->name) . ' ที่ ' . $loan->doc_no . ' ลงวันที่ ' . convDbDateToLongThDate($loan->doc_date) . 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $loan->project_name);
+            $word->setValue('projectName', 'เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $loan->project_name);
         }
 
         $word->setValue('projectSDate', convDbDateToLongThDate($loan->project_sdate));
