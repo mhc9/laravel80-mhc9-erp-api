@@ -452,6 +452,9 @@ class LoanController extends Controller
                 $itemTable
                     ->addCell(50 * 50)
                     ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+
+                /** คำนวณยอดรวมเป็นเงิน */
+                $courseTotal += $detail['total'];
             }
 
             /** เพิ่มแถวยอดรวมเป็นเงิน */
