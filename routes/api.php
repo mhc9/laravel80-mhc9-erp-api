@@ -355,6 +355,7 @@ Route::get( '/reservations', [App\Http\Controllers\ReservationController::class,
 Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById'])->middleware('api.key');
 Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData'])->middleware('api.key');
 Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->middleware('api.key');
+Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update'])->middleware('api.key');
 Route::post( '/reservations/{id}/assign', [App\Http\Controllers\ReservationController::class, 'assign'])->middleware('api.key');
 Route::post( '/reservations/{id}/status', [App\Http\Controllers\ReservationController::class, 'status'])->middleware('api.key');
 
