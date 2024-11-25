@@ -348,6 +348,9 @@ Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'g
 Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search'])->middleware('api.key');
 Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById'])->middleware('api.key');
 Route::get( '/drivers/{id}/assignments/{date}', [App\Http\Controllers\DriverController::class, 'getAssignments'])->middleware('api.key');
+Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData'])->middleware('api.key');
+Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store'])->middleware('api.key');
+Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update'])->middleware('api.key');
 
 /** Reservations */
 Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search'])->middleware('api.key');

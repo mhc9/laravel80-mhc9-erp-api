@@ -13,7 +13,7 @@ class Driver extends Model
 
     public function member_of()
     {
-        return $this->belongsTo(VehicleOwner::class, 'member_of', 'id');
+        return $this->belongsTo(VehicleOwner::class, 'owner_id', 'id');
     }
 
     public function assignments()

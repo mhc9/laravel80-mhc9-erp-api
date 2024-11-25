@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Driver;
 use App\Models\ReservationAssignment;
+use App\Models\VehicleOwner;
 
 class DriverController extends Controller
 {
@@ -76,18 +77,30 @@ class DriverController extends Controller
         return $driver;
     }
 
+    public function getInitialFormData()
+    {
+        return [
+            'owners' => VehicleOwner::all()
+        ];
+    }
+
     public function store(Request $req)
     {
         try {
-            $unit = new Unit();
-            $unit->name      = $req['name'];
-            $unit->status    = $req['status'] ? 1 : 0;
+            $driver = new Driver();
+            $driver->firstname  = $req['firstname'];
+            $driver->lastname   = $req['lastname'];
+            $driver->nickname   = $req['nickname'];
+            $driver->owner_id   = $req['owner_id'];
+            $driver->tel        = $req['tel'];
+            $driver->line_id    = $req['line_id'];
+            // $driver->status    = $req['status'] ? 1 : 0;
 
-            if($unit->save()) {
+            if($driver->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'unit'      => $unit
+                    'driver'    => $driver
                 ];
             } else {
                 return [
@@ -106,15 +119,20 @@ class DriverController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $unit = Unit::find($id);
-            $unit->name     = $req['name'];
-            $unit->status   = $req['status'] ? 1 : 0;
+            $driver = Driver::find($id);
+            $driver->firstname  = $req['firstname'];
+            $driver->lastname   = $req['lastname'];
+            $driver->nickname   = $req['nickname'];
+            $driver->owner_id   = $req['owner_id'];
+            $driver->tel        = $req['tel'];
+            $driver->line_id    = $req['line_id'];
+            // $driver->status   = $req['status'] ? 1 : 0;
 
-            if($unit->save()) {
+            if($driver->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'unit'      => $unit
+                    'driver'    => $driver
                 ];
             } else {
                 return [
