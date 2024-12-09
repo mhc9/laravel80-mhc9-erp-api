@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use PhpOffice\PhpWord\Element\Field;
@@ -168,6 +169,9 @@ class LoanContractController extends Controller
                 /** อัตเดต status ของตาราง loan เป็น 3=อนุมัติแล้ว */
                 Loan::find($req['loan_id'])->update(['status' => 3]);
 
+                /** Log info */
+                Log::channel('daily')->info('Added new contract ID:' .$contract->id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
@@ -207,6 +211,9 @@ class LoanContractController extends Controller
             $contract->remark           = $req['remark'];
 
             if($contract->save()) {
+                /** Log info */
+                Log::channel('daily')->info('Updated contract ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
@@ -238,6 +245,9 @@ class LoanContractController extends Controller
 
                 /** Update loans's status to 1 according to deleted contract's loan_id */
                 Loan::find($loanId)->update(['status' => 1]);
+
+                /** Log info */
+                Log::channel('daily')->info('Deleted contract ID:' .$id. ' by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,
@@ -282,6 +292,9 @@ class LoanContractController extends Controller
                 $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
                 Line::send($lineMsg);
 
+                /** Log info */
+                Log::channel('daily')->info('Desposition of contract ID:' .$id. ' was operated by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Depositing successfully!!',
@@ -312,6 +325,9 @@ class LoanContractController extends Controller
             if($contract->save()) {
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=3 (3=อนุมัติแล้ว) */
                 Loan::find($contract->loan_id)->update(['status' => 3]);
+
+                /** Log info */
+                Log::channel('daily')->info('Desposition of contract ID:' .$id. ' was cancelled by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,

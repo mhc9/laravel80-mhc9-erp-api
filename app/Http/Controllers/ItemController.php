@@ -72,7 +72,7 @@ class ItemController extends Controller
         try {
             if($item = $this->itemService->store($request)) {
                 /** Log info */
-                Log::channel('daily')->info('Add item ID:' .$item->id. ' by ' . auth()->user()->name);
+                Log::channel('daily')->info('Added item ID:' .$item->id. ' by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,
@@ -106,7 +106,7 @@ class ItemController extends Controller
 
             if($item->save()) {
                 /** Log info */
-                Log::channel('daily')->info('Update item ID:' .$id. ' by ' . auth()->user()->name);
+                Log::channel('daily')->info('Updated item ID:' .$id. ' by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,
@@ -132,7 +132,7 @@ class ItemController extends Controller
         try {
             if($this->itemService->delete($id)) {
                 /** Log info */
-                Log::channel('daily')->info('Delete item ID:' .$id. ' by ' . auth()->user()->name);
+                Log::channel('daily')->info('Deleted item ID:' .$id. ' by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use PhpOffice\PhpWord\Element\Field;
@@ -140,6 +141,9 @@ class LoanRefundController extends Controller
                 /** อัตเดต status ของตาราง loan_contracts เป็น 3=รอเคลียร์ **/
                 $contract = LoanContract::find($req['contract_id'])->update(['status' => 3]);
 
+                /** Log info */
+                Log::channel('daily')->info('Added new refund ID:' .$refund->id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
@@ -180,6 +184,9 @@ class LoanRefundController extends Controller
             // $refund->status           = $req['status'] ? 1 : 0;
 
             if($refund->save()) {
+                /** Log info */
+                Log::channel('daily')->info('Updated refund ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
@@ -222,6 +229,9 @@ class LoanRefundController extends Controller
                 /** Revert status ของตาราง loans เป็น 4=เงินเข้าแล้ว **/
                 Loan::find($contract->loan_id)->update(['status' => 4]);
 
+                /** Log info */
+                Log::channel('daily')->info('Deleted refund ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
@@ -258,6 +268,9 @@ class LoanRefundController extends Controller
 
                 /** อัตเดต status ของตาราง loans เป็น 5=เคลียร์แล้ว **/
                 Loan::find($contract->loan_id)->update(['status' => 5]);
+
+                /** Log info */
+                Log::channel('daily')->info('Approval of refund ID:' .$id. ' was operated by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,
@@ -296,6 +309,9 @@ class LoanRefundController extends Controller
 
                 /** อัตเดต status ของตาราง loans เป็น 5=เคลียร์แล้ว **/
                 // Loan::find($contract->loan_id)->update(['status' => 5]);
+
+                /** Log info */
+                Log::channel('daily')->info('Receipt of refund ID:' .$id. ' was operated by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,

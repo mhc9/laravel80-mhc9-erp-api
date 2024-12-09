@@ -208,7 +208,7 @@ class TaskController extends Controller
                 // Line::send('คุณ'.$reporter->firstname.' '.$reporter->lastname.' ได้แจ้ง'.$task->problem.' เมื่อ '.convDbDateToThDate($task->task_date).' เวลา '.$task->task_time.'น.');
 
                 /** Log info */
-                Log::channel('daily')->info('Add new task ID:' .$task->id. ' by ' . auth()->user()->name);
+                Log::channel('daily')->info('Added new task ID:' .$task->id. ' by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,
@@ -313,7 +313,7 @@ class TaskController extends Controller
 
             if($task->delete()) {
                 /** Log info */
-                Log::channel('daily')->info('Delete task ID:' .$id. ' by ' . auth()->user()->name);
+                Log::channel('daily')->info('Deleted task ID:' .$id. ' by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,

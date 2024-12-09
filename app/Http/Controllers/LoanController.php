@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use PhpOffice\PhpWord\Element\Field;
@@ -180,6 +181,9 @@ class LoanController extends Controller
                     $detail->save();
                 }
 
+                /** Log info */
+                Log::channel('daily')->info('Added new loan ID:' .$loan->id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
@@ -300,6 +304,9 @@ class LoanController extends Controller
                     }
                 }
 
+                /** Log info */
+                Log::channel('daily')->info('Updated loan ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
@@ -329,6 +336,9 @@ class LoanController extends Controller
             $loan = Loan::find($id);
 
             if($loan->delete()) {
+                /** Log info */
+                Log::channel('daily')->info('Deleted loan ID:' .$id. ' by ' . auth()->user()->name);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
