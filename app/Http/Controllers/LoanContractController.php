@@ -162,6 +162,7 @@ class LoanContractController extends Controller
             $contract->bk02_date        = $req['bk02_date'];
             $contract->year             = $req['year'];
             $contract->refund_days      = $req['refund_days'];
+            $contract->refund_notify    = 0;
             $contract->remark           = $req['remark'];
             $contract->status           = 1;
 
