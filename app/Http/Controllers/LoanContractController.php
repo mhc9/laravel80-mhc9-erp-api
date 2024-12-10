@@ -31,7 +31,7 @@ class LoanContractController extends Controller
     */
     protected $contractService;
 
-    public function __contruct(LoanContractService $contractService)
+    public function __construct(LoanContractService $contractService)
     {
         $this->contractService = $contractService;
     }
