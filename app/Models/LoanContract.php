@@ -11,7 +11,7 @@ class LoanContract extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
-    protected $fillable = ['status'];
+    protected $fillable = ['refund_notify','status'];
 
     public function loan()
     {

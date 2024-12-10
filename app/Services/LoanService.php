@@ -60,6 +60,7 @@ class LoanService
                                 ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
                                 ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                                 ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
+                                ->whereIn('refund_notify', [0,1])
                                 ->whereIn('status', [1, 2])
                                 ->get();
 
@@ -73,6 +74,9 @@ class LoanService
         foreach($contracts as $contract) {
             if ($contract->refund_days == 15) {
                 if (Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date)) <= 5) {
+                    /** อัพเดตฟิลด์ refund_notify เป็น 2 แจ้งเตือนครบแล้ว */
+                    LoanContract::find($contract->id)->update(['refund_notify' => 2]);
+
                     /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                     $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                     $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
@@ -83,6 +87,9 @@ class LoanService
                 }
             } else {
                 if (Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date)) <= 10) {
+                    /** อัพเดตฟิลด์ refund_notify เป็น 1 แจ้งเตือนยังไม่ครบ*/
+                    LoanContract::find($contract->id)->update(['refund_notify' => 1]);
+
                     /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                     $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                     $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
