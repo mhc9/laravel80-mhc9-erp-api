@@ -13,6 +13,7 @@ use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
+use App\Services\LoanService;
 use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\LoanBudget;
@@ -22,7 +23,17 @@ use App\Models\Department;
 use App\Models\Budget;
 
 class LoanController extends Controller
-{
+{   
+    /**
+    * @var $loanService
+    */
+    protected $loanService;
+
+    public function __construct(LoanService $loanService)
+    {
+        $this->loanService = $loanService;
+    }
+
     public function search(Request $req)
     {
         /** Get params from query string */
@@ -45,6 +56,9 @@ class LoanController extends Controller
                         })
                         ->orderBy('doc_date', 'DESC')
                         ->paginate(10);
+
+        /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
+        $contracts = $this->loanService->sendNotify();
 
         return $loans;
     }
