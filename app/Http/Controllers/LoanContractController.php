@@ -16,6 +16,7 @@ use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
 use Phattarachai\LineNotify\Facade\Line;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LoanContractExport;
+use App\Services\LoanContractService;
 use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
@@ -25,6 +26,16 @@ use App\Models\Department;
 
 class LoanContractController extends Controller
 {
+    /**
+    * @var $contractService
+    */
+    protected $contractService;
+
+    public function __contruct(LoanContractService $contractService)
+    {
+        $this->contractService = $contractService;
+    }
+
     public function search(Request $req)
     {
         /** Get params from query string */
@@ -33,23 +44,23 @@ class LoanContractController extends Controller
         $status     = $req->get('status');
 
         $contracts = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                        ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                        ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                        ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
-                            $q->where('employee_id', auth()->user()->employee_id);
-                        })
-                        ->when(!empty($employee), function($q) use ($employee) {
-                            $q->where('employee_id', $employee);
-                        })
-                        ->when(!empty($year), function($q) use ($year) {
-                            $q->where('year', $year);
-                        })
-                        ->when(!empty($status), function($q) use ($status) {
-                            $q->where('status', $status);
-                        })
-                        ->orderBy('approved_date', 'DESC')
-                        ->paginate(10);
+                                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
+                                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                                ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
+                                    $q->where('employee_id', auth()->user()->employee_id);
+                                })
+                                ->when(!empty($employee), function($q) use ($employee) {
+                                    $q->where('employee_id', $employee);
+                                })
+                                ->when(!empty($year), function($q) use ($year) {
+                                    $q->where('year', $year);
+                                })
+                                ->when(!empty($status), function($q) use ($status) {
+                                    $q->where('status', $status);
+                                })
+                                ->orderBy('approved_date', 'DESC')
+                                ->paginate(10);
 
         return $contracts;
     }
@@ -63,25 +74,25 @@ class LoanContractController extends Controller
         $status     = $req->get('status');
 
         $activities = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                        ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                        ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                        ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                        ->when(!empty($project), function($q) use ($project) {
-                            $q->where('project_id', $project);
-                        })
-                        ->when(!empty($plan), function($q) use ($plan) {
-                            $q->whereHas('project.plan', function($sq) use ($plan) {
-                                $sq->where('plan_id', $plan);
-                            });
-                        })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where('name', 'like', '%'.$name.'%');
-                        // })
-                        ->orderBy('approved_date', 'DESC')
-                        ->get();
+                                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
+                                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                                ->when(!empty($project), function($q) use ($project) {
+                                    $q->where('project_id', $project);
+                                })
+                                ->when(!empty($plan), function($q) use ($plan) {
+                                    $q->whereHas('project.plan', function($sq) use ($plan) {
+                                        $sq->where('plan_id', $plan);
+                                    });
+                                })
+                                // ->when($status != '', function($q) use ($status) {
+                                //     $q->where('status', $status);
+                                // })
+                                // ->when(!empty($name), function($q) use ($name) {
+                                //     $q->where('name', 'like', '%'.$name.'%');
+                                // })
+                                ->orderBy('approved_date', 'DESC')
+                                ->get();
 
         return $activities;
     }
@@ -89,22 +100,22 @@ class LoanContractController extends Controller
     public function getById($id)
     {
         return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                ->find($id);
+                            ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                            ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
+                            ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                            ->find($id);
     }
 
     public function getReport($year)
     {
         return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                ->with('refund')
-                ->where('year', $year)
-                ->orderBy('approved_date', 'DESC')
-                ->paginate(10);
+                            ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
+                            ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
+                            ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                            ->with('refund')
+                            ->where('year', $year)
+                            ->orderBy('approved_date', 'DESC')
+                            ->paginate(10);
     }
 
     public function getInitialFormData()
@@ -121,9 +132,9 @@ class LoanContractController extends Controller
         ];
 
         $employees = Employee::with('prefix','position','level','memberOf')
-                        ->with('memberOf.duty','memberOf.department','memberOf.division')
-                        ->whereIn('status', [1,5,6])
-                        ->get();
+                                ->with('memberOf.duty','memberOf.department','memberOf.division')
+                                ->whereIn('status', [1,5,6])
+                                ->get();
 
         return [
             'departments'   => Department::all(),
@@ -280,17 +291,8 @@ class LoanContractController extends Controller
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=4 (4=เงินเข้าแล้ว) */
                 Loan::find($contract->loan_id)->update(['status' => 4]);
 
-                $contract = $contract->load('details','details.expense','details.loanDetail','loan.department',
-                                                'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
-                                                'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
-                                                'loan.courses','loan.courses.place','loan.courses.place.changwat');
-
-                /** แจ้งเตือนไปในไลน์กลุ่ม "แจ้งเตือน09" */
-                $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
-                $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
-                $lineMsg .= ' จะเข้าบัญชีในวันที่ ' .convDbDateToThDate($contract->deposited_date);
-                $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
-                Line::send($lineMsg);
+                /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
+                $this->contractService->sendNotify($contract);
 
                 /** Log info */
                 Log::channel('daily')->info('Desposition of contract ID:' .$id. ' was operated by ' . auth()->user()->name);
@@ -333,9 +335,9 @@ class LoanContractController extends Controller
                     'status'    => 1,
                     'message'   => 'Cancelation successfully!!',
                     'contract'  => $contract->load('details','details.expense','details.loanDetail','loan.department',
-                                        'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
-                                        'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
-                                        'loan.courses','loan.courses.place','loan.courses.place.changwat')
+                                                    'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
+                                                    'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
+                                                    'loan.courses','loan.courses.place','loan.courses.place.changwat')
                 ];
             } else {
                 return [
