@@ -80,7 +80,7 @@ class LoanService
                     /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                     $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                     $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
-                    $lineMsg .= ' จะครบกำหนดคืนเงินในวันที่ ' .convDbDateToThDate($contract->deposited_date);
+                    $lineMsg .= ' จะครบกำหนดคืนเงินในวันที่ ' .convDbDateToThDate($contract->refund_date);
                     $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
 
                     Line::send($lineMsg);
@@ -93,7 +93,7 @@ class LoanService
                     /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                     $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                     $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
-                    $lineMsg .= ' จะครบกำหนดคืนเงินในวันที่ ' .convDbDateToThDate($contract->deposited_date);
+                    $lineMsg .= ' จะครบกำหนดคืนเงินในวันที่ ' .convDbDateToThDate($contract->refund_date);
                     $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
 
                     Line::send($lineMsg);
