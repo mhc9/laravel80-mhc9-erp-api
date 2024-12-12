@@ -109,7 +109,7 @@ class RequisitionController extends Controller
         return [
             'requisition'   => $requisition,
             'headOfDepart'  => Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
-                                        ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+                                        ->whereIn('id', Member::where('department_id', $requisition->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
                                         ->where('status', 1)
                                         ->first()
         ];
@@ -374,14 +374,14 @@ class RequisitionController extends Controller
     public function getDocument(Request $req, $id)
     {
         $requisition = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
-                        ->with('details','project','division','division.department','details.item','details.item','details.unit')
+                        ->with('details','project','division','department','details.item','details.item','details.unit')
                         ->with('requester','requester.prefix','requester.position','requester.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
                         ->with('committees.employee.position','committees.employee.level','category')
                         ->find($id);
 
         $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
-                            ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+                            ->whereIn('id', Member::where('department_id', $requisition->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
                             ->where('status', 1)
                             ->first();
 
@@ -389,14 +389,14 @@ class RequisitionController extends Controller
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates//requisitions/' . $template));
 
         /** ================================== HEADER ================================== */
-        $word->setValue('department', $requisition->division->department->name);
+        $word->setValue('department', $requisition->department->name);
         $word->setValue('pr_no', $requisition->pr_no);
         $word->setValue('pr_date', convDbDateToLongThDate($requisition->pr_date));
         $word->setValue('topic', $requisition->topic);
         /** ================================== HEADER ================================== */
 
         /** ================================== CONTENT ================================== */
-        $word->setValue('division', $requisition->division->name);
+        $word->setValue('division', $requisition->division ? $requisition->division->name : '');
         $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('reason', $requisition->reason);
@@ -434,7 +434,7 @@ class RequisitionController extends Controller
         /** ================================== SIGNATURE ================================== */
         $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
         $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
-        $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
+        $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->department->name);
         /** ================================== SIGNATURE ================================== */
 
         $pathToSave = public_path('temp/' . $template);
