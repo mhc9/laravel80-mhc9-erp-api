@@ -389,14 +389,13 @@ class RequisitionController extends Controller
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates//requisitions/' . $template));
 
         /** ================================== HEADER ================================== */
-        $word->setValue('department', $requisition->department->name);
+        $word->setValue('department', $requisition->division ? $requisition->division->name : $requisition->department->name);
         $word->setValue('pr_no', $requisition->pr_no);
         $word->setValue('pr_date', convDbDateToLongThDate($requisition->pr_date));
         $word->setValue('topic', $requisition->topic);
         /** ================================== HEADER ================================== */
 
         /** ================================== CONTENT ================================== */
-        $word->setValue('division', $requisition->division ? $requisition->division->name : '');
         $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('reason', $requisition->reason);
