@@ -356,6 +356,6 @@ class LoanContractController extends Controller
 
     public function export($year)
     {
-        return Excel::download(new LoanContractExport, 'contract.xlsx');
+        return Excel::download(new LoanContractExport($year), 'contract.xlsx');
     }
 }
