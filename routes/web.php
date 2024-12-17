@@ -38,7 +38,7 @@ Route::get('/loans/{id}/form', [App\Http\Controllers\LoanController::class, 'get
 Route::get('/loans/{id}/contract', [App\Http\Controllers\LoanController::class, 'getContract']);
 
 /** Loan Contract */
-Route::get('/loan-contracts/export', [App\Http\Controllers\LoanContractController::class, 'export']);
+Route::get('/loan-contracts/export/{year}', [App\Http\Controllers\LoanContractController::class, 'export']);
 
 /** LoanRefund */
 Route::get('/loan-refunds/{id}/form', [App\Http\Controllers\LoanRefundController::class, 'getForm']);

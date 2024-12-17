@@ -341,35 +341,35 @@ Route::middleware('auth:api')->group(function() {
 });
 
 /** Vehicles */
-Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search'])->middleware('api.key');
-Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById'])->middleware('api.key');
+// Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search'])->middleware('api.key');
+// Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById'])->middleware('api.key');
 
 /** Drivers */
-Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search'])->middleware('api.key');
-Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById'])->middleware('api.key');
-Route::get( '/drivers/{id}/assignments/{date}', [App\Http\Controllers\DriverController::class, 'getAssignments'])->middleware('api.key');
-Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData'])->middleware('api.key');
-Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store'])->middleware('api.key');
-Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update'])->middleware('api.key');
+// Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search'])->middleware('api.key');
+// Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById'])->middleware('api.key');
+// Route::get( '/drivers/{id}/assignments/{date}', [App\Http\Controllers\DriverController::class, 'getAssignments'])->middleware('api.key');
+// Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData'])->middleware('api.key');
+// Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store'])->middleware('api.key');
+// Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update'])->middleware('api.key');
 
 /** Reservations */
-Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search'])->middleware('api.key');
-Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll'])->middleware('api.key');
-Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById'])->middleware('api.key');
-Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData'])->middleware('api.key');
-Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->middleware('api.key');
-Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update'])->middleware('api.key');
-Route::post( '/reservations/{id}/assign', [App\Http\Controllers\ReservationController::class, 'assign'])->middleware('api.key');
-Route::post( '/reservations/{id}/status', [App\Http\Controllers\ReservationController::class, 'status'])->middleware('api.key');
+// Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search'])->middleware('api.key');
+// Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll'])->middleware('api.key');
+// Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById'])->middleware('api.key');
+// Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData'])->middleware('api.key');
+// Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->middleware('api.key');
+// Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update'])->middleware('api.key');
+// Route::post( '/reservations/{id}/assign', [App\Http\Controllers\ReservationController::class, 'assign'])->middleware('api.key');
+// Route::post( '/reservations/{id}/status', [App\Http\Controllers\ReservationController::class, 'status'])->middleware('api.key');
 
 /** Reservation Assignments */
-Route::get( '/reservation-assignments/search', [App\Http\Controllers\ReservationAssignmentController::class, 'search'])->middleware('api.key');
-Route::get( '/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'getAll'])->middleware('api.key');
-Route::get( '/reservation-assignments/{id}', [App\Http\Controllers\ReservationAssignmentController::class, 'getById'])->middleware('api.key');
-Route::get('/reservation-assignments/init/form', [App\Http\Controllers\ReservationAssignmentController::class, 'getInitialFormData'])->middleware('api.key');
-Route::post( '/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'store'])->middleware('api.key');
-Route::post( '/reservation-assignments/{id}/update', [App\Http\Controllers\ReservationAssignmentController::class, 'update'])->middleware('api.key');
-Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy'])->middleware('api.key');
+// Route::get( '/reservation-assignments/search', [App\Http\Controllers\ReservationAssignmentController::class, 'search'])->middleware('api.key');
+// Route::get( '/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'getAll'])->middleware('api.key');
+// Route::get( '/reservation-assignments/{id}', [App\Http\Controllers\ReservationAssignmentController::class, 'getById'])->middleware('api.key');
+// Route::get('/reservation-assignments/init/form', [App\Http\Controllers\ReservationAssignmentController::class, 'getInitialFormData'])->middleware('api.key');
+// Route::post( '/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'store'])->middleware('api.key');
+// Route::post( '/reservation-assignments/{id}/update', [App\Http\Controllers\ReservationAssignmentController::class, 'update'])->middleware('api.key');
+// Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy'])->middleware('api.key');
 
 /** Check db connection */
 Route::get('/db-connection', function () {
