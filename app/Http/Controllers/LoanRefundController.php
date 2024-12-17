@@ -172,18 +172,39 @@ class LoanRefundController extends Controller
     {
         try {
             $refund = LoanRefund::find($id);
-            $refund->doc_no             = $req['doc_no'];
-            $refund->doc_date           = $req['doc_date'];
-            $refund->contract_id        = $req['contract_id'];
-            $refund->refund_type_id     = $req['refund_type_id'];
-            $refund->employee_id        = $req['employee_id'];
-            $refund->year               = $req['year'];
-            $refund->net_total          = currencyToNumber($req['net_total']);
-            $refund->balance            = currencyToNumber($req['balance']);
-            // $refund->remark           = $req['remark'];
-            // $refund->status           = $req['status'] ? 1 : 0;
+            $refund->doc_no         = $req['doc_no'];
+            $refund->doc_date       = $req['doc_date'];
+            $refund->contract_id    = $req['contract_id'];
+            $refund->refund_type_id = $req['refund_type_id'];
+            $refund->employee_id    = $req['employee_id'];
+            $refund->year           = $req['year'];
+            $refund->item_total     = currencyToNumber($req['item_total']);
+            $refund->order_total    = currencyToNumber($req['order_total']);
+            $refund->net_total      = currencyToNumber($req['net_total']);
+            $refund->balance        = currencyToNumber($req['balance']);
+            $refund->is_over20      = $req['is_over20'];
+            $refund->over20_no      = $req['over20_no'];
+            $refund->over20_date    = $req['over20_date'];
+            $refund->over20_reason  = $req['over20_reason'];
+            // $refund->remark         = $req['remark'];
 
             if($refund->save()) {
+                foreach($req['items'] as $item) {
+                    if (!array_key_exists('refund_id', $item)) {
+                        $detail = new LoanRefundDetail();
+                        $detail->refund_id      = $refund->id;
+                        $detail->contract_detail_id = $item['contract_detail_id'];
+                        $detail->description    = $item['description'];
+                        $detail->total          = currencyToNumber($item['total']);
+                        $detail->save();
+                    } else {
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
+                        if (array_key_exists('removed', $item) && $item['removed']) {
+                            LoanRefundDetail::find($item['id'])->delete();
+                        }
+                    }
+                }
+
                 /** Log info */
                 Log::channel('daily')->info('Updated refund ID:' .$id. ' by ' . auth()->user()->name);
 
