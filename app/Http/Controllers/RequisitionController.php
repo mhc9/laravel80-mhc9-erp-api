@@ -436,6 +436,21 @@ class RequisitionController extends Controller
         $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->department->name);
         /** ================================== SIGNATURE ================================== */
 
+         /** เงื่อนไขการแสดงรายชื่อคณะกรรมการตรวจรับ */
+        if (sizeof($requisition->committees) == 1) {
+            $word->cloneBlock('isOneman', 1, true, true);
+            $word->cloneBlock('isGroup', 0, true, true);
+
+            $word->setValue('committee#1', $requisition->committees[0]->employee->prefix->name.$requisition->committees[0]->employee->firstname . ' ' . $requisition->committees[0]->employee->lastname);
+        } else {
+            $word->cloneBlock('isOneman', 0, true, true);
+            $word->cloneBlock('isGroup', 1, true, true);
+
+            $word->setValue('committee1#1', $requisition->committees[0]->employee->prefix->name.$requisition->committees[0]->employee->firstname . ' ' . $requisition->committees[0]->employee->lastname);
+            $word->setValue('committee2#1', $requisition->committees[1]->employee->prefix->name.$requisition->committees[1]->employee->firstname . ' ' . $requisition->committees[1]->employee->lastname);
+            $word->setValue('committee3#1', $requisition->committees[2]->employee->prefix->name.$requisition->committees[2]->employee->firstname . ' ' . $requisition->committees[2]->employee->lastname);
+        }
+
         $pathToSave = public_path('temp/' . $template);
         $filepath = $word->saveAs($pathToSave);
 
