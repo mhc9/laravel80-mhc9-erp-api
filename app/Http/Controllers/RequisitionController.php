@@ -438,13 +438,17 @@ class RequisitionController extends Controller
 
          /** เงื่อนไขการแสดงรายชื่อคณะกรรมการตรวจรับ */
         if (sizeof($requisition->committees) == 1) {
-            $word->cloneBlock('isOneman', 1, true, true);
-            $word->cloneBlock('isGroup', 0, true, true);
+            $word->cloneBlock('isOneman1', 1, true, true);
+            $word->cloneBlock('isOneman2', 1, true, true);
+            $word->cloneBlock('isGroup1', 0, true, true);
+            $word->cloneBlock('isGroup2', 0, true, true);
 
             $word->setValue('committee#1', $requisition->committees[0]->employee->prefix->name.$requisition->committees[0]->employee->firstname . ' ' . $requisition->committees[0]->employee->lastname);
         } else {
-            $word->cloneBlock('isOneman', 0, true, true);
-            $word->cloneBlock('isGroup', 1, true, true);
+            $word->cloneBlock('isOneman1', 0, true, true);
+            $word->cloneBlock('isOneman2', 0, true, true);
+            $word->cloneBlock('isGroup1', 1, true, true);
+            $word->cloneBlock('isGroup2', 1, true, true);
 
             $word->setValue('committee1#1', $requisition->committees[0]->employee->prefix->name.$requisition->committees[0]->employee->firstname . ' ' . $requisition->committees[0]->employee->lastname);
             $word->setValue('committee2#1', $requisition->committees[1]->employee->prefix->name.$requisition->committees[1]->employee->firstname . ' ' . $requisition->committees[1]->employee->lastname);
