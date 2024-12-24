@@ -61,7 +61,7 @@ class LoanService
                                 ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
                                 ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
                                 ->whereIn('refund_notify', [0,1])
-                                ->whereIn('status', [1, 2])
+                                ->whereIn('status', [1, 2, 3])
                                 ->get();
 
         return $contracts;
