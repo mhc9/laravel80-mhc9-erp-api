@@ -492,7 +492,7 @@ class RequisitionController extends Controller
         $word->setValue('division', $requisition->division->name);
         $word->setValue('reason', $requisition->reason);
         $word->setValue('year', $requisition->year);
-        $word->setValue('budget', $requisition->budget->project->plan->name . ' ' . $requisition->budget->project->name  . ' ' . $requisition->budget->name);
+        $word->setValue('budget', $requisition->budget->activity->project->plan->name . ' ' . $requisition->budget->activity->project->name  . ' ' . $requisition->budget->activity->name);
         $word->setValue('netTotal', number_format($requisition->net_total));
         $word->setValue('netTotalText', baht_text($requisition->net_total));
         $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
