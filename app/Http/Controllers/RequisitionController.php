@@ -39,7 +39,8 @@ class RequisitionController extends Controller
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
-                            ->with('approvals','approvals.procuring','approvals.supplier','project','category')
+                            ->with('approvals','approvals.procuring','approvals.supplier','approvals.supplier.tambon')
+                            ->with('approvals.supplier.amphur','approvals.supplier.changwat','project','category')
                             ->when((!auth()->user()->isAdmin() && !auth()->user()->isParcel()), function($q) {
                                 $q->where('requester_id', auth()->user()->employee_id);
                             })
