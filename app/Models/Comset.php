@@ -23,6 +23,11 @@ class Comset extends Model
 
     public function assets()
     {
-        return $this->hasMany(ComsetAsset::class, 'asset_id', 'id')->orderBy('asset_id');
+        return $this->hasMany(ComsetAsset::class, 'comset_id', 'id')->orderBy('asset_id');
+    }
+
+    public function softwares()
+    {
+        return $this->hasMany(ComsetLicense::class, 'comset_id', 'id');
     }
 }
