@@ -26,7 +26,7 @@ class Comset extends Model
         return $this->hasMany(ComsetAsset::class, 'comset_id', 'id')->orderBy('asset_id');
     }
 
-    public function softwares()
+    public function licenses()
     {
         return $this->hasMany(ComsetLicense::class, 'comset_id', 'id');
     }

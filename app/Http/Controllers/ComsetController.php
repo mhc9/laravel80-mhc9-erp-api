@@ -23,7 +23,7 @@ class ComsetController extends Controller
 
         $comsets = Comset::with('asset','asset.brand')
                     ->with('equipments','equipments.type','equipments.brand')
-                    ->with('assets')
+                    ->with('assets','licenses')
                     ->when(!empty($name), function($q) use ($name) {
                         $q->where('name', 'like', '%'.$name.'%');
                     })
@@ -44,7 +44,7 @@ class ComsetController extends Controller
 
         $comsets = Comset::with('asset','asset.brand')
                     ->with('equipments','equipments.type','equipments.brand')
-                    ->with('assets')
+                    ->with('assets','licenses')
                     // ->when($status != '', function($q) use ($status) {
                     //     $q->where('status', $status);
                     // })
@@ -57,7 +57,7 @@ class ComsetController extends Controller
     {
         return Comset::with('asset','asset.brand')
                 ->with('equipments','equipments.type','equipments.brand')
-                ->with('assets')
+                ->with('assets','licenses')
                 ->find($id);
     }
 
