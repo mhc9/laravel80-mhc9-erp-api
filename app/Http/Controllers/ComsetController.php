@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Comset;
 use App\Models\ComsetEquipment;
+use App\Models\ComsetLicense;
 use App\Models\ComsetAsset;
 use App\Models\Brand;
 use App\Models\EquipmentType;
@@ -96,6 +97,21 @@ class ComsetController extends Controller
                     }
                 }
 
+                if ($req->exists('licenses') && count($req['licenses']) > 0) {
+                    foreach ($req['licenses'] as $license) {
+                        $newLicense = new ComsetLicense();
+                        $newLicense->comset_id        = $comset->id;
+                        $newLicense->description      = $license['description'];
+                        $newLicense->purchased_date   = $license['purchased_date'];
+                        $newLicense->registered_date  = $license['registered_date'];
+                        $newLicense->registered_email = $license['registered_email'];
+                        $newLicense->license_no       = $license['license_no'];
+                        $newLicense->price            = $license['price'];
+                        $newLicense->status           = $license['status'];
+                        $newLicense->save();
+                    }
+                }
+
                 /** ================== Assets ================== */
                 if ($req->exists('assets') && count($req['assets']) > 0) {
                     foreach ($req['assets'] as $asset) {
@@ -167,6 +183,43 @@ class ComsetController extends Controller
                             /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed ให้ทำการลบรายการ */
                             if (array_key_exists('removed', $equipment) && $equipment['removed']) {
                                 ComsetEquipment::find($equipment['id'])->delete();
+                            }
+                        }
+                    }
+                }
+
+                /** ================== Licenses ================== */
+                if ($req->exists('licenses') && count($req['licenses']) > 0) {
+                    foreach ($req['licenses'] as $license) {
+                        /** ถ้า element ของ licenses ไม่มี property comset_id (รายการใหม่) */
+                        if (!array_key_exists('comset_id', $license)) {
+                            $newLicense = new ComsetLicense();
+                            $newLicense->comset_id        = $comset->id;
+                            $newLicense->description      = $license['description'];
+                            $newLicense->purchased_date   = $license['purchased_date'];
+                            $newLicense->registered_date  = $license['registered_date'];
+                            $newLicense->registered_email = $license['registered_email'];
+                            $newLicense->license_no       = $license['license_no'];
+                            $newLicense->price            = $license['price'];
+                            $newLicense->status           = $license['status'];
+                            $newLicense->save();
+                        } else {
+                            /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property updated ให้ทำการแก้ไขรายการ */
+                            if (array_key_exists('updated', $license) && $license['updated']) {
+                                $newLicense = ComsetLicense::find($license['id']);
+                                $newLicense->purchased_date   = $license['purchased_date'];
+                                $newLicense->registered_date  = $license['registered_date'];
+                                $newLicense->registered_email = $license['registered_email'];
+                                $newLicense->license_no       = $license['license_no'];
+                                $newLicense->description      = $license['description'];
+                                $newLicense->price            = $license['price'];
+                                $newLicense->status           = $license['status'];
+                                $newLicense->save();
+                            }
+
+                            /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed ให้ทำการลบรายการ */
+                            if (array_key_exists('removed', $license) && $license['removed']) {
+                                ComsetLicense::find($license['id'])->delete();
                             }
                         }
                     }
