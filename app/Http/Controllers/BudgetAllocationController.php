@@ -159,6 +159,8 @@ class BudgetAllocationController extends Controller
     public function update(Request $req, $id)
     {
         try {
+            $budget = Budget::find($req['budget_id']);
+
             $allocation = BudgetAllocation::find($id);
             $allocation->budget_id      = $req['budget_id'];
             $allocation->doc_no         = $req['doc_no'];
@@ -170,6 +172,8 @@ class BudgetAllocationController extends Controller
 
             if($allocation->save()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
+                $budget->total = $req['allocate_type_id'] == '1' ? $budget->latest_total + $req['total'] : $budget->latest_total - $req['total'];
+                $budget->save();
 
                 return [
                     'status'    => 1,
