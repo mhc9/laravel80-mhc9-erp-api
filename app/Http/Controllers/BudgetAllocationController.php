@@ -118,6 +118,8 @@ class BudgetAllocationController extends Controller
     public function store(Request $req)
     {
         try {
+            $budget = Budget::find($req['budget_id']);
+
             $allocation = new BudgetAllocation();
             $allocation->budget_id      = $req['budget_id'];
             $allocation->doc_no         = $req['doc_no'];
@@ -126,12 +128,12 @@ class BudgetAllocationController extends Controller
             $allocation->agency_id      = $req['agency_id'];
             $allocation->description    = $req['description'];
             $allocation->total          = $req['total'];
+            $allocation->latest_budget  = $budget->latest_total;
 
             if($allocation->save()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
-                $budget = Budget::find($req['budget_id']);
-                $budget->latest_total = $req['total'];
-                $budget->total = $req['allocate_type_id'] == '1' ? $budget->total + $req['total'] : $budget->total - $req['total'];
+                $budget->latest_total   = $budget->total;
+                $budget->total          = $req['allocate_type_id'] == '1' ? $budget->total + $req['total'] : $budget->total - $req['total'];
                 $budget->save();
 
                 return [
@@ -194,13 +196,14 @@ class BudgetAllocationController extends Controller
         try {
             $allocation = BudgetAllocation::find($id);
             /** Store deleted budget's id to variable */
-            $deletedId = $allocation->budget_id;
+            $deleted = $allocation;
 
             if($allocation->delete()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
-                // $newBudget = Budget::find(deletedId);
-                // $newBudget->total = $type['total'];
-                // $newBudget->save();
+                $budget = Budget::find($deleted->budget_id);
+                $budget->total          = $budget->latest_total;
+                $budget->latest_total   = $deleted->latest_budget;
+                $budget->save();
 
                 return [
                     'status'    => 1,
