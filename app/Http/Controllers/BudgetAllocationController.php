@@ -128,13 +128,17 @@ class BudgetAllocationController extends Controller
             $allocation->agency_id      = $req['agency_id'];
             $allocation->description    = $req['description'];
             $allocation->total          = $req['total'];
-            $allocation->latest_budget  = $budget->latest_total;
+            $allocation->latest_budget  = $budget->total;
+            $allocation->status         = 1;
 
             if($allocation->save()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
                 $budget->latest_total   = $budget->total;
                 $budget->total          = $req['allocate_type_id'] == '1' ? $budget->total + $req['total'] : $budget->total - $req['total'];
                 $budget->save();
+
+                /** อัพเดต status รายการจัดสรรงบของรหัส budget_id เดียวกันให้เป็น 0 */
+                BudgetAllocation::where('budget_id', $budget->id)->whereNotIn('id', [$allocation->id])->update(['status' => 0]);
 
                 return [
                     'status'    => 1,
@@ -168,12 +172,16 @@ class BudgetAllocationController extends Controller
             $allocation->allocate_type_id = $req['allocate_type_id'];
             $allocation->agency_id      = $req['agency_id'];
             $allocation->description    = $req['description'];
-            $allocation->total          = $req['total'];
+            if ($allocation->status == 1) {
+                $allocation->total = $req['total'];
+            }
 
             if($allocation->save()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
-                $budget->total = $req['allocate_type_id'] == '1' ? $budget->latest_total + $req['total'] : $budget->latest_total - $req['total'];
-                $budget->save();
+                if ($allocation->status == 1) {
+                    $budget->total = $req['allocate_type_id'] == '1' ? $allocation->latest_budget + $req['total'] : $allocation->latest_budget - $req['total'];
+                    $budget->save();
+                }
 
                 return [
                     'status'    => 1,
@@ -200,14 +208,19 @@ class BudgetAllocationController extends Controller
         try {
             $allocation = BudgetAllocation::find($id);
             /** Store deleted budget's id to variable */
-            $deleted = $allocation;
+            $allocationToDelete = $allocation;
 
             if($allocation->delete()) {
                 /** อัพเดตยอดเงินในตาราง budgets ด้วย */
-                $budget = Budget::find($deleted->budget_id);
+                $budget = Budget::find($allocationToDelete->budget_id);
                 $budget->total          = $budget->latest_total;
-                $budget->latest_total   = $deleted->latest_budget;
+                $budget->latest_total   = $allocationToDelete->latest_budget;
                 $budget->save();
+
+                /** อัพเดต status รายการจัดสรรงบของรหัส budget_id เดียวกันให้เป็น 0 */
+                $allocationToUpdate = BudgetAllocation::where('budget_id', $budget->id)->orderBy('doc_date', 'DESC')->first();
+                $allocationToUpdate->status = 1;
+                $allocationToUpdate->save();
 
                 return [
                     'status'    => 1,
