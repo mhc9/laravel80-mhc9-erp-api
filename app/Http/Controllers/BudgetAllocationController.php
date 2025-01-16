@@ -219,8 +219,10 @@ class BudgetAllocationController extends Controller
 
                 /** อัพเดต status รายการจัดสรรงบของรหัส budget_id เดียวกันให้เป็น 0 */
                 $allocationToUpdate = BudgetAllocation::where('budget_id', $budget->id)->orderBy('doc_date', 'DESC')->first();
-                $allocationToUpdate->status = 1;
-                $allocationToUpdate->save();
+                if ($allocationToUpdate) {
+                    $allocationToUpdate->status = 1;
+                    $allocationToUpdate->save();
+                }
 
                 return [
                     'status'    => 1,
