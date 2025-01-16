@@ -382,7 +382,7 @@ class RequisitionController extends Controller
                         ->find($id);
 
         $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
-                            ->whereIn('id', Member::where('department_id', $requisition->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+                            ->whereIn('id', Member::where('department_id', $requisition->department_id)->whereIn('duty_id', [2,5,6])->pluck('employee_id'))
                             ->where('status', 1)
                             ->first();
 
