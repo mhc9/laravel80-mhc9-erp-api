@@ -174,6 +174,25 @@ function convDbDateToLongThMonth($dbDate)
     return MONTH_LONG_NAMES[$arrDate[1]]. ' ' .((int)$arrDate[0] + 543);
 }
 
+function convDbDateToLongThDateRange($dbSDate, $dbEDate)
+{
+    if(empty($dbSDate)) return '';
+
+    $arrSDate = explode('-', $dbSDate);
+
+    if (!$dbEDate) {
+        return (int)$arrSDate[2]. ' ' .MONTH_LONG_NAMES[$arrSDate[1]]. ' ' .((int)$arrSDate[0] + 543);
+    } else {
+        $arrEDate = explode('-', $dbEDate);
+
+        if ($arrSDate[0] == $arrEDate[0] && $arrSDate[1] == $arrEDate[1]) {
+            return (int)$arrSDate[2].'-'.(int)$arrEDate[2]. ' ' .MONTH_LONG_NAMES[$arrSDate[1]]. ' ' .((int)$arrSDate[0] + 543);
+        } else {
+            return (int)$arrSDate[2]. ' ' .MONTH_LONG_NAMES[$arrSDate[1]]. ' ' .((int)$arrSDate[0] + 543).'-'.(int)$arrEDate[2]. ' ' .MONTH_LONG_NAMES[$arrEDate[1]]. ' ' .((int)$arrEDate[0] + 543);
+        }
+    }
+}
+
 /**
  * $renderType should be 'preview' | 'download'
  */

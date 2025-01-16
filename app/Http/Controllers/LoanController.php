@@ -169,6 +169,7 @@ class LoanController extends Controller
                     $course->seq_no         = $item['id'];
                     $course->loan_id        = $loan->id;
                     $course->course_date    = $item['course_date'];
+                    $course->course_edate   = $item['course_edate'];
                     $course->place_id       = $item['place_id'];
                     $course->save();
                 }
@@ -251,10 +252,11 @@ class LoanController extends Controller
                     /** ถ้า element ของ courses ไม่มี property loan_id (รายการใหม่) */
                     if (!array_key_exists('loan_id', $course)) {
                         $newCourse = new ProjectCourse();
-                        $newCourse->seq_no         = $course['id'];
-                        $newCourse->loan_id        = $loan->id;
-                        $newCourse->course_date    = $course['course_date'];
-                        $newCourse->place_id       = $course['place_id'];
+                        $newCourse->seq_no      = $course['id'];
+                        $newCourse->loan_id     = $loan->id;
+                        $newCourse->course_date = $course['course_date'];
+                        $course->course_edate   = $item['course_edate'];
+                        $newCourse->place_id    = $course['place_id'];
                         $newCourse->save();
                     } else {
                         /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
@@ -495,7 +497,7 @@ class LoanController extends Controller
                 $itemTable->addRow();
                 $itemTable
                 ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle);
+                ->addText('วันที่ ' . convDbDateToLongThDateRange($cs->course_date, $cs->course_edate) . ' ณ ' . $cs->place->name, $couseFontStyle);
                 
                 $items = array_filter($loan->details->toArray(), function($detail) use ($cs) { return $detail['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
@@ -669,7 +671,7 @@ class LoanController extends Controller
                 $itemTable->addRow();
                 $itemTable
                     ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                    ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle, ['spaceAfter' => 0]);
+                    ->addText('วันที่ ' . convDbDateToLongThDateRange($cs->course_date, $cs->course_edate) . ' ณ ' . $cs->place->name, $couseFontStyle, ['spaceAfter' => 0]);
                 
                 $items = array_filter($loan->details->toArray(), function($detail) use ($cs) { return $detail['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
