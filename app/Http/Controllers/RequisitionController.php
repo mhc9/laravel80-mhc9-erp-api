@@ -437,6 +437,15 @@ class RequisitionController extends Controller
         $word->setValue('headOfDepartRole', $headOfDepart->memberOf[0]->duty->display_name . $requisition->department->name);
         /** ================================== SIGNATURE ================================== */
 
+        /** เงื่อนไขการแสดงรายชื่อผู้กำหนดรายละเอียดขอบเขตของงาน/ผู้ตรวจรับ กรณีเป็นคนเดียวกัน */
+        if (sizeof($requisition->committees) == 1 && $requisition->committees[0]->employee_id == $requisition->requester_id) {
+            $word->cloneBlock('isSame', 1, true, true);
+            $word->cloneBlock('isNotSame', 0, true, true);
+        } else {
+            $word->cloneBlock('isSame', 0, true, true);
+            $word->cloneBlock('isNotSame', 1, true, true);
+        }
+
          /** เงื่อนไขการแสดงรายชื่อคณะกรรมการตรวจรับ */
         if (sizeof($requisition->committees) == 1) {
             $word->cloneBlock('isOneman1', 1, true, true);
