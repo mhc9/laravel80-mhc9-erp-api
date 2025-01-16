@@ -434,7 +434,7 @@ class RequisitionController extends Controller
         /** ================================== SIGNATURE ================================== */
         $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
         $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
-        $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->department->name);
+        $word->setValue('headOfDepartRole', $headOfDepart->memberOf[0]->duty->display_name . $requisition->department->name);
         /** ================================== SIGNATURE ================================== */
 
          /** เงื่อนไขการแสดงรายชื่อคณะกรรมการตรวจรับ */
