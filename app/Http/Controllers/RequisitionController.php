@@ -35,7 +35,7 @@ class RequisitionController extends Controller
         $limit      = $req->get('limit') ? $req->get('limit') : 10;
 
         $requisitions = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
-                            ->with('division','division.department','details','details.unit','details.item','details.item.category')
+                            ->with('division','department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
@@ -95,7 +95,7 @@ class RequisitionController extends Controller
     public function getById($id)
     {
         return Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
-                    ->with('division','division.department','details','details.unit','details.item','details.item.category')
+                    ->with('division','department','details','details.unit','details.item','details.item.category')
                     ->with('requester','requester.prefix','requester.position','requester.level')
                     ->with('committees','committees.employee','committees.employee.prefix')
                     ->with('committees.employee.position','committees.employee.level')
@@ -110,7 +110,7 @@ class RequisitionController extends Controller
         return [
             'requisition'   => $requisition,
             'headOfDepart'  => Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
-                                        ->whereIn('id', Member::where('department_id', $requisition->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+                                        ->whereIn('id', Member::where('department_id', $requisition->department_id)->whereIn('duty_id', [2, 5, 6])->pluck('employee_id'))
                                         ->where('status', 1)
                                         ->first()
         ];
