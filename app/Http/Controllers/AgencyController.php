@@ -53,23 +53,23 @@ class AgencyController extends Controller
 
     public function getInitialFormData(Request $req)
     {
-        return [
-        ];
+        return [];
     }
 
     public function store(Request $req)
     {
         try {
-            $budget = new Budget();
-            $budget->activity_id    = $req['activity_id'];
-            $budget->budget_type_id = $req['budget_type_id'];
-            $budget->total          = $req['total'];
+            $agency = new Agency();
+            $agency->name       = $req['name'];
+            $agency->is_dmh     = $req['is_dmh'];
+            $agency->is_moph    = $req['is_moph'];
+            $agency->status     = 1;
 
-            if($budget->save()) {
+            if($agency->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'budget'    => $budget->load('activity','type')
+                    'agency'    => $agency
                 ];
             } else {
                 return [
@@ -88,16 +88,16 @@ class AgencyController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $budget = Budget::find($id);
-            $budget->activity_id    = $req['activity_id'];
-            $budget->budget_type_id = $req['budget_type_id'];
-            $budget->total          = $req['total'];
+            $agency = Agency::find($id);
+            $agency->name       = $req['name'];
+            $agency->is_dmh     = $req['is_dmh'];
+            $agency->is_moph    = $req['is_moph'];
 
-            if($budget->save()) {
+            if($agency->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'budget'    => $budget->load('activity','type')
+                    'agency'    => $agency
                 ];
             } else {
                 return [
@@ -116,9 +116,9 @@ class AgencyController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $budget = Budget::find($id);
+            $agency = Agency::find($id);
 
-            if($budget->delete()) {
+            if($agency->delete()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
