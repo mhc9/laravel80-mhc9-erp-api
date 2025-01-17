@@ -18,6 +18,7 @@ class Requisition extends Model
         return $this->belongsTo(AssetCategory::class, 'category_id', 'id');
     }
 
+    /** TODO: remove */
     public function budget()
     {
         return $this->belongsTo(Budget::class, 'budget_id', 'id');
@@ -56,5 +57,10 @@ class Requisition extends Model
     public function approvals()
     {
         return $this->hasMany(Approval::class, 'requisition_id', 'id');
+    }
+
+    public function budgets()
+    {
+        return $this->hasMany(RequisitionBudget::class, 'budget_id', 'id');
     }
 }

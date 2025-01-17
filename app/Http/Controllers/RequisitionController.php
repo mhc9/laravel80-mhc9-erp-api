@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use App\Models\Requisition;
 use App\Models\RequisitionDetail;
+use App\Models\RequisitionBudget;
 use App\Models\Item;
 use App\Models\AssetType;
 use App\Models\AssetCategory;
@@ -178,6 +179,15 @@ class RequisitionController extends Controller
                     $detail->save();
                 }
 
+                /** รายการงบประมาณ */
+                foreach($req['budgets'] as $budget) {
+                    $newBudget = new RequisitionBudget();
+                    $newBudget->requisition_id  = $requisition->id;
+                    $newBudget->budget_id       = $budget['budget_id'];
+                    $newBudget->total           = currencyToNumber($budget['total']);
+                    $newBudget->save();
+                }
+
                 /** Insert committees */
                 foreach($req['committees'] as $employee) {
                     $committee = new Committee();
@@ -267,6 +277,23 @@ class RequisitionController extends Controller
                         /** ============= ตรวจสอบและลบเฉพาะรายการที่ถูกลบ ============= */
                         if (array_key_exists('removed', $item) && $item['removed']) {
                             RequisitionDetail::find($item['id'])->delete();
+                        }
+                    }
+                }
+
+                /** update รายการงบประมาณ */
+                foreach($req['budgets'] as $budget) {
+                    /** ถ้า element ของ budgets ไม่มี property id (รายการใหม่) */
+                    if (!array_key_exists('requisition_id', $budget)) {
+                        $newBudget = new RequisitionBudget();
+                        $newBudget->requisition_id  = $requisition->id;
+                        $newBudget->budget_id       = $budget['budget_id'];
+                        $newBudget->total           = currencyToNumber($budget['total']);
+                        $newBudget->save();
+                    } else {
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
+                        if (array_key_exists('removed', $budget) && $budget['removed']) {
+                            RequisitionBudget::find($budget['id'])->delete();
                         }
                     }
                 }
