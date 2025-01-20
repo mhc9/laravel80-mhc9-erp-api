@@ -252,11 +252,11 @@ class LoanController extends Controller
                     /** ถ้า element ของ courses ไม่มี property loan_id (รายการใหม่) */
                     if (!array_key_exists('loan_id', $course)) {
                         $newCourse = new ProjectCourse();
-                        $newCourse->seq_no      = $course['id'];
-                        $newCourse->loan_id     = $loan->id;
-                        $newCourse->course_date = $course['course_date'];
-                        $course->course_edate   = $item['course_edate'];
-                        $newCourse->place_id    = $course['place_id'];
+                        $newCourse->seq_no          = $course['id'];
+                        $newCourse->loan_id         = $loan->id;
+                        $newCourse->course_date     = $course['course_date'];
+                        $newCourse->course_edate    = $course['course_edate'];
+                        $newCourse->place_id        = $course['place_id'];
                         $newCourse->save();
                     } else {
                         /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
