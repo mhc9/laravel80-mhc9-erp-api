@@ -180,7 +180,7 @@ function convDbDateToLongThDateRange($dbSDate, $dbEDate)
 
     $arrSDate = explode('-', $dbSDate);
 
-    if (!$dbEDate) {
+    if (!$dbEDate || ($dbEDate && $dbSDate == $dbEDate)) {
         return (int)$arrSDate[2]. ' ' .MONTH_LONG_NAMES[$arrSDate[1]]. ' ' .((int)$arrSDate[0] + 543);
     } else {
         $arrEDate = explode('-', $dbEDate);
