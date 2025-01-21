@@ -61,6 +61,6 @@ class Requisition extends Model
 
     public function budgets()
     {
-        return $this->hasMany(RequisitionBudget::class, 'budget_id', 'id');
+        return $this->hasMany(RequisitionBudget::class, 'requisition_id', 'id');
     }
 }

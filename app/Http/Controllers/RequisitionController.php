@@ -35,7 +35,8 @@ class RequisitionController extends Controller
         $year       = $req->get('year');
         $limit      = $req->get('limit') ? $req->get('limit') : 10;
 
-        $requisitions = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+        $requisitions = Requisition::with('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type')
+                            // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                             ->with('division','department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
@@ -76,7 +77,8 @@ class RequisitionController extends Controller
         $requester  = $req->get('requester');
         $status     = $req->get('status');
 
-        $requisitions = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+        $requisitions = Requisition::with('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type')
+                            // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                             ->with('division','division.department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
@@ -95,7 +97,8 @@ class RequisitionController extends Controller
 
     public function getById($id)
     {
-        return Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+        return Requisition::with('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type')
+                    // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                     ->with('division','department','details','details.unit','details.item','details.item.category')
                     ->with('requester','requester.prefix','requester.position','requester.level')
                     ->with('committees','committees.employee','committees.employee.prefix')
@@ -163,6 +166,7 @@ class RequisitionController extends Controller
             $requisition->desired_date  = $req['desired_date'];
             $requisition->item_count    = $req['item_count'];
             $requisition->net_total     = currencyToNumber($req['net_total']);
+            $requisition->budget_total  = currencyToNumber($req['budget_total']);
             $requisition->status        = 1;
 
             if($requisition->save()) {
@@ -203,7 +207,8 @@ class RequisitionController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Insertion successfully!!',
-                    'requisition'   => $requisition->load('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
+                    'requisition'   => $requisition->load('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type',
+                                                        // 'budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
                                                         'division','division.department','details','details.unit','details.item','details.item.category',
                                                         'requester','requester.prefix','requester.position','requester.level',
                                                         'committees','committees.employee','committees.employee.prefix',
@@ -245,6 +250,7 @@ class RequisitionController extends Controller
             $requisition->desired_date  = $req['desired_date'];
             $requisition->item_count    = $req['item_count'];
             $requisition->net_total     = currencyToNumber($req['net_total']);
+            $requisition->budget_total  = currencyToNumber($req['budget_total']);
             $requisition->status        = 1;
 
             if($requisition->save()) {
@@ -319,7 +325,8 @@ class RequisitionController extends Controller
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
-                    'requisition'   => $requisition->load('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
+                    'requisition'   => $requisition->load('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type',
+                                                        // 'budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
                                                         'division','division.department','details','details.unit','details.item','details.item.category',
                                                         'requester','requester.prefix','requester.position','requester.level',
                                                         'committees','committees.employee','committees.employee.prefix',
@@ -429,7 +436,7 @@ class RequisitionController extends Controller
         $word->setValue('reason', $requisition->reason);
         $word->setValue('year', $requisition->year+543);
         $word->setValue('budget', $requisition->budget->activity->project->plan->name . ' ' . $requisition->budget->activity->project->name  . ' ' . $requisition->budget->activity->name);
-        $word->setValue('netTotal', number_format($requisition->net_total));
+        $word->setValue('netTotal', number_format($requisition->net_total, 2));
         $word->setValue('netTotalText', baht_text($requisition->net_total));
         $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
         $word->setValue('requesterPosition', $requisition->requester->position->name . ($requisition->requester->level ? $requisition->requester->level->name : ''));
@@ -447,10 +454,10 @@ class RequisitionController extends Controller
         foreach($requisition->details as $item => $detail) {
             $word->setValue('no#' . $no, $no);
             $word->setValue('item#' . $no, $detail->item->name . ' ' . $detail->description);
-            $word->setValue('amt#' . $no, number_format($detail->amount));
+            $word->setValue('amt#' . $no, number_format($detail->amount, 1));
             $word->setValue('unit#' . $no, $detail->unit->name);
-            $word->setValue('price#' . $no, number_format($detail->price));
-            $word->setValue('total#' . $no, number_format($detail->total));
+            $word->setValue('price#' . $no, number_format($detail->price, 2));
+            $word->setValue('total#' . $no, number_format($detail->total, 2));
             $no++;
         }
 
