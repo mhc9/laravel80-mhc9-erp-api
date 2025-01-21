@@ -408,7 +408,8 @@ class RequisitionController extends Controller
 
     public function getDocument(Request $req, $id)
     {
-        $requisition = Requisition::with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+        $requisition = Requisition::with('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type')
+                        // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                         ->with('details','project','division','department','details.item','details.item','details.unit')
                         ->with('requester','requester.prefix','requester.position','requester.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
@@ -435,7 +436,15 @@ class RequisitionController extends Controller
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('reason', $requisition->reason);
         $word->setValue('year', $requisition->year+543);
-        $word->setValue('budget', $requisition->budget->activity->project->plan->name . ' ' . $requisition->budget->activity->project->name  . ' ' . $requisition->budget->activity->name);
+        
+        /** แผนงาน */
+        $budgets = '';
+        foreach($requisition->budgets as $data) {
+            $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+            $budgets .= ' จำนวนเงิน ' . number_format($data->total) . ' บาท ';
+        }
+        $word->setValue('budget', $budgets);
+
         $word->setValue('netTotal', number_format($requisition->net_total, 2));
         $word->setValue('netTotalText', baht_text($requisition->net_total));
         $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
