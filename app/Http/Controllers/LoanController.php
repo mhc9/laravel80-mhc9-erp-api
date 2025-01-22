@@ -588,15 +588,22 @@ class LoanController extends Controller
 
         $word->setValue('projectSDate', convDbDateToLongThDate($loan->project_sdate));
         $word->setValue('projectEDate', convDbDateToLongThDate($loan->project_edate));
-        $word->setValue('place', $loan->courses[0]->place->name . ' จังหวัด' .$loan->courses[0]->place->changwat->name);
 
-        /** =================== แผนงาน =================== */
-        $budgets = '';
-        foreach($loan->budgets as $data) {
-            $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+        /** สถานที่จัด */
+        $placeText = '';
+        foreach($loan->courses as $key => $course) {
+            $placeText .= ($key > 0 ? 'และ' : '') . $course->place->name . ' จังหวัด' .$course->place->changwat->name;
         }
+        $word->setValue('place', $placeText);
 
-        $word->setValue('budget', $budgets);
+        /** แผนงาน */
+        $budgetText = '';
+        foreach($loan->budgets as $data) {
+            $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+            $budgetText .= ' จำนวนเงิน ' . number_format($data->total) . ' บาท ';
+        }
+        $word->setValue('budget', $budgetText);
+
         $word->setValue('budgetTotal', number_format($loan->budget_total));
         $word->setValue('budgetTotalText', baht_text($loan->budget_total));
 
