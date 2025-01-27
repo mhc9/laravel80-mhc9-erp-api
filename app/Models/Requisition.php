@@ -34,6 +34,11 @@ class Requisition extends Model
         return $this->belongsTo(Employee::class, 'requester_id', 'id');
     }
 
+    public function deputy()
+    {
+        return $this->belongsTo(Employee::class, 'deputy_id', 'id');
+    }
+
     public function division()
     {
         return $this->belongsTo(Division::class, 'division_id', 'id');
