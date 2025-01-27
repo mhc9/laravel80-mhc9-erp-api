@@ -167,6 +167,7 @@ class RequisitionController extends Controller
             $requisition->item_count    = $req['item_count'];
             $requisition->net_total     = currencyToNumber($req['net_total']);
             $requisition->budget_total  = currencyToNumber($req['budget_total']);
+            $requisition->deputy_id     = $req['deputy_id'];
             $requisition->status        = 1;
 
             if($requisition->save()) {
@@ -251,6 +252,7 @@ class RequisitionController extends Controller
             $requisition->item_count    = $req['item_count'];
             $requisition->net_total     = currencyToNumber($req['net_total']);
             $requisition->budget_total  = currencyToNumber($req['budget_total']);
+            $requisition->deputy_id     = $req['deputy_id'];
             $requisition->status        = 1;
 
             if($requisition->save()) {
