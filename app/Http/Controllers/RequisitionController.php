@@ -39,6 +39,7 @@ class RequisitionController extends Controller
                             // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                             ->with('division','department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
+                            ->with('deputy','deputy.prefix','deputy.position','deputy.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
                             ->with('approvals','approvals.procuring','approvals.supplier','approvals.supplier.tambon')
@@ -81,6 +82,7 @@ class RequisitionController extends Controller
                             // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                             ->with('division','division.department','details','details.unit','details.item','details.item.category')
                             ->with('requester','requester.prefix','requester.position','requester.level')
+                            ->with('deputy','deputy.prefix','deputy.position','deputy.level')
                             ->with('committees','committees.employee','committees.employee.prefix')
                             ->with('committees.employee.position','committees.employee.level')
                             ->with('approvals','approvals.procuring','approvals.supplier','project','category')
@@ -101,6 +103,7 @@ class RequisitionController extends Controller
                     // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                     ->with('division','department','details','details.unit','details.item','details.item.category')
                     ->with('requester','requester.prefix','requester.position','requester.level')
+                    ->with('deputy','deputy.prefix','deputy.position','deputy.level')
                     ->with('committees','committees.employee','committees.employee.prefix')
                     ->with('committees.employee.position','committees.employee.level')
                     ->with('approvals','approvals.procuring','approvals.supplier','project','category')
@@ -212,6 +215,7 @@ class RequisitionController extends Controller
                                                         // 'budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
                                                         'division','division.department','details','details.unit','details.item','details.item.category',
                                                         'requester','requester.prefix','requester.position','requester.level',
+                                                        'deputy','deputy.prefix','deputy.position','deputy.level',
                                                         'committees','committees.employee','committees.employee.prefix',
                                                         'committees.employee.position','committees.employee.level',
                                                         'approvals','approvals.procuring','approvals.supplier','project','category')
@@ -331,6 +335,7 @@ class RequisitionController extends Controller
                                                         // 'budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type',
                                                         'division','division.department','details','details.unit','details.item','details.item.category',
                                                         'requester','requester.prefix','requester.position','requester.level',
+                                                        'deputy','deputy.prefix','deputy.position','deputy.level',
                                                         'committees','committees.employee','committees.employee.prefix',
                                                         'committees.employee.position','committees.employee.level',
                                                         'approvals','approvals.procuring','approvals.supplier','project','category')
@@ -414,6 +419,7 @@ class RequisitionController extends Controller
                         // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
                         ->with('details','project','division','department','details.item','details.item','details.unit')
                         ->with('requester','requester.prefix','requester.position','requester.level')
+                        ->with('deputy','deputy.prefix','deputy.position','deputy.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
                         ->with('committees.employee.position','committees.employee.level','category')
                         ->find($id);
