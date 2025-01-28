@@ -449,7 +449,7 @@ class RequisitionController extends Controller
         $budgets = '';
         foreach($requisition->budgets as $data) {
             $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgets .= ' จำนวนเงิน ' . number_format($data->total) . ' บาท ';
+            $budgets .= sizeof($requisition->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total, 2) . ' บาท ' : '';
         }
         $word->setValue('budget', $budgets);
 
@@ -471,7 +471,7 @@ class RequisitionController extends Controller
         foreach($requisition->details as $item => $detail) {
             $word->setValue('no#' . $no, $no);
             $word->setValue('item#' . $no, $detail->item->name . ' ' . $detail->description);
-            $word->setValue('amt#' . $no, number_format($detail->amount, 1));
+            $word->setValue('amt#' . $no, number_format($detail->amount, 2));
             $word->setValue('unit#' . $no, $detail->unit->name);
             $word->setValue('price#' . $no, number_format($detail->price, 2));
             $word->setValue('total#' . $no, number_format($detail->total, 2));

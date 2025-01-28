@@ -418,7 +418,7 @@ class LoanController extends Controller
         $budgetText = '';
         foreach($loan->budgets as $data) {
             $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgetText .= ' จำนวนเงิน ' . number_format($data->total) . ' บาท ';
+            $budgetText .= sizeof($loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
         }
         $word->setValue('budget', $budgetText);
 
@@ -600,7 +600,7 @@ class LoanController extends Controller
         $budgetText = '';
         foreach($loan->budgets as $data) {
             $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgetText .= ' จำนวนเงิน ' . number_format($data->total) . ' บาท ';
+            $budgetText .= sizeof($loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
         }
         $word->setValue('budget', $budgetText);
 
