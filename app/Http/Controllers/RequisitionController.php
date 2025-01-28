@@ -480,13 +480,6 @@ class RequisitionController extends Controller
 
         $word->setValue('desiredDate', convDbDateToLongThDate($requisition->desired_date));
         $word->setValue('deliverPlace', array_any($requisition->details->toArray(), function($detail) { return in_array($detail['item_id'], [24]); }) ? 'สถานบริการน้ำมันเชื้อเพลิง' : 'ศูนย์สุขภาพจิตที่ 9');
-        /** ================================== CONTENT ================================== */
-
-        /** ================================== SIGNATURE ================================== */
-        $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
-        $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
-        $word->setValue('headOfDepartRole', $headOfDepart->memberOf[0]->duty->display_name . $requisition->department->name);
-        /** ================================== SIGNATURE ================================== */
 
         /** เงื่อนไขการแสดงรายชื่อผู้กำหนดรายละเอียดขอบเขตของงาน/ผู้ตรวจรับ กรณีเป็นคนเดียวกัน */
         if (sizeof($requisition->committees) == 1 && $requisition->committees[0]->employee_id == $requisition->requester_id) {
@@ -515,6 +508,24 @@ class RequisitionController extends Controller
             $word->setValue('committee2#1', $requisition->committees[1]->employee->prefix->name.$requisition->committees[1]->employee->firstname . ' ' . $requisition->committees[1]->employee->lastname);
             $word->setValue('committee3#1', $requisition->committees[2]->employee->prefix->name.$requisition->committees[2]->employee->firstname . ' ' . $requisition->committees[2]->employee->lastname);
         }
+        /** ================================== CONTENT ================================== */
+
+        /** ================================== SIGNATURE ================================== */
+        /** หัวหน้ากลุ่มงาน */
+        $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
+        $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
+        $word->setValue('headOfDepartRole', $headOfDepart->memberOf[0]->duty->display_name . $requisition->department->name);
+        
+        /** ผู้ลงนาม */
+        $word->setValue('director', is_null($requisition->deputy) ? 'นายนิตย์ ทองเพชรศรี' : $requisition->deputy->prefix->name.$requisition->deputy->firstname . ' ' . $requisition->deputy->lastname);
+        $word->setValue('directorPosition', is_null($requisition->deputy) ? 'ผู้อำนวยการศูนย์สุขภาพจิตที่ 9' : $requisition->deputy->position->name . $requisition->deputy->level->name);
+        
+        if (is_null($requisition->deputy)) {
+            $word->cloneBlock('isDeputy', 0, true, true);
+        } else {
+            $word->cloneBlock('isDeputy', 1, true, true);
+        }
+        /** ================================== SIGNATURE ================================== */
 
         $pathToSave = public_path('temp/' . $template);
         $filepath = $word->saveAs($pathToSave);
