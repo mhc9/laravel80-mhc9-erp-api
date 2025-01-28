@@ -518,7 +518,12 @@ class RequisitionController extends Controller
         
         /** ผู้ลงนาม */
         $word->setValue('director', is_null($requisition->deputy) ? 'นายนิตย์ ทองเพชรศรี' : $requisition->deputy->prefix->name.$requisition->deputy->firstname . ' ' . $requisition->deputy->lastname);
-        $word->setValue('directorPosition', is_null($requisition->deputy) ? 'ผู้อำนวยการศูนย์สุขภาพจิตที่ 9' : $requisition->deputy->position->name . $requisition->deputy->level->name);
+        $word->setValue(
+            'directorPosition',
+            is_null($requisition->deputy)
+                ? 'ผู้อำนวยการศูนย์สุขภาพจิตที่ 9'
+                : $requisition->deputy->position->name . $requisition->deputy->level->name . (is_null($requisition->deputy->position_text) ? '' : ' ' . $requisition->deputy->position_text)
+        );
         
         if (is_null($requisition->deputy)) {
             $word->cloneBlock('isDeputy', 0, true, true);
