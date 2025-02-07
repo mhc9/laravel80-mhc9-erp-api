@@ -392,15 +392,22 @@ class LoanRefundController extends Controller
 
         $word->setValue('projectSDate', convDbDateToLongThDate($refund->contract->loan->project_sdate));
         $word->setValue('projectEDate', convDbDateToLongThDate($refund->contract->loan->project_edate));
-        $word->setValue('place', $refund->contract->loan->courses[0]->place->name . ' จังหวัด' .$refund->contract->loan->courses[0]->place->changwat->name);
 
-        /** =================== แผนงาน =================== */
-        $budgets = '';
-        foreach($refund->contract->loan->budgets as $data) {
-            $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+        /** สถานที่จัด */
+        $placeText = '';
+        foreach($refund->contract->loan->courses as $key => $course) {
+            $placeText .= ($key > 0 ? 'และ' : '') . $course->place->name . ' จังหวัด' .$course->place->changwat->name;
         }
+        $word->setValue('place', $placeText);
 
-        $word->setValue('budget', $budgets);
+        /** แผนงาน */
+        $budgetText = '';
+        foreach($refund->contract->loan->budgets as $data) {
+            $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+        }
+        $word->setValue('budget', $budgetText);
+
         $word->setValue('budgetTotal', number_format($refund->contract->loan->budget_total));
         $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
         $word->setValue('completed', $refund->contract->loan->loan_type_id == 1 ? 'ได้ดำเนินการจัดโครงการฯ เสร็จสิ้นแล้ว ' : '');
@@ -572,15 +579,31 @@ class LoanRefundController extends Controller
 
         $word->setValue('projectSDate', convDbDateToLongThDate($refund->contract->loan->project_sdate));
         $word->setValue('projectEDate', convDbDateToLongThDate($refund->contract->loan->project_edate));
-        $word->setValue('place', $refund->contract->loan->courses[0]->place->name . ' จังหวัด' .$refund->contract->loan->courses[0]->place->changwat->name);
+
+        /** สถานที่จัด */
+        $placeText = '';
+        foreach($refund->contract->loan->courses as $key => $course) {
+            $placeText .= ($key > 0 ? 'และ' : '') . $course->place->name . ' จังหวัด' .$course->place->changwat->name;
+        }
+        $word->setValue('place', $placeText);
+
+        /** แผนงาน */
+        $budgetText = '';
+        foreach($refund->contract->loan->budgets as $data) {
+            $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+        }
+        $word->setValue('budget', $budgetText);
+
+        // $word->setValue('place', $refund->contract->loan->courses[0]->place->name . ' จังหวัด' .$refund->contract->loan->courses[0]->place->changwat->name);
 
         /** =================== แผนงาน =================== */
-        $budgets = '';
-        foreach($refund->contract->loan->budgets as $data) {
-            $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
-        }
+        // $budgets = '';
+        // foreach($refund->contract->loan->budgets as $data) {
+        //     $budgets .= $data->budget->project->plan->name . ' ' . $data->budget->project->name  . ' ' . $data->budget->name;
+        // }
+        // $word->setValue('budget', $budgets);
 
-        $word->setValue('budget', $budgets);
         $word->setValue('budgetTotal', number_format($refund->contract->loan->budget_total));
         $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
         $word->setValue('over20Reason', $refund->over20_reason);
