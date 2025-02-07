@@ -127,6 +127,7 @@ class LoanRefundController extends Controller
             $refund->over20_reason  = $req['over20_reason'];
             $refund->return_no      = $req['return_no'];
             $refund->return_date    = $req['return_date'];
+            $refund->return_topic   = $req['return_topic'];
             $refund->return_reason  = $req['return_reason'];
             // $refund->remark         = $req['remark'];
             $refund->status         = 'N';
@@ -191,6 +192,7 @@ class LoanRefundController extends Controller
             $refund->over20_reason  = $req['over20_reason'];
             $refund->return_no      = $req['return_no'];
             $refund->return_date    = $req['return_date'];
+            $refund->return_topic   = $req['return_topic'];
             $refund->return_reason  = $req['return_reason'];
             // $refund->remark         = $req['remark'];
 
