@@ -72,39 +72,41 @@ class LoanService
         $contracts = $this->findContractToNotify();
 
         foreach($contracts as $contract) {
+            $remainDays = Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date));
+
             if ($contract->refund_days == 15) { // กรณียืมไปราชการ
-                if (Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date)) <= 5) {
+                if ($remainDays <= 5) {
                     /** อัพเดตฟิลด์ refund_notify เป็น 2 แจ้งเตือนครบแล้ว */
                     LoanContract::find($contract->id)->update(['refund_notify' => 2]);
 
                     /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                     $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                     $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
-                    $lineMsg .= ' จะครบกำหนดคืนเงินในวันที่ ' .convDbDateToThDate($contract->refund_date);
+                    $lineMsg .= ' จะครบกำหนดคืนเงินในอีก ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
                     $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
 
                     Line::send($lineMsg);
                 }
             } else { // กรณียืมโครงการ
-                if ($contract->refund_notify == 0 && Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date)) <= 10) { // แจ้งเตือนครั้งที่ 1
+                if ($contract->refund_notify == 0 && $remainDays <= 10) { // แจ้งเตือนครั้งที่ 1
                     /** อัพเดตฟิลด์ refund_notify เป็น 1 แจ้งเตือนยังไม่ครบ*/
                     LoanContract::find($contract->id)->update(['refund_notify' => 1]);
 
                     /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                     $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                     $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
-                    $lineMsg .= ' จะครบกำหนดคืนเงินในวันที่ ' .convDbDateToThDate($contract->refund_date);
+                    $lineMsg .= ' จะครบกำหนดคืนเงินในอีก ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
                     $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
 
                     Line::send($lineMsg);
-                } else if ($contract->refund_notify == 1 && Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date)) <= 5) { // แจ้งเตือนครั้งที่ 2
+                } else if ($contract->refund_notify == 1 && $remainDays <= 5) { // แจ้งเตือนครั้งที่ 2
                     /** อัพเดตฟิลด์ refund_notify เป็น 1 แจ้งเตือนยังไม่ครบ*/
                     LoanContract::find($contract->id)->update(['refund_notify' => 2]);
 
                     /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                     $lineMsg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                     $lineMsg .= ' เลขที่สัญญา ' .$contract->contract_no;
-                    $lineMsg .= ' จะครบกำหนดคืนเงินในวันที่ ' .convDbDateToThDate($contract->refund_date);
+                    $lineMsg .= ' จะครบกำหนดคืนเงินในอีก ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
                     $lineMsg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
 
                     Line::send($lineMsg);
