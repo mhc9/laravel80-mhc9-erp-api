@@ -491,7 +491,7 @@ class LoanRefundController extends Controller
                 $itemTable->addRow();
                 $itemTable
                     ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                    ->addText('วันที่ ' . convDbDateToLongThDate($cs->course_date) . ' ณ ' . $cs->place->name, $couseFontStyle);
+                    ->addText('วันที่ ' . convDbDateToLongThDateRange($cs->course_date, $cs->course_edate) . ' ณ ' . $cs->place->name, $couseFontStyle);
 
                 $items = array_filter($refund->details->toArray(), function($detail) use ($cs) { return $detail['contract_detail']['expense_group'] == 1 && $detail['contract_detail']['loan_detail']['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
