@@ -536,7 +536,7 @@ class LoanRefundController extends Controller
         if ($refund->refund_type_id == 1) {
             $word->setValue('refundType', 'และคืนเงินยืม จำนวนเงิน ' . number_format($refund->balance) . ' บาท (' . baht_text($refund->balance) . ')');
         } else if ($refund->refund_type_id == 2) {
-            $word->setValue('refundType', 'และเบิกเงินเพิ่ม จำนวนเงิน ' . number_format($refund->balance) . ' บาท (' . baht_text($refund->balance) . ')');
+            $word->setValue('refundType', 'และเบิกเงินเพิ่ม จำนวนเงิน ' . number_format(abs($refund->balance)) . ' บาท (' . baht_text(abs($refund->balance)) . ')');
         } else {
             $word->setValue('refundType', '');
         }
