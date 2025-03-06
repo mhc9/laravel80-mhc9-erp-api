@@ -444,7 +444,7 @@ class RequisitionController extends Controller
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('reason', $requisition->reason);
         $word->setValue('year', $requisition->year+543);
-        
+
         /** แผนงาน */
         $budgets = '';
         foreach($requisition->budgets as $data) {
@@ -540,8 +540,9 @@ class RequisitionController extends Controller
 
     public function getReport(Request $req, $id)
     {
-        $requisition = Requisition::with('category','budget','details','project','division','division.department')
-                        ->with('details.item','details.item.unit')
+        $requisition = Requisition::with('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type')
+                        // ->with('budget','budget.activity','budget.activity.project','budget.activity.project.plan','budget.type')
+                        ->with('category','details.item','details.item.unit')
                         ->with('requester','requester.prefix','requester.position','requester.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
                         ->with('committees.employee.position','committees.employee.level')
@@ -557,7 +558,7 @@ class RequisitionController extends Controller
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/requisitions/' . $template));
 
         /** ================================== HEADER ================================== */
-        $word->setValue('department', $requisition->division->department->name);
+        $word->setValue('department', $requisition->division ? $requisition->division->name : $requisition->department->name);
         $word->setValue('report_no', $requisition->approvals[0]->report_no);
         $word->setValue('report_date', convDbDateToLongThDate($requisition->approvals[0]->report_date));
         /** ================================== HEADER ================================== */
@@ -566,10 +567,17 @@ class RequisitionController extends Controller
         $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('deliver_date', convDbDateToLongThDate($requisition->approvals[0]->deliver_date));
-        $word->setValue('division', $requisition->division->name);
         $word->setValue('reason', $requisition->reason);
         $word->setValue('year', $requisition->year);
-        $word->setValue('budget', $requisition->budget->activity->project->plan->name . ' ' . $requisition->budget->activity->project->name  . ' ' . $requisition->budget->activity->name);
+
+        /** แผนงาน */
+        $budgets = '';
+        foreach($requisition->budgets as $data) {
+            $budgets .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+            $budgets .= sizeof($requisition->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total, 2) . ' บาท ' : '';
+        }
+        $word->setValue('budget', $budgets);
+
         $word->setValue('netTotal', number_format($requisition->net_total));
         $word->setValue('netTotalText', baht_text($requisition->net_total));
         $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
