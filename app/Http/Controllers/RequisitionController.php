@@ -685,9 +685,23 @@ class RequisitionController extends Controller
         
         /** ================================== CONTENT ================================== */
         $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
-        $word->setValue('item', $requisition->order_type_id == 1 ? $requisition->category->name : $requisition->contract_desc);
-        $word->setValue('itemCount', $requisition->item_count);
+
+        $no = 1;
+        $word->cloneRow('item', sizeof($requisition->details));
+        foreach($requisition->details as $item => $detail) {
+            $word->setValue('no#' . $no, $no);
+            $word->setValue('item#' . $no, $detail->item->name . ' ' . $detail->description);
+            $word->setValue('amt#' . $no, number_format($detail->amount));
+            $word->setValue('unit#' . $no, $detail->unit->name);
+            $word->setValue('price#' . $no, number_format($detail->price, 2));
+            $word->setValue('total#' . $no, number_format($detail->total, 2));
+            $no++;
+        }
+
+        // $word->setValue('item', $requisition->order_type_id == 1 ? $requisition->category->name : $requisition->contract_desc);
+        // $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('supplier', $requisition->approvals[0]->supplier->name);
+
         $word->setValue('netTotal', number_format($requisition->net_total));
         $word->setValue('netTotalText', baht_text($requisition->net_total));
         /** ================================== CONTENT ================================== */
