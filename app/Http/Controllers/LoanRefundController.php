@@ -529,14 +529,14 @@ class LoanRefundController extends Controller
         }
 
         /** =================== ยอดรวมทั้งสิ้น =================== */
-        $word->setValue('netTotal', number_format($refund->net_total));
-        $word->setValue('netTotalText', baht_text($refund->net_total));
+        $word->setValue('netTotal', number_format($refund->net_total, 2));
+        $word->setValue('netTotalText', baht_text($refund->net_total, 2));
 
         /** =================== เงื่อนไขการคืนเงิน =================== */
         if ($refund->refund_type_id == 1) {
-            $word->setValue('refundType', 'และคืนเงินยืม จำนวนเงิน ' . number_format($refund->balance) . ' บาท (' . baht_text($refund->balance) . ')');
+            $word->setValue('refundType', 'และคืนเงินยืม จำนวนเงิน ' . number_format($refund->balance, 2) . ' บาท (' . baht_text($refund->balance, 2) . ')');
         } else if ($refund->refund_type_id == 2) {
-            $word->setValue('refundType', 'และเบิกเงินเพิ่ม จำนวนเงิน ' . number_format(abs($refund->balance)) . ' บาท (' . baht_text(abs($refund->balance)) . ')');
+            $word->setValue('refundType', 'และเบิกเงินเพิ่ม จำนวนเงิน ' . number_format(abs($refund->balance, 2)) . ' บาท (' . baht_text(abs($refund->balance, 2)) . ')');
         } else {
             $word->setValue('refundType', '');
         }
@@ -611,12 +611,12 @@ class LoanRefundController extends Controller
         $word->setValue('over20Reason', $refund->over20_reason);
 
         /** =================== รวมทั้งสิ้น =================== */
-        $word->setValue('netTotal', number_format($refund->net_total));
-        $word->setValue('netTotalText', baht_text($refund->net_total));
+        $word->setValue('netTotal', number_format($refund->net_total,2 ));
+        $word->setValue('netTotalText', baht_text($refund->net_total,2 ));
 
         /** =================== ยอดคืน =================== */
-        $word->setValue('balance', number_format($refund->balance));
-        $word->setValue('balanceText', baht_text($refund->balance));
+        $word->setValue('balance', number_format($refund->balance, 2));
+        $word->setValue('balanceText', baht_text($refund->balance, 2));
 
         /** =================== ผู้ขอ =================== */
         $word->setValue('requester', $refund->contract->loan->employee->prefix->name.$refund->contract->loan->employee->firstname . ' ' . $refund->contract->loan->employee->lastname);
