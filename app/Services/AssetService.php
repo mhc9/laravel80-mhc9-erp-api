@@ -27,21 +27,53 @@ class AssetService
     public function __construct(AssetRepository $assetRepo)
     {
         $this->assetRepo = $assetRepo;
+        $this->assetRepo->setSortBy('date_in');
+        // $this->assetRepo->setSortOrder('desc');
+        // $this->assetRepo->setRelations(['group','group.category','brand','budget','obtaining','unit','room','currentOwner','currentOwner.owner','currentOwner.owner.prefix']);
     }
 
     public function find($id)
     {
-        return $this->assetRepo->getAsset($id);
+        return $this->assetRepo->findOne($id);
     }
 
     public function findAll($params = [])
     {
-        return $this->assetRepo->getAssets();
+        return $this->assetRepo->paginated(10);
     }
 
-    public function findById($id)
+    public function search(array $params)
     {
-        return $this->assetRepo->getAssetById($id);
+        $conditions = [];
+        if (!empty($params['category'])) {
+            array_push($conditions, ['asset_category_id', '=', $params['category']]);
+        }
+
+        //             ->when(!empty($group), function($q) use ($group) {
+        //                 $q->where('asset_group_id', $group);
+        //             })
+        //             ->when(!empty($no), function($q) use ($no) {
+        //                 $q->where('asset_no', 'like', '%'.$no.'%');
+        //             })
+
+        if (!empty($params['name'])) {
+            array_push($conditions, ['name', 'like', '%'.$params['name'].'%']);
+        }
+        //             ->when(!empty($owner), function($q) use ($owner) {
+        //                 $q->whereHas('currentOwner', function($sq) use ($owner) {
+        //                     $sq->where('owner_id', $owner);
+        //                 });
+        //             })
+        //             ->when(!empty($status), function($q) use ($status) {
+        //                 $q->where('status', $status);
+        //             })
+
+        return $this->assetRepo->find($conditions);
+    }
+
+    public function delete($id)
+    {
+        return $this->assertRepo->destroy($id);
     }
 
     public function initForm()
@@ -68,15 +100,10 @@ class AssetService
         ];
     }
 
-    public function delete($id)
-    {
-        return $this->assertRepo->delete($id);
-    }
-
     public function updateImage($id, $image)
     {
-        $asset = $this->assetRepo->getAsset($id);
         $destPath = 'assets';
+        $asset = $this->assetRepo->findOne($id);
 
         /** Remove old uploaded file */
         if (\File::exists($destPath . $asset->img_url)) {
