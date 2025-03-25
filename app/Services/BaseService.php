@@ -4,7 +4,7 @@ namespace App\Services;
 
 abstract class BaseService
 {
-    public $repo;
+    protected $repo;
 
     public function getAll()
     {

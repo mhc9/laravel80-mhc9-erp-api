@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\BaseService;
 use App\Repositories\AssetRepository;
 use App\Models\Asset;
 use App\Models\AssetType;
@@ -15,34 +16,24 @@ use App\Models\Employee;
 use App\Models\Room;
 use App\Traits\SaveImage;
 
-class AssetService
+class AssetService extends BaseService
 {
     use SaveImage;
 
     /**
-     * @var $assetRepo
+     * @var $repo
      */
-    protected $assetRepo;
+    protected $repo;
 
-    public function __construct(AssetRepository $assetRepo)
+    public function __construct(AssetRepository $repo)
     {
-        $this->assetRepo = $assetRepo;
-        $this->assetRepo->setSortBy('date_in');
-        // $this->assetRepo->setSortOrder('desc');
-        $this->assetRepo->setRelations([
+        $this->repo = $repo;
+        $this->repo->setSortBy('date_in');
+        // $this->repo->setSortOrder('desc');
+        $this->repo->setRelations([
             'group','group.category','brand','budget','obtaining','unit','room',
             'currentOwner','currentOwner.owner','currentOwner.owner.prefix'
         ]);
-    }
-
-    public function getAll($params = [])
-    {
-        return $this->assetRepo->paginated(10);
-    }
-
-    public function getById($id)
-    {
-        return $this->assetRepo->findOne($id);
     }
 
     public function search(array $params, $all = false, $perPage = 10)
@@ -69,7 +60,7 @@ class AssetService
         //                 $q->where('status', $status);
         //             })
 
-        $collections = $this->assetRepo->getModel()
+        $collections = $this->repo->getModel()
                                 ->where($conditions)
                                 ->when(!empty($params['owner']), function($query) use ($params) {
                                     $query->whereHas('currentOwner', function($subquery) use ($params) {
@@ -78,11 +69,6 @@ class AssetService
                                 });
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
-    }
-
-    public function delete($id)
-    {
-        return $this->assertRepo->destroy($id);
     }
 
     public function initForm()
@@ -112,7 +98,7 @@ class AssetService
     public function updateImage($id, $image)
     {
         $destPath = 'assets';
-        $asset = $this->assetRepo->findOne($id);
+        $asset = $this->repo->findOne($id);
 
         /** Remove old uploaded file */
         if (\File::exists($destPath . $asset->img_url)) {

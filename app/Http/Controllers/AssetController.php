@@ -24,55 +24,17 @@ class AssetController extends Controller
 
     public function search(Request $req)
     {
-        /** Get params from query string */
-        // $type       = $req->get('type');
-        // $category   = $req->get('category');
-        // $group      = $req->get('group');
-        // $no         = $req->get('assetNo');
-        // $name       = $req->get('name');
-        // $owner      = $req->get('owner');
-        // $status     = $req->get('status');
-
-        // $assets = Asset::with('group','group.category','brand','budget','obtaining','unit','room')
-        //             ->with('currentOwner','currentOwner.owner','currentOwner.owner.prefix')
-        //             // ->when(!empty($type), function($q) use ($type) {
-        //             //     $q->where('asset_type_id', $type);
-        //             // })
-        //             ->when(!empty($category), function($q) use ($category) {
-        //                 $q->where('asset_category_id', $category);
-        //             })
-        //             ->when(!empty($group), function($q) use ($group) {
-        //                 $q->where('asset_group_id', $group);
-        //             })
-        //             ->when(!empty($no), function($q) use ($no) {
-        //                 $q->where('asset_no', 'like', '%'.$no.'%');
-        //             })
-        //             ->when(!empty($name), function($q) use ($name) {
-        //                 $q->where('name', 'like', '%'.$name.'%');
-        //             })
-        //             ->when(!empty($owner), function($q) use ($owner) {
-        //                 $q->whereHas('currentOwner', function($sq) use ($owner) {
-        //                     $sq->where('owner_id', $owner);
-        //                 });
-        //             })
-        //             ->when(!empty($status), function($q) use ($status) {
-        //                 $q->where('status', $status);
-        //             })
-        //             ->paginate(10);
-
-        // return $assets;
-
         return $this->assetService->search($req->all());
     }
 
     public function getAll(Request $req)
     {
-        return $this->assetService->findAll($req->query());
+        return $this->assetService->getAll($req->query());
     }
 
     public function getById($id)
     {
-        return $this->assetService->find($id);
+        return $this->assetService->getById($id);
     }
 
     public function getInitialFormData()
@@ -171,7 +133,7 @@ class AssetController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            if($this->assetService->delete($id)) {
+            if($this->assetService->destroy($id)) {
                 return [
                     'status'     => 1,
                     'message'    => 'Deleting successfully!!',
