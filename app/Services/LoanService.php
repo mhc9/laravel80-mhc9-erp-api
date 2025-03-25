@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use Phattarachai\LineNotify\Facade\Line;
+use App\Services\BaseService;
 use App\Repositories\PlaceRepository;
+use Phattarachai\LineNotify\Facade\Line;
 use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\LoanBudget;
@@ -14,44 +15,32 @@ use App\Models\Department;
 use App\Models\Budget;
 use Carbon\Carbon;
 
-class LoanService
+class LoanService extends BaseService
 {
     /**
-     * @var $loanRepo
+     * @var $repo
      */
-    protected $loanRepo;
+    protected $repo;
 
     /**
      * @var $destPath
      */
     protected $destPath = 'products';
 
-    public function __construct(PlaceRepository $loanRepo)
+    public function __construct(PlaceRepository $repo)
     {
-        $this->loanRepo = $loanRepo;
+        $this->repo = $repo;
     }
 
     public function find($id)
     {
-        return $this->loanRepo->getPlace($id);
+        return $this->repo->getPlace($id);
     }
 
     public function findAll($params = [])
     {
-        return $this->loanRepo->getPlaces($params)->get();
+        return $this->repo->getPlaces($params)->get();
     }
-
-    // public function search($params = [])
-    // {
-    //     $limit = (array_key_exists('limit', $params) && $params['limit']) ? $params['limit'] : 10;
-
-    //     return $this->loanRepo->getPlaces($params)->paginate(10);
-    // }
-
-    // public function findById($id)
-    // {
-    //     return $this->loanRepo->getPlaceById($id);
-    // }
 
     public function findContractToNotify()
     {
@@ -114,38 +103,4 @@ class LoanService
             }
         }
     }
-
-    // public function initForm()
-    // {
-    //     return [
-    //         'tambons'       => Tambon::all(),
-    //         'amphurs'       => Amphur::all(),
-    //         'changwats'     => Changwat::all(),
-    //     ];
-    // }
-
-    // public function store($req)
-    // {
-    //     $data = [
-    //         'name'          => $req['name'],
-    //         'place_type_id' => $req['place_type_id'],
-    //         'address_no'    => $req['address_no'],
-    //         'road'          => $req['road'],
-    //         'moo'           => $req['moo'],
-    //         'tambon_id'     => $req['tambon_id'],
-    //         'amphur_id'     => $req['amphur_id'],
-    //         'changwat_id'   => $req['changwat_id'],
-    //         'zipcode'       => $req['zipcode'],
-    //         'latitude'      => $req['latitude'],
-    //         'longitude'     => $req['longitude'],
-    //         'status'        => 1,
-    //     ];
-
-    //     return $this->loanRepo->store($data);
-    // }
-
-    // public function delete($id)
-    // {
-    //     return $this->loanRepo->delete($id);
-    // }
 }
