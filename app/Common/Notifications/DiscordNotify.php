@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 
 class DiscordNotify implements INotify
 {
-    protected $webhookUrl = 'https://discord.com/api/webhooks/1354002881249935360/V3BCz2wCYgxF9JCHWOaAwqzJEq8cWLraKFA_Yhmd2xAusEaL2dNA_64lGbD5ejiQcN93';
+    protected $webhookUrl = config('services.webhook_url');
 
     protected $client;
 

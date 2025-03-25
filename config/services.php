@@ -32,4 +32,6 @@ return [
 
     'api_key' => env('API_KEY'),
 
+    'webhook_url' => env('DISCORD_WEBHOOK_URL'),
+
 ];
