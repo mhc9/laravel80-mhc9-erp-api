@@ -6,9 +6,14 @@ abstract class BaseService
 {
     public $repo;
 
-    public function all()
+    public function getAll()
     {
         return $this->repo->all();
+    }
+
+    public function getById($id)
+    {
+        return $this->repo->findOne($id);
     }
 
     public function paginated()
@@ -19,11 +24,6 @@ abstract class BaseService
     public function create(array $input)
     {
         return $this->repo->create($input);
-    }
-
-    public function find($id)
-    {
-        return $this->repo->find($id);
     }
 
     public function update($id, array $input)

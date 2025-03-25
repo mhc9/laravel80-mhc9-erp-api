@@ -29,21 +29,25 @@ class AssetService
         $this->assetRepo = $assetRepo;
         $this->assetRepo->setSortBy('date_in');
         // $this->assetRepo->setSortOrder('desc');
-        // $this->assetRepo->setRelations(['group','group.category','brand','budget','obtaining','unit','room','currentOwner','currentOwner.owner','currentOwner.owner.prefix']);
+        $this->assetRepo->setRelations([
+            'group','group.category','brand','budget','obtaining','unit','room',
+            'currentOwner','currentOwner.owner','currentOwner.owner.prefix'
+        ]);
     }
 
-    public function find($id)
-    {
-        return $this->assetRepo->findOne($id);
-    }
-
-    public function findAll($params = [])
+    public function getAll($params = [])
     {
         return $this->assetRepo->paginated(10);
     }
 
-    public function search(array $params)
+    public function getById($id)
     {
+        return $this->assetRepo->findOne($id);
+    }
+
+    public function search(array $params, $all = false, $perPage = 10)
+    {
+        $collections;
         $conditions = [];
         if (!empty($params['category'])) {
             array_push($conditions, ['asset_category_id', '=', $params['category']]);
@@ -52,6 +56,7 @@ class AssetService
         //             ->when(!empty($group), function($q) use ($group) {
         //                 $q->where('asset_group_id', $group);
         //             })
+
         //             ->when(!empty($no), function($q) use ($no) {
         //                 $q->where('asset_no', 'like', '%'.$no.'%');
         //             })
@@ -59,16 +64,20 @@ class AssetService
         if (!empty($params['name'])) {
             array_push($conditions, ['name', 'like', '%'.$params['name'].'%']);
         }
-        //             ->when(!empty($owner), function($q) use ($owner) {
-        //                 $q->whereHas('currentOwner', function($sq) use ($owner) {
-        //                     $sq->where('owner_id', $owner);
-        //                 });
-        //             })
+
         //             ->when(!empty($status), function($q) use ($status) {
         //                 $q->where('status', $status);
         //             })
 
-        return $this->assetRepo->find($conditions);
+        $collections = $this->assetRepo->getModel()
+                                ->where($conditions)
+                                ->when(!empty($params['owner']), function($query) use ($params) {
+                                    $query->whereHas('currentOwner', function($subquery) use ($params) {
+                                        $subquery->where('owner_id', $params['owner']);
+                                    });
+                                });
+
+        return $all ?  $collections->get() : $collections->paginate($perPage);
     }
 
     public function delete($id)

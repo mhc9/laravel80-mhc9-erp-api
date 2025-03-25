@@ -56,6 +56,7 @@ abstract class BaseRepository
     public function update($id, array $data)
     {
         $model = $this->findOne($id);
+        $model->fill($input);
         $model->save();
 
         return $model;
@@ -64,5 +65,10 @@ abstract class BaseRepository
     public function destroy($id)
     {
         return $this->findOne($id)->delete();
+    }
+
+    public function getModel()
+    {
+        return $this->model->with($this->relations);
     }
 }
