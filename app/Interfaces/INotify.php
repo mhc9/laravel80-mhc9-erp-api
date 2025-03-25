@@ -4,5 +4,5 @@ namespace App\Interfaces;
 
 interface INotify
 {
-    public function send();
+    public function send(string $message);
 }
