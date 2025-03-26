@@ -3,8 +3,7 @@
 namespace App\Services;
 
 use App\Services\BaseService;
-use App\Repositories\PlaceRepository;
-use App\Common\Notifications\DiscordNotify;
+use App\Repositories\LoanRepository;
 use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\LoanBudget;
@@ -28,15 +27,19 @@ class LoanService extends BaseService
      */
     protected $destPath = 'products';
 
-    /**
-     * @var $notify
-     */
-    private INotify $notify;
-
-    public function __construct(PlaceRepository $repo)
+    public function __construct(LoanRepository $repo)
     {
         $this->repo = $repo;
-        $this->notify = new DiscordNotify;
+
+        $this->repo->setSortBy('doc_date');
+        // $this->repo->setSortOrder('desc');
+        $this->repo->setRelations([
+            'details','details.expense','department','division',
+            'employee','employee.prefix','employee.position','employee.level',
+            'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
+            'lbudgets.budget.activity.project','budgets.budget.activity.project.plan',
+            'courses','courses.place','courses.place.changwat'
+        ]);
     }
 
     public function find($id)
@@ -63,7 +66,7 @@ class LoanService extends BaseService
         return $contracts;
     }
 
-    public function sendNotify()
+    public function sendNotify(INotify $notify)
     {
         $contracts = $this->findContractToNotify();
 
@@ -105,7 +108,7 @@ class LoanService extends BaseService
                     $msg .= ' จะครบกำหนดคืนเงินในอีก ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
                     $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
 
-                    $this->notify->send($msg);
+                    $notify->send($msg);
                 }
             }
         }

@@ -7,13 +7,14 @@ use GuzzleHttp\Client;
 
 class DiscordNotify implements INotify
 {
-    protected $webhookUrl = config('services.webhook_url');
+    protected $webhookUrl;
 
     protected $client;
 
     public function __construct()
     {
         $this->client = new Client();
+        $this->webhookUrl = config('services.webhook_url');
     }
 
     public function send(string $message)

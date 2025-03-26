@@ -27,6 +27,15 @@ class LoanContractService
     public function __construct(PlaceRepository $contractRepo)
     {
         $this->contractRepo = $contractRepo;
+
+        // $this->repo->setSortBy('approved_date');
+        // $this->repo->setSortOrder('desc');
+        // $this->repo->setRelations([
+        //     'details','details.expense','details.loanDetail','loan.department',
+        //     'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
+        //     'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
+        //     'loan.courses','loan.courses.place','loan.courses.place.changwat'
+        // ]);
     }
 
     public function find($id)
