@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Arr;
 use PhpOffice\PhpWord\Element\Field;
 use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
@@ -33,8 +34,10 @@ class LoanController extends Controller
     */
     protected $contractService;
 
-    public function __construct(LoanService $loanService, LoanContractService $contractService)
-    {
+    public function __construct(
+        LoanService $loanService,
+        LoanContractService $contractService
+    ) {
         $this->loanService = $loanService;
         $this->contractService = $contractService;
     }
@@ -62,83 +65,79 @@ class LoanController extends Controller
         return $this->loanService->getFormData();
     }
 
+    public function transformInput(array $inputs): array
+    {
+        foreach ($inputs as $key => $val) {
+            if (array_any(['budget_total','item_total','order_total','net_total'], function ($field) use ($key) { return $field == $key; })) {
+                $inputs[$key] = currencyToNumber($val);
+            }
+        }
+
+        return $inputs;
+    }
+
     public function store(Request $req)
     {
         try {
-            $loan = new Loan();
-            $loan->doc_no           = $req['doc_no'];
-            $loan->doc_date         = $req['doc_date'];
-            $loan->loan_type_id     = $req['loan_type_id'];
-            $loan->money_type_id    = $req['money_type_id'];
-            $loan->year             = $req['year'];
-            $loan->department_id    = $req['department_id'];
-            $loan->division_id      = $req['division_id'];
-            $loan->employee_id      = $req['employee_id'];
-            $loan->project_no       = $req['project_no'];
-            $loan->project_date     = $req['project_date'];
-            $loan->project_owner    = $req['project_owner'];
-            $loan->project_name     = $req['project_name'];
-            $loan->project_sdate    = $req['project_sdate'];
-            $loan->project_edate    = $req['project_edate'];
-            $loan->expense_calc     = $req['expense_calc'];
-            $loan->budget_total     = currencyToNumber($req['budget_total']);
-            $loan->item_total       = currencyToNumber($req['item_total']);
-            $loan->order_total      = currencyToNumber($req['order_total']);
-            $loan->net_total        = currencyToNumber($req['net_total']);
-            $loan->remark           = $req['remark'];
-            $loan->status           = 1;
+            $loanData = $this->transformInput($req->except(['courses', 'budgets', 'items']));
+            $loanData['status'] = 1;
 
-            if($loan->save()) {
-                foreach($req['courses'] as $item) {
-                    $course = new ProjectCourse();
-                    $course->seq_no         = $item['id'];
-                    $course->loan_id        = $loan->id;
-                    $course->course_date    = $item['course_date'];
-                    $course->course_edate   = $item['course_edate'];
-                    $course->place_id       = $item['place_id'];
-                    $course->save();
-                }
+            $loan = $this->loanService->create($loanData);
+            dd($loan);
 
-                foreach($req['budgets'] as $item) {
-                    $budget = new LoanBudget();
-                    $budget->loan_id    = $loan->id;
-                    $budget->budget_id  = $item['budget_id'];
-                    $budget->total      = currencyToNumber($item['total']);
-                    $budget->save();
-                }
+            // $loanData = $req->only(['courses', 'budgets', 'items']);
 
-                foreach($req['items'] as $item) {
-                    /** ดึงข้อมูลรุ่นของโครงการ */
-                    $course = $item['expense_group'] == '1' ? ProjectCourse::where('loan_id', $loan->id)->where('seq_no', $item['course_id'])->first() : null;
+            // if($loan->save()) {
+                // foreach($req['courses'] as $item) {
+                //     $course = new ProjectCourse();
+                //     $course->seq_no         = $item['id'];
+                //     $course->loan_id        = $loan->id;
+                //     $course->course_date    = $item['course_date'];
+                //     $course->course_edate   = $item['course_edate'];
+                //     $course->place_id       = $item['place_id'];
+                //     $course->save();
+                // }
 
-                    $detail = new LoanDetail();
-                    $detail->loan_id        = $loan->id;
-                    $detail->course_id      = $item['expense_group'] == '1' ? $course->id : $course;
-                    $detail->expense_id     = $item['expense_id'];
-                    $detail->expense_group  = $item['expense_group'];
-                    $detail->description    = $item['description'];
-                    $detail->total          = currencyToNumber($item['total']);
-                    $detail->save();
-                }
+                // foreach($req['budgets'] as $item) {
+                //     $budget = new LoanBudget();
+                //     $budget->loan_id    = $loan->id;
+                //     $budget->budget_id  = $item['budget_id'];
+                //     $budget->total      = currencyToNumber($item['total']);
+                //     $budget->save();
+                // }
 
-                /** Log info */
-                Log::channel('daily')->info('Added new loan ID:' .$loan->id. ' by ' . auth()->user()->name);
+                // foreach($req['items'] as $item) {
+                //     /** ดึงข้อมูลรุ่นของโครงการ */
+                //     $course = $item['expense_group'] == '1' ? ProjectCourse::where('loan_id', $loan->id)->where('seq_no', $item['course_id'])->first() : null;
 
-                return [
-                    'status'    => 1,
-                    'message'   => 'Insertion successfully!!',
-                    'loan'      => $loan->load('details','details.expense','department',
-                                                'employee','employee.prefix','employee.position','employee.level',
-                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
-                                                'budgets.budget.activity.project','budgets.budget.activity.project.plan',
-                                                'courses','courses.place','courses.place.changwat')
-                ];
-            } else {
-                return [
-                    'status'    => 0,
-                    'message'   => 'Something went wrong!!'
-                ];
-            }
+                //     $detail = new LoanDetail();
+                //     $detail->loan_id        = $loan->id;
+                //     $detail->course_id      = $item['expense_group'] == '1' ? $course->id : $course;
+                //     $detail->expense_id     = $item['expense_id'];
+                //     $detail->expense_group  = $item['expense_group'];
+                //     $detail->description    = $item['description'];
+                //     $detail->total          = currencyToNumber($item['total']);
+                //     $detail->save();
+                // }
+
+                // /** Log info */
+                // Log::channel('daily')->info('Added new loan ID:' .$loan->id. ' by ' . auth()->user()->name);
+
+            //     return [
+            //         'status'    => 1,
+            //         'message'   => 'Insertion successfully!!',
+            //         'loan'      => $loan->load('details','details.expense','department',
+            //                                     'employee','employee.prefix','employee.position','employee.level',
+            //                                     'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
+            //                                     'budgets.budget.activity.project','budgets.budget.activity.project.plan',
+            //                                     'courses','courses.place','courses.place.changwat')
+            //     ];
+            // } else {
+            //     return [
+            //         'status'    => 0,
+            //         'message'   => 'Something went wrong!!'
+            //     ];
+            // }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,
