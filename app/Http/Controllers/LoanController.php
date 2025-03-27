@@ -20,9 +20,6 @@ use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\LoanBudget;
 use App\Models\ProjectCourse;
-use App\Models\Expense;
-use App\Models\Department;
-use App\Models\Budget;
 
 class LoanController extends Controller
 {   
@@ -44,105 +41,25 @@ class LoanController extends Controller
 
     public function search(Request $req)
     {
-        /** Get params from query string */
-        $year       = $req->get('year');
-        $status     = $req->get('status');
-
-        $loans = Loan::with('details','details.expense','department','division')
-                        ->with('employee','employee.prefix','employee.position','employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
-                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
-                        ->with('courses','courses.place','courses.place.changwat')
-                        ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
-                            $q->where('employee_id', auth()->user()->employee_id);
-                        })
-                        ->when(!empty($year), function($q) use ($year) {
-                            $q->where('year', $year);
-                        })
-                        ->when(!empty($status), function($q) use ($status) {
-                            $q->where('status', $status);
-                        })
-                        ->orderBy('doc_date', 'DESC')
-                        ->paginate(10);
-
         /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
         $this->contractService->sendNotify(new DiscordNotify);
 
-        return $loans;
+        return $this->loanService->search($req->all());
     }
 
     public function getAll(Request $req)
     {
-        /** Get params from query string */
-        $project    = $req->get('project');
-        $plan       = $req->get('plan');
-        $name       = $req->get('name');
-        $status     = $req->get('status');
-
-        $loans = Loan::with('details','details.expense','department','division')
-                        ->with('employee','employee.prefix','employee.position','employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
-                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
-                        ->with('courses','courses.place','courses.place.changwat')
-                        ->when(!empty($project), function($q) use ($project) {
-                            $q->where('project_id', $project);
-                        })
-                        ->when(!empty($plan), function($q) use ($plan) {
-                            $q->whereHas('project.plan', function($sq) use ($plan) {
-                                $sq->where('plan_id', $plan);
-                            });
-                        })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where('name', 'like', '%'.$name.'%');
-                        // })
-                        ->get();
-
-        return $loans;
+        return $this->loanService->getAll();
     }
 
     public function getById($id)
     {
-        return Loan::with('details','details.expense','department','division')
-                    ->with('employee','employee.prefix','employee.position','employee.level')
-                    ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
-                    ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
-                    ->with('courses','courses.place','courses.place.changwat')
-                    ->find($id);
+        return $this->loanService->getById($id);
     }
 
     public function getInitialFormData()
     {
-        $loanTypes = [
-            ['id' => 1, 'name' => 'ยืมเงินโครงการ'],
-            ['id' => 2, 'name' => 'ยืมเงินเดินทางไปราชการ'],
-        ];
-
-        $moneyTypes = [
-            ['id' => 1, 'name' => 'เงินทดลองราชการ'],
-            ['id' => 2, 'name' => 'เงินยืมนอกงบประมาณ'],
-            ['id' => 3, 'name' => 'เงินยืมราชการ'],
-        ];
-
-        $statuses = [
-            ['id' => 1, 'name' => 'รอดำเนินการ'],
-            ['id' => 2, 'name' => 'ส่งสัญญาแล้ว'],
-            ['id' => 3, 'name' => 'อนุมัติแล้ว'],
-            ['id' => 4, 'name' => 'เงินเข้าแล้ว'],
-            ['id' => 5, 'name' => 'เคลียร์แล้ว'],
-            ['id' => 9, 'name' => 'ยกเลิก'],
-        ];
-
-        return [
-            'departments'   => Department::with('divisions')->get(),
-            'expenses'      => Expense::all(),
-            'budgets'       => Budget::with('activity','type')->get(),
-            'loanTypes'     => $loanTypes,
-            'moneyTypes'    => $moneyTypes,
-            'statuses'      => $statuses
-        ];
+        return $this->loanService->getFormData();
     }
 
     public function store(Request $req)
@@ -357,9 +274,7 @@ class LoanController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $loan = Loan::find($id);
-
-            if($loan->delete()) {
+            if($this->loanService->destroy($id)) {
                 /** Log info */
                 Log::channel('daily')->info('Deleted loan ID:' .$id. ' by ' . auth()->user()->name);
 
