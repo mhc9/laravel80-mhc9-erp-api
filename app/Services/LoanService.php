@@ -12,7 +12,6 @@ use App\Models\ProjectCourse;
 use App\Models\Expense;
 use App\Models\Department;
 use App\Models\Budget;
-use App\Interfaces\INotify;
 use Carbon\Carbon;
 
 class LoanService extends BaseService

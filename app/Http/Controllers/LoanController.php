@@ -32,14 +32,14 @@ class LoanController extends Controller
     protected $loanService;
 
     /**
-    * @var $$contractService
+    * @var $contractService
     */
     protected $contractService;
 
     public function __construct(LoanService $loanService, LoanContractService $contractService)
     {
         $this->loanService = $loanService;
-        $this->$contractService = $$contractService;
+        $this->contractService = $contractService;
     }
 
     public function search(Request $req)
@@ -66,7 +66,7 @@ class LoanController extends Controller
                         ->paginate(10);
 
         /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
-        $this->$contractService->sendNotify(new DiscordNotify);
+        $this->contractService->sendNotify(new DiscordNotify);
 
         return $loans;
     }

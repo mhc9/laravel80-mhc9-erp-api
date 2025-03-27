@@ -11,6 +11,7 @@ use App\Models\LoanContractDetail;
 use App\Models\Expense;
 use App\Models\Employee;
 use App\Models\Department;
+use App\Interfaces\INotify;
 
 class LoanContractService
 {
