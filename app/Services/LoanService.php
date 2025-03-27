@@ -31,7 +31,8 @@ class LoanService extends BaseService
         $this->repo = $repo;
 
         $this->repo->setSortBy('doc_date');
-        // $this->repo->setSortOrder('desc');
+        $this->repo->setSortOrder('desc');
+
         $this->repo->setRelations([
             'details','details.expense','department','division',
             'employee','employee.prefix','employee.position','employee.level',
@@ -39,15 +40,5 @@ class LoanService extends BaseService
             'lbudgets.budget.activity.project','budgets.budget.activity.project.plan',
             'courses','courses.place','courses.place.changwat'
         ]);
-    }
-
-    public function find($id)
-    {
-        return $this->repo->getPlace($id);
-    }
-
-    public function findAll($params = [])
-    {
-        return $this->repo->getPlaces($params)->get();
     }
 }
