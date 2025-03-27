@@ -13,10 +13,10 @@
             <th style="text-align: center;">วันที่ ขบ.02</th>
             <th style="text-align: center;">วันที่เงินเข้า</th>
             <th style="text-align: center;">วันที่เคลียร์</th>
-            <th style="text-align: center;">วันที่ติดตาม<br />(ก่อน7วัน)</th>
             <th style="text-align: center;">วันที่ครบกำหนด</th>
             <th style="text-align: center;">เลขที่ใบรับใบสำคัญ</th>
             <th style="text-align: center;">เลขที่ใบเสร็จ</th>
+            <th style="text-align: center;">วันที่ใบเสร็จ</th>
         </tr>
     </thead>
     <tbody>
@@ -41,10 +41,10 @@
                 <td style="text-align: center;">{{ convDbDateToThDate($contract->bk02_date) }}</td>
                 <td style="text-align: center;">{{ convDbDateToThDate($contract->deposited_date) }}</td>
                 <td style="text-align: center;">{{ $contract->refund ? convDbDateToThDate($contract->refund->approved_date) : '' }}</td>
-                <td style="text-align: center;">-</td>
                 <td style="text-align: center;">{{ convDbDateToThDate($contract->refund_date) }}</td>
                 <td style="text-align: center;">{{ $contract->refund ? $contract->refund->bill_no : '' }}</td>
                 <td style="text-align: center;">{{ $contract->refund ? $contract->refund->receipt_no : '' }}</td>
+                <td style="text-align: center;">{{ $contract->refund ? convDbDateToThDate($contract->refund->receipt_date) : '' }}</td>
             </tr>
         @endforeach
     </tbody>
