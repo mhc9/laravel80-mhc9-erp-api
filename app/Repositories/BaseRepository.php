@@ -44,10 +44,10 @@ abstract class BaseRepository
                     ->paginate($perPage);
     }
 
-    public function create($input)
+    public function create(array $data)
     {
         $model = $this->model;
-        $model->fill($input);
+        $model->fill($data);
         $model->save();
 
         return $model;
@@ -56,7 +56,7 @@ abstract class BaseRepository
     public function update($id, array $data)
     {
         $model = $this->findOne($id);
-        $model->fill($input);
+        $model->fill($data);
         $model->save();
 
         return $model;

@@ -13,7 +13,7 @@ use App\Models\Employee;
 use App\Models\Department;
 use App\Interfaces\INotify;
 
-class LoanContractService
+class LoanContractService extends BaseService
 {
     /**
      * @var $repo
