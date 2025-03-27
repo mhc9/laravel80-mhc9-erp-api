@@ -15,6 +15,7 @@ use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
 use App\Common\Notifications\DiscordNotify;
 use App\Services\LoanService;
+use App\Services\LoanContractService;
 use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\LoanBudget;
@@ -30,9 +31,15 @@ class LoanController extends Controller
     */
     protected $loanService;
 
-    public function __construct(LoanService $loanService)
+    /**
+    * @var $$contractService
+    */
+    protected $contractService;
+
+    public function __construct(LoanService $loanService, LoanContractService $contractService)
     {
         $this->loanService = $loanService;
+        $this->$contractService = $$contractService;
     }
 
     public function search(Request $req)
@@ -59,7 +66,7 @@ class LoanController extends Controller
                         ->paginate(10);
 
         /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
-        $contracts = $this->loanService->sendNotify(new DiscordNotify);
+        $this->$contractService->sendNotify(new DiscordNotify);
 
         return $loans;
     }
