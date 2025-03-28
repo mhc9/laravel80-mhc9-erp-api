@@ -391,3 +391,15 @@ function formatCurrency(array $inputs, array $fields) {
 
     return $inputs;
 }
+
+function transformManyInputs(array $data, array $fields, array $addOptions) {
+    return array_map(function($item) use ($fields, $addOptions) {
+        $filtered = Arr::only($item, $fields);
+
+        foreach ($addOptions as $key => $val) {
+            $filtered = Arr::add($filtered, $key, $val);
+        }
+
+        return $filtered;
+    }, $data);
+}

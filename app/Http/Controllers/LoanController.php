@@ -16,6 +16,7 @@ use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
 use App\Common\Notifications\DiscordNotify;
 use App\Services\LoanService;
+use App\Services\LoanDetailService;
 use App\Services\LoanBudgetService;
 use App\Services\LoanContractService;
 use App\Services\ProjectCourseService;
@@ -33,6 +34,8 @@ class LoanController extends Controller
      * @var LoanService
      */
     protected LoanService $loanService;
+
+    protected LoanDetailService $detailService;
 
     /**
      * @var LoanContractService
@@ -53,12 +56,14 @@ class LoanController extends Controller
         LoanService $loanService,
         LoanContractService $contractService,
         ProjectCourseService $courseService,
-        LoanBudgetService $budgetService
+        LoanBudgetService $budgetService,
+        LoanDetailService $detailService
     ) {
-        $this->loanService = $loanService;
+        $this->loanService  = $loanService;
         $this->contractService = $contractService;
         $this->courseService = $courseService;
         $this->budgetService = $budgetService;
+        $this->detailService = $detailService;
     }
 
     /**
@@ -89,45 +94,39 @@ class LoanController extends Controller
         return $this->loanService->getFormData();
     }
 
-    public function transform(array $data, array $fields, array $addOptions)
-    {
-        return array_map(function($item) use ($fields, $addOptions) {
-            $filtered = Arr::only($item, $fields);
-
-            foreach ($addOptions as $key => $val) {
-                $filtered = Arr::add($filtered, $key, $val);
-            }
-
-            return $filtered;
-        }, $data);
-    }
-
     public function store(Request $req)
     {
         try {
             $loanData = Arr::add($req->except(['courses', 'budgets', 'items']), 'status', 1);
 
             if($loan = $this->loanService->create($loanData)) {
-                $this->courseService->createMany($this->transform($req['courses'], ['seq_no','course_date','course_edate','room','place_id'], ['loan_id' => $loan->id]));
+                $this->courseService->createMany(
+                    transformManyInputs(
+                        $req['courses'],
+                        ['id','course_date','course_edate','room','place_id'],
+                        ['loan_id' => $loan->id]
+                    )
+                );
 
-                $this->budgetService->createMany($this->transform($req['budgets'], ['budget_id','total'], ['loan_id' => $loan->id]));
+                $this->budgetService->createMany(
+                    transformManyInputs(
+                        $req['budgets'],
+                        ['budget_id','total'],
+                        ['loan_id' => $loan->id]
+                    )
+                );
 
-                // foreach($req['items'] as $item) {
-                //     /** ดึงข้อมูลรุ่นของโครงการ */
-                //     $course = $item['expense_group'] == '1' ? ProjectCourse::where(['loan_id' => $loan->id, 'seq_no' => $item['course_id']])->first() : null;
+                $this->detailService->createMany(
+                    transformManyInputs(
+                        $req['items'],
+                        ['course_id','expense_id','expense_group','description','total'],
+                        ['loan_id' => $loan->id]
+                    ),
+                    $this->courseService->getAllByConditions(['loan_id' => $loan->id])
+                );
 
-                //     $detail = new LoanDetail();
-                //     $detail->loan_id        = $loan->id;
-                //     $detail->course_id      = $item['expense_group'] == '1' ? $course->id : $course;
-                //     $detail->expense_id     = $item['expense_id'];
-                //     $detail->expense_group  = $item['expense_group'];
-                //     $detail->description    = $item['description'];
-                //     $detail->total          = currencyToNumber($item['total']);
-                //     $detail->save();
-                // }
-
-                // /** Log info */
-                // Log::channel('daily')->info('Added new loan ID:' .$loan->id. ' by ' . auth()->user()->name);
+                /** Log info */
+                Log::channel('daily')->info('Added new loan ID:' .$loan->id. ' by ' . auth()->user()->name);
 
                 return [
                     'status'    => 1,

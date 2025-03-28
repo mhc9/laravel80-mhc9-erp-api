@@ -27,7 +27,7 @@ class LoanBudgetService extends BaseService
     public function createMany(array $data)
     {
         foreach($data as $item) {
-            $this->repo->create(formatCurrency($item, ['total']));
+            $this->repo->getModel()->create(formatCurrency($item, ['total']));
         }
     }
 }

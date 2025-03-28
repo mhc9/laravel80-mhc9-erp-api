@@ -69,6 +69,11 @@ abstract class BaseRepository
 
     public function getModel()
     {
+        return $this->model;
+    }
+
+    public function getModelWithRelations()
+    {
         return $this->model->with($this->relations);
     }
 

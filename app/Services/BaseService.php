@@ -29,7 +29,7 @@ abstract class BaseService
     public function createMany(array $data)
     {
         foreach($data as $item) {
-            $this->repo->create($item);
+            $this->repo->getModel()->create($item);
         }
     }
 
