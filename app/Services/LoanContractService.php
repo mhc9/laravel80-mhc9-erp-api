@@ -42,7 +42,7 @@ class LoanContractService extends BaseService
 
     public function search(array $params, $all = false, $perPage = 10)
     {
-        $collections = $this->repo->getModel();
+        $collections = $this->repo->getModelWithRelations();
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
     }

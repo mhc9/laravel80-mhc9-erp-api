@@ -60,7 +60,7 @@ class AssetService extends BaseService
         //                 $q->where('status', $status);
         //             })
 
-        $collections = $this->repo->getModel()
+        $collections = $this->repo->getModelWithRelations()
                                 ->where($conditions)
                                 ->when(!empty($params['owner']), function($query) use ($params) {
                                     $query->whereHas('currentOwner', function($subquery) use ($params) {

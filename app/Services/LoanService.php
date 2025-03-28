@@ -44,7 +44,7 @@ class LoanService extends BaseService
 
     public function search(array $params, $all = false, $perPage = 10)
     {
-        $collections = $this->repo->getModel()
+        $collections = $this->repo->getModelWithRelations()
                             ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($qurey) {
                                 $qurey->where('employee_id', auth()->user()->employee_id);
                             })
