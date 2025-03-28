@@ -82,12 +82,7 @@ class LoanController extends Controller
             $loanData = $this->transformInput($req->except(['courses', 'budgets', 'items']));
             $loanData['status'] = 1;
 
-            $loan = $this->loanService->create($loanData);
-            dd($loan);
-
-            // $loanData = $req->only(['courses', 'budgets', 'items']);
-
-            // if($loan->save()) {
+            // if($loan = $this->loanService->create($loanData)) {
                 // foreach($req['courses'] as $item) {
                 //     $course = new ProjectCourse();
                 //     $course->seq_no         = $item['id'];
@@ -126,11 +121,7 @@ class LoanController extends Controller
             //     return [
             //         'status'    => 1,
             //         'message'   => 'Insertion successfully!!',
-            //         'loan'      => $loan->load('details','details.expense','department',
-            //                                     'employee','employee.prefix','employee.position','employee.level',
-            //                                     'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
-            //                                     'budgets.budget.activity.project','budgets.budget.activity.project.plan',
-            //                                     'courses','courses.place','courses.place.changwat')
+            //         'loan'      => $loan->load($this->loanService->getRelations())
             //     ];
             // } else {
             //     return [

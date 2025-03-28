@@ -35,4 +35,9 @@ abstract class BaseService
     {
         return $this->repo->destroy($id);
     }
+
+    public function getRelations()
+    {
+        return $this->repo->getRelations();
+    }
 }
