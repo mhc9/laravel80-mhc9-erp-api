@@ -381,3 +381,13 @@ function replaceExpensePatternFromDesc($pattern = '', $replacement = '') {
         return replaceExpensePattern($pattern, $replacement);
     }
 }
+
+function formatCurrency(array $inputs, array $fields) {
+    foreach ($inputs as $key => $val) {
+        if (array_any($fields, function ($field) use ($key) { return $field == $key; })) {
+            $inputs[$key] = currencyToNumber($val);
+        }
+    }
+
+    return $inputs;
+}

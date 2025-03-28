@@ -16,32 +16,56 @@ use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
 use App\Common\Notifications\DiscordNotify;
 use App\Services\LoanService;
+use App\Services\LoanBudgetService;
 use App\Services\LoanContractService;
+use App\Services\ProjectCourseService;
 use App\Models\Loan;
 use App\Models\LoanDetail;
 use App\Models\LoanBudget;
 use App\Models\ProjectCourse;
 
+/**
+ * [Description LoanController]
+ */
 class LoanController extends Controller
 {   
     /**
-    * @var $loanService
-    */
-    protected $loanService;
+     * @var LoanService
+     */
+    protected LoanService $loanService;
 
     /**
-    * @var $contractService
-    */
-    protected $contractService;
+     * @var LoanContractService
+     */
+    protected LoanContractService $contractService;
+
+    /**
+     * @var ProjectCourseService
+     */
+    protected ProjectCourseService $courseService;
+
+    /**
+     * @var LoanBudgetService
+     */
+    protected LoanBudgetService $budgetService;
 
     public function __construct(
         LoanService $loanService,
-        LoanContractService $contractService
+        LoanContractService $contractService,
+        ProjectCourseService $courseService,
+        LoanBudgetService $budgetService
     ) {
         $this->loanService = $loanService;
         $this->contractService = $contractService;
+        $this->courseService = $courseService;
+        $this->budgetService = $budgetService;
     }
 
+    /**
+     * @param Request $req
+     * 
+     * @return [type]
+     */
     public function search(Request $req)
     {
         /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
@@ -65,45 +89,32 @@ class LoanController extends Controller
         return $this->loanService->getFormData();
     }
 
-    public function transformInput(array $inputs): array
+    public function transform(array $data, array $fields, array $addOptions)
     {
-        foreach ($inputs as $key => $val) {
-            if (array_any(['budget_total','item_total','order_total','net_total'], function ($field) use ($key) { return $field == $key; })) {
-                $inputs[$key] = currencyToNumber($val);
-            }
-        }
+        return array_map(function($item) use ($fields, $addOptions) {
+            $filtered = Arr::only($item, $fields);
 
-        return $inputs;
+            foreach ($addOptions as $key => $val) {
+                $filtered = Arr::add($filtered, $key, $val);
+            }
+
+            return $filtered;
+        }, $data);
     }
 
     public function store(Request $req)
     {
         try {
-            $loanData = $this->transformInput($req->except(['courses', 'budgets', 'items']));
-            $loanData['status'] = 1;
+            $loanData = Arr::add($req->except(['courses', 'budgets', 'items']), 'status', 1);
 
-            // if($loan = $this->loanService->create($loanData)) {
-                // foreach($req['courses'] as $item) {
-                //     $course = new ProjectCourse();
-                //     $course->seq_no         = $item['id'];
-                //     $course->loan_id        = $loan->id;
-                //     $course->course_date    = $item['course_date'];
-                //     $course->course_edate   = $item['course_edate'];
-                //     $course->place_id       = $item['place_id'];
-                //     $course->save();
-                // }
+            if($loan = $this->loanService->create($loanData)) {
+                $this->courseService->createMany($this->transform($req['courses'], ['seq_no','course_date','course_edate','room','place_id'], ['loan_id' => $loan->id]));
 
-                // foreach($req['budgets'] as $item) {
-                //     $budget = new LoanBudget();
-                //     $budget->loan_id    = $loan->id;
-                //     $budget->budget_id  = $item['budget_id'];
-                //     $budget->total      = currencyToNumber($item['total']);
-                //     $budget->save();
-                // }
+                $this->budgetService->createMany($this->transform($req['budgets'], ['budget_id','total'], ['loan_id' => $loan->id]));
 
                 // foreach($req['items'] as $item) {
                 //     /** ดึงข้อมูลรุ่นของโครงการ */
-                //     $course = $item['expense_group'] == '1' ? ProjectCourse::where('loan_id', $loan->id)->where('seq_no', $item['course_id'])->first() : null;
+                //     $course = $item['expense_group'] == '1' ? ProjectCourse::where(['loan_id' => $loan->id, 'seq_no' => $item['course_id']])->first() : null;
 
                 //     $detail = new LoanDetail();
                 //     $detail->loan_id        = $loan->id;
@@ -118,17 +129,17 @@ class LoanController extends Controller
                 // /** Log info */
                 // Log::channel('daily')->info('Added new loan ID:' .$loan->id. ' by ' . auth()->user()->name);
 
-            //     return [
-            //         'status'    => 1,
-            //         'message'   => 'Insertion successfully!!',
-            //         'loan'      => $loan->load($this->loanService->getRelations())
-            //     ];
-            // } else {
-            //     return [
-            //         'status'    => 0,
-            //         'message'   => 'Something went wrong!!'
-            //     ];
-            // }
+                return [
+                    'status'    => 1,
+                    'message'   => 'Insertion successfully!!',
+                    'loan'      => $loan->load($this->loanService->getRelations())
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,

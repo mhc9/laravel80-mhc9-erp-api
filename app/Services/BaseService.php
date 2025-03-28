@@ -26,6 +26,13 @@ abstract class BaseService
         return $this->repo->create($input);
     }
 
+    public function createMany(array $data)
+    {
+        foreach($data as $item) {
+            $this->repo->create($item);
+        }
+    }
+
     public function update($id, array $input)
     {
         return $this->repo->update($id, $input);

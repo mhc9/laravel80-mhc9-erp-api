@@ -89,4 +89,9 @@ class LoanService extends BaseService
             'statuses'      => $statuses
         ];
     }
+
+    public function create(array $input)
+    {
+        return $this->repo->create(formatCurrency($input, ['budget_total','item_total','order_total','net_total']));
+    }
 }
