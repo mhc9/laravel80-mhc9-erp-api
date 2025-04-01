@@ -20,28 +20,21 @@ class EmployeeService
     use SaveImage;
 
     /**
-     * @var $employeeRepo
+     * @var $repo
      */
-    protected $employeeRepo;
+    protected $repo;
 
-    public function __construct(EmployeeRepository $employeeRepo)
+    public function __construct(EmployeeRepository $repo)
     {
-        $this->employeeRepo = $employeeRepo;
-    }
+        $this->repo = $repo;
 
-    public function find($id)
-    {
-        return $this->employeeRepo->getEmployee($id);
-    }
+        // $this->repo->setSortBy('doc_date');
+        // $this->repo->setSortOrder('desc');
 
-    public function findAll($params = [])
-    {
-        return $this->employeeRepo->getEmployees();
-    }
-
-    public function findById($id)
-    {
-        return $this->employeeRepo->getEmployeeById($id);
+        $this->repo->setRelations([
+            'prefix','changwat','amphur','tambon','position','level',
+            'memberOf','memberOf.duty','memberOf.department','memberOf.division'
+        ]);
     }
 
     public function initForm()
@@ -58,14 +51,9 @@ class EmployeeService
         ];
     }
 
-    public function delete($id)
-    {
-        return $this->employeeRepo->delete($id);
-    }
-
     public function updateImage($id, $image)
     {
-        $employee = $this->employeeRepo->getEmployee($id);
+        $employee = $this->repo->getEmployee($id);
         $destPath = 'employees';
 
         /** Remove old uploaded file */

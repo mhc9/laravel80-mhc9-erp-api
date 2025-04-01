@@ -28,8 +28,10 @@ class AssetService extends BaseService
     public function __construct(AssetRepository $repo)
     {
         $this->repo = $repo;
+
         $this->repo->setSortBy('date_in');
         // $this->repo->setSortOrder('desc');
+
         $this->repo->setRelations([
             'group','group.category','brand','budget','obtaining','unit','room',
             'currentOwner','currentOwner.owner','currentOwner.owner.prefix'
