@@ -20,54 +20,22 @@ class EmployeeController extends Controller
 
     public function search(Request $req)
     {
-        /** Get params from query string */
-        $position   = $req->get('position');
-        $level      = $req->get('level');
-        $name       = $req->get('name');
-        $department = $req->get('department');
-        $status     = $req->get('status');
-        $limit      = $req->filled('limit') ? $req->get('limit') : 10;
-
-        $memberLists = [];
-        if (!empty($department)) {
-            $memberLists = Member::where('department_id', $department)->pluck('employee_id');
-        }
-
-        $employees = Employee::with('prefix','changwat','amphur','tambon','position','level')
-                        ->with('memberOf','memberOf.duty','memberOf.department','memberOf.division')
-                        ->when(!empty($position), function($q) use ($position) {
-                            $q->where('position_id', $position);
-                        })
-                        ->when(!empty($level), function($q) use ($level) {
-                            $q->where('level_id', $level);
-                        })
-                        ->when(!empty($name), function($q) use ($name) {
-                            $q->where('firstname', 'like', '%'.$name.'%');
-                        })
-                        ->when(!empty($department), function($q) use ($memberLists) {
-                            $q->whereIn('id', $memberLists);
-                        })
-                        ->when(!empty($status), function($q) use ($status) {
-                            $q->where('status', $status);
-                        })
-                        ->paginate($limit);
-
-        return $employees;
+        return $this->employeeService->search($req->all());
     }
 
     public function getAll()
     {
-        return $this->employeeService->findAll();
+        return $this->employeeService->getAll();
     }
 
     public function getById($id)
     {
-        return $this->employeeService->findById($id);
+        return $this->employeeService->getById($id);
     }
 
     public function getInitialFormData()
     {
-        return $this->employeeService->initForm();
+        return $this->employeeService->getFormData();
     }
 
     public function store(Request $req)
@@ -169,7 +137,7 @@ class EmployeeController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            if($this->employeeService->delete($id)) {
+            if($this->employeeService->destroy($id)) {
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',

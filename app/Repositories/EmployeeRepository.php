@@ -2,10 +2,15 @@
 
 namespace App\Repositories;
 
+use App\Repositories\BaseRepository;
+use App\Repositories\Traits\Sortable;
+use App\Repositories\Traits\Relationable;
 use App\Models\Employee;
 
-class EmployeeRepository
+class EmployeeRepository extends BaseRepository
 {
+    use Sortable, Relationable;
+
     /**
      *  @var $model
      */
