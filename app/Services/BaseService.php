@@ -16,6 +16,22 @@ abstract class BaseService
         return $this->repo->findOne($id);
     }
 
+    public function getOneWithConditions(array $conditions)
+    {
+        return $this->repo
+                    ->getModel()
+                    ->where($conditions)
+                    ->first();
+    }
+
+    public function getAllWithConditions(array $conditions)
+    {
+        return $this->repo
+                    ->getModel()
+                    ->where($conditions)
+                    ->get();
+    }
+
     public function paginated()
     {
         return $this->repo->paginated(config('paginate'));

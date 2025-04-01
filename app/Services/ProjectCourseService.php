@@ -24,22 +24,6 @@ class ProjectCourseService extends BaseService
         // $this->repo->setRelations([]);
     }
 
-    public function getOneByConditions(array $conditions)
-    {
-        return $this->repo
-                    ->getModel()
-                    ->where($conditions)
-                    ->first();
-    }
-
-    public function getAllByConditions(array $conditions)
-    {
-        return $this->repo
-                    ->getModel()
-                    ->where($conditions)
-                    ->get();
-    }
-
     public function createMany(array $data)
     {
         foreach($data as $item) {

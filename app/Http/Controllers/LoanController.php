@@ -122,7 +122,7 @@ class LoanController extends Controller
                         ['course_id','expense_id','expense_group','description','total'],
                         ['loan_id' => $loan->id]
                     ),
-                    $this->courseService->getAllByConditions(['loan_id' => $loan->id])
+                    $this->courseService->getAllWithConditions(['loan_id' => $loan->id])
                 );
 
                 /** Log info */
