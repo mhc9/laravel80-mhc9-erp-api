@@ -2,45 +2,35 @@
 
 namespace App\Services;
 
+use App\Services\BaseService;
 use App\Repositories\ItemRepository;
-use App\Models\Item;
 use App\Models\AssetType;
 use App\Models\AssetCategory;
 use App\Models\Unit;
 use App\Traits\SaveImage;
 
-class ItemService
+class ItemService extends BaseService
 {
     use SaveImage;
 
     /**
-     * @var $itemRepo
+     * @var $repo
      */
-    protected $itemRepo;
+    protected $repo;
 
     /**
      * @var $destPath
      */
     protected $destPath = 'products';
 
-    public function __construct(ItemRepository $itemRepo)
+    public function __construct(ItemRepository $repo)
     {
-        $this->itemRepo = $itemRepo;
-    }
+        $this->repo = $repo;
 
-    public function find($id)
-    {
-        return $this->itemRepo->getItem($id);
-    }
+        // $this->repo->setSortBy('date_in');
+        // $this->repo->setSortOrder('desc');
 
-    public function findAll($params = [])
-    {
-        return $this->itemRepo->getItems();
-    }
-
-    public function findById($id)
-    {
-        return $this->itemRepo->getItemById($id);
+        $this->repo->setRelations(['category','unit']);
     }
 
     public function initForm()
@@ -54,30 +44,9 @@ class ItemService
         ];
     }
 
-    public function store($req)
-    {
-        $data = [
-            'name'          => $req['name'],
-            'category_id'   => $req['category_id'],
-            'description'   => $req['description'],
-            'cost'          => $req['cost'],
-            'price'         => $req['price'],
-            'unit_id'       => $req['unit_id'],
-            // 'status'        => $req['status'] ? 1 : 0,
-            'img_url'       => $this->saveImage($req->file('img_url'), $this->destPath),
-        ];
-
-        return $this->itemRepo->store($data);
-    }
-
-    public function delete($id)
-    {
-        return $this->itemRepo->delete($id);
-    }
-
     public function updateImage($id, $image)
     {
-        $item = $this->itemRepo->getItem($id);
+        $item = $this->repo->getItem($id);
 
         /** Remove old file */
         if (\File::exists($this->destPath . $item->img_url)) {
