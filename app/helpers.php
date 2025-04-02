@@ -394,12 +394,15 @@ function formatCurrency(array $inputs, array $fields) {
 
 function transformManyInputs(array $data, array $fields, array $addOptions) {
     return array_map(function($item) use ($fields, $addOptions) {
-        $filtered = Arr::only($item, $fields);
-
-        foreach ($addOptions as $key => $val) {
-            $filtered = Arr::add($filtered, $key, $val);
-        }
-
-        return $filtered;
+        return addMultipleInputs(Arr::only($item, $fields), $addOptions);
     }, $data);
+}
+
+function addMultipleInputs(array $data, array $additions) {
+    $newInputs = [];
+    foreach ($additions as $key => $val) {
+        $newInputs = Arr::add($data, $key, $val);
+    }
+
+    return $newInputs;
 }
