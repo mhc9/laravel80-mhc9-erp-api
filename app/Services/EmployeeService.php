@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Services\BaseService;
 use App\Repositories\EmployeeRepository;
-use App\Models\Employee;
 use App\Models\Prefix;
 use App\Models\Position;
 use App\Models\Level;
