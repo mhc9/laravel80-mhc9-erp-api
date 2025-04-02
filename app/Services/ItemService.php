@@ -33,7 +33,7 @@ class ItemService extends BaseService
         $this->repo->setRelations(['category','unit']);
     }
 
-    public function initForm()
+    public function getFormData()
     {
         $types = AssetType::with('categories')->get();
 

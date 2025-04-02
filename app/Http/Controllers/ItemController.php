@@ -31,46 +31,36 @@ class ItemController extends Controller
 
     public function search(Request $req)
     {
-        /** Get params from query string */
-        $category   = $req->get('category');
-        $name       = $req->get('name');
-        $status     = $req->get('status');
-        $pageSize   = $req->get('limit') ? $req->get('limit') : 10;
-
-        $items = Item::with('category','unit')
-                    ->when(!empty($category), function($q) use ($category) {
-                        $q->where('category_id', $category);
-                    })
-                    ->when(!empty($name), function($q) use ($name) {
-                        $q->where('name', 'like', '%'.$name.'%');
-                    })
-                    ->when(!empty($status), function($q) use ($status) {
-                        $q->where('status', $status);
-                    })
-                    ->paginate($pageSize);
-
-        return $items;
+        return $this->itemService->search($req->all());
     }
 
     public function getAll(Request $req)
     {
-        return $this->itemService->findAll();
+        return $this->itemService->getAll();
     }
 
     public function getById($id)
     {
-        return $this->itemService->find($id);
+        return $this->itemService->getById($id);
     }
 
     public function getInitialFormData()
     {
-        return $this->itemService->initForm();
+        return $this->itemService->getFormData();
     }
 
-    public function store(Request $request)
+    public function store(Request $req)
     {
         try {
-            if($item = $this->itemService->store($request)) {
+            $itemData = addMultipleInputs(
+                $req->except(['id','img_url']),
+                [
+                    'img_url'   => $this->itemService->saveImage($req->file('img_url'), 'products'),
+                    // 'status'    => $req['status'] ? 1 : 0,
+                ],
+            );
+
+            if($item = $this->itemService->create($itemData)) {
                 /** Log info */
                 Log::channel('daily')->info('Added item ID:' .$item->id. ' by ' . auth()->user()->name);
 
@@ -96,15 +86,7 @@ class ItemController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $item = Item::find($id);
-            $item->name         = $req['name'];
-            $item->category_id  = $req['category_id'];
-            $item->cost         = $req['cost'];
-            $item->price        = $req['price'];
-            $item->unit_id      = $req['unit_id'];
-            $item->description  = $req['description'];
-
-            if($item->save()) {
+            if($item = $this->itemService->update($id, $req->all())) {
                 /** Log info */
                 Log::channel('daily')->info('Updated item ID:' .$id. ' by ' . auth()->user()->name);
 
@@ -130,7 +112,7 @@ class ItemController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            if($this->itemService->delete($id)) {
+            if($this->itemService->destroy($id)) {
                 /** Log info */
                 Log::channel('daily')->info('Deleted item ID:' .$id. ' by ' . auth()->user()->name);
 
