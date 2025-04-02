@@ -11,7 +11,12 @@ class Item extends Model
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
 
-    protected $fillable = ['name','category_id','description','cost','price','unit_id','img_url','status'];
+    /** Set particular field mass assignable */
+    // protected $fillable = ['name','category_id','description','cost','price','unit_id','img_url','status'];
+
+    /** Set all the fields mass assignable */
+    protected $guarded = [];
+
 
     public function category()
     {

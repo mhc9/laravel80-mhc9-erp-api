@@ -23,27 +23,27 @@ class PlaceController extends Controller
 
     public function getAll(Request $req)
     {
-        return $this->placeService->findAll($req->query());
+        return $this->placeService->getAll($req->query());
     }
 
     public function getById($id)
     {
-        return $this->placeService->find($id);
+        return $this->placeService->getById($id);
     }
 
     public function getInitialFormData()
     {
-        return $this->placeService->initForm();
+        return $this->placeService->getFormData();
     }
 
     public function store(Request $req)
     {
         try {
-            if($place = $this->placeService->store($req)) {
+            if($place = $this->placeService->create($req->all())) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'place'     => $place->load('tambon','amphur','changwat')
+                    'place'     => $place
                 ];
             } else {
                 return [
@@ -62,20 +62,11 @@ class PlaceController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $budget = Project::find($id);
-            $budget->name       = $req['name'];
-            $budget->year       = $req['year'];
-            $budget->project_type_id = $req['project_type_id'];
-            $budget->owner_id   = $req['owner_id'];
-            $budget->place_id   = $req['place_id'];
-            $budget->from_date  = $req['from_date'];
-            $budget->to_date    = $req['to_date'];
-
-            if($budget->save()) {
+            if($place = $this->placeService->update($id, $req->all())) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'Budget'  => $budget
+                    'place'     => $place
                 ];
             } else {
                 return [
@@ -94,9 +85,7 @@ class PlaceController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $budget = Project::find($id);
-
-            if($budget->delete()) {
+            if($this->placeService->destroy()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
