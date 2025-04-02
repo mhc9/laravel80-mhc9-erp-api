@@ -33,6 +33,23 @@ class ItemService extends BaseService
         $this->repo->setRelations(['category','unit']);
     }
 
+    public function search(array $params, $all = false, $perPage = 10)
+    {
+        $collections = $this->repo
+                            ->getModelWithRelations()
+                            ->when(!empty($params['category']), function($q) use ($params) {
+                                $q->where('category_id', $params['category']);
+                            })
+                            ->when(!empty($params['name']), function($q) use ($params) {
+                                $q->where('name', 'like', '%'.$params['name'].'%');
+                            })
+                            ->when(!empty($params['status']), function($q) use ($params) {
+                                $q->where('status', $params['status']);
+                            });
+
+        return $all ?  $collections->get() : $collections->paginate($perPage);
+    }
+
     public function getFormData()
     {
         $types = AssetType::with('categories')->get();
@@ -46,7 +63,7 @@ class ItemService extends BaseService
 
     public function updateImage($id, $image)
     {
-        $item = $this->repo->getItem($id);
+        $item = $this->repo->getById($id);
 
         /** Remove old file */
         if (\File::exists($this->destPath . $item->img_url)) {
