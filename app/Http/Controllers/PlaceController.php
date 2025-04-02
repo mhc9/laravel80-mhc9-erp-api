@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Arr;
 use App\Services\PlaceService;
 
 class PlaceController extends Controller
@@ -39,11 +40,13 @@ class PlaceController extends Controller
     public function store(Request $req)
     {
         try {
-            if($place = $this->placeService->create($req->all())) {
+            $placeData = Arr::add($req->all(), "status", 1);
+
+            if($place = $this->placeService->create($placeData)) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'place'     => $place
+                    'place'     => $place->load($this->placeService->getRelations())
                 ];
             } else {
                 return [
@@ -66,7 +69,7 @@ class PlaceController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'place'     => $place
+                    'place'     => $place->load($this->placeService->getRelations())
                 ];
             } else {
                 return [
