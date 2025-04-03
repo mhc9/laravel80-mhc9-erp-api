@@ -113,7 +113,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/employees/{id}', 'App\Http\Controllers\EmployeeController@getById');
     Route::get('/employees/init/form', 'App\Http\Controllers\EmployeeController@getInitialFormData');
     Route::post('/employees', 'App\Http\Controllers\EmployeeController@store');
-    Route::post('/employees/{id}', 'App\Http\Controllers\EmployeeController@update');
+    Route::post('/employees/{id}/update', 'App\Http\Controllers\EmployeeController@update');
     Route::post('/employees/{id}/delete', 'App\Http\Controllers\EmployeeController@destroy');
     Route::post('/employees/{id}/upload', 'App\Http\Controllers\EmployeeController@uploadAvatar');
 
