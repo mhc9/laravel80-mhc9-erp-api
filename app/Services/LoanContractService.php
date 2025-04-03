@@ -65,12 +65,15 @@ class LoanContractService extends BaseService
             $refundNotify = 0;
             $remainDays = Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date));
 
-            if ($remainDays >= 0) { // กรณีครบหรือเลยกำหนดคืนเงิน
-                        /** ข้อความแจ้งเตือน */
-                        $msg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
-                        $msg .= ' เลขที่สัญญา ' .$contract->contract_no;
-                        $msg .= ' ครบกำหนดหรือเลยกำหนดคืนเงินแล้ว ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
-                        $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
+            if ($remainDays < 0) { // กรณีครบหรือเลยกำหนดคืนเงิน
+                /** เซตค่า refundNotify เป็น 2 = แจ้งเตือนครบแล้ว */
+                $refundNotify = 2;
+
+                /** ข้อความแจ้งเตือน */
+                $msg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
+                $msg .= ' เลขที่สัญญา ' .$contract->contract_no;
+                $msg .= ' เลยกำหนดคืนเงินแล้ว ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
+                $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
             } else {
                 if ($contract->refund_days == 15) { // กรณียืมไปราชการ
                     if ($remainDays <= 5) {
@@ -106,20 +109,13 @@ class LoanContractService extends BaseService
                 }
             }
 
-            /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
-            $notify->send($msg);
+            if (!empty($msg)) {
+                /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
+                $notify->send($msg);
 
-            /** อัพเดตฟิลด์ refund_notify */
-            $this->update($contract->id, ['refund_notify' => $refundNotify]);
+                /** อัพเดตฟิลด์ refund_notify */
+                $this->update($contract->id, ['refund_notify' => $refundNotify]);
+            }
         }
     }
-
-    // public function initForm()
-    // {
-    //     return [
-    //         'tambons'       => Tambon::all(),
-    //         'amphurs'       => Amphur::all(),
-    //         'changwats'     => Changwat::all(),
-    //     ];
-    // }
 }
