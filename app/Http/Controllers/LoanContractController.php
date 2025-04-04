@@ -292,7 +292,7 @@ class LoanContractController extends Controller
                 Loan::find($contract->loan_id)->update(['status' => 4]);
 
                 /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
-                $this->contractService->sendNotify($contract->load($this->contractService->getRelations()));
+                $this->contractService->notifyDeposit($contract->load($this->contractService->getRelations()));
 
                 /** Log info */
                 Log::channel('daily')->info('Desposition of contract ID:' .$id. ' was operated by ' . auth()->user()->name);

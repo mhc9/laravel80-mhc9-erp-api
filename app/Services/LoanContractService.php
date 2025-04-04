@@ -62,7 +62,7 @@ class LoanContractService extends BaseService
      * แจ้งเตือนการคืนเงิน
      * @return void
      */
-    private function sendNotify0(): void
+    public function notifyRefund(): void
     {
         $contracts = $this->findContractToNotify();
 
@@ -131,7 +131,7 @@ class LoanContractService extends BaseService
      * 
      * @return void
      */
-    private function sendNotify1(Collection $contract): void
+    public function notifyDeposit(Collection $contract): void
     {
         /** ข้อความแจ้งเตือน */
         $msg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
@@ -153,13 +153,5 @@ class LoanContractService extends BaseService
     {
         /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
         $notify->send($message);
-    }
-
-    public function __call($funcName, $args)
-    {
-        $count = count($args);
-        $funcName = $funcName . $count;
-
-        return method_exists(__CLASS__, $funcName) ? $this->{$funcName}($args) : null;
     }
 }

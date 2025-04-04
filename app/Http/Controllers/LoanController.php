@@ -73,7 +73,7 @@ class LoanController extends Controller
     public function search(Request $req)
     {
         /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
-        $this->contractService->sendNotify();
+        $this->contractService->notifyRefund();
 
         return $this->loanService->search($req->all());
     }
