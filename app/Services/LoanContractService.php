@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
 use App\Services\BaseService;
 use App\Repositories\LoanContractRepository;
+use App\Common\Notifications\DiscordNotify;
 use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
@@ -56,7 +58,11 @@ class LoanContractService extends BaseService
                             ->get();
     }
 
-    public function sendNotify(INotify $notify)
+    /**
+     * แจ้งเตือนการคืนเงิน
+     * @return void
+     */
+    private function sendNotify0(): void
     {
         $contracts = $this->findContractToNotify();
 
@@ -111,11 +117,49 @@ class LoanContractService extends BaseService
 
             if (!empty($msg)) {
                 /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
-                $notify->send($msg);
+                $notify->send(new DiscordNotify, $msg);
 
                 /** อัพเดตฟิลด์ refund_notify */
                 $this->update($contract->id, ['refund_notify' => $refundNotify]);
             }
         }
+    }
+
+    /**
+     * แจ้งเตือนเงินเข้า
+     * @param Collection $contract
+     * 
+     * @return void
+     */
+    private function sendNotify1(Collection $contract): void
+    {
+        /** ข้อความแจ้งเตือน */
+        $msg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
+        $msg .= ' เลขที่สัญญา ' .$contract->contract_no;
+        $msg .= ' จะเข้าบัญชีในวันที่ ' .convDbDateToThDate($contract->deposited_date);
+        $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
+
+        /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
+        $notify->send(new DiscordNotify, $msg);
+    }
+
+    /**
+     * @param INotify $notify
+     * @param string $message
+     * 
+     * @return void
+     */
+    public function send(INotify $notify, string $message): void
+    {
+        /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
+        $notify->send($message);
+    }
+
+    public function __call($funcName, $args)
+    {
+        $count = count($args);
+        $funcName = $funcName . $count;
+
+        return method_exists(__CLASS__, $funcName) ? $this->{$funcName}($args) : null;
     }
 }

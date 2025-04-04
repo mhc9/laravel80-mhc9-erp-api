@@ -14,7 +14,6 @@ use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
-use App\Common\Notifications\DiscordNotify;
 use App\Services\LoanService;
 use App\Services\LoanDetailService;
 use App\Services\LoanBudgetService;
@@ -74,7 +73,7 @@ class LoanController extends Controller
     public function search(Request $req)
     {
         /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
-        $this->contractService->sendNotify(new DiscordNotify);
+        $this->contractService->sendNotify();
 
         return $this->loanService->search($req->all());
     }

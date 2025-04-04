@@ -13,7 +13,6 @@ use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
-use Phattarachai\LineNotify\Facade\Line;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LoanContractExport;
 use App\Services\LoanContractService;
@@ -293,7 +292,7 @@ class LoanContractController extends Controller
                 Loan::find($contract->loan_id)->update(['status' => 4]);
 
                 /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
-                $this->contractService->sendNotify($contract);
+                $this->contractService->sendNotify($contract->load($this->contractService->getRelations()));
 
                 /** Log info */
                 Log::channel('daily')->info('Desposition of contract ID:' .$id. ' was operated by ' . auth()->user()->name);
