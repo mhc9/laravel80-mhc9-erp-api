@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
 use App\Services\BaseService;
 use App\Repositories\LoanContractRepository;
 use App\Common\Notifications\DiscordNotify;
-use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
 use App\Models\Expense;
@@ -127,11 +125,11 @@ class LoanContractService extends BaseService
 
     /**
      * แจ้งเตือนเงินเข้า
-     * @param Collection $contract
+     * @param LoanContract $contract
      * 
      * @return void
      */
-    public function notifyDeposit(Collection $contract): void
+    public function notifyDeposit(LoanContract $contract): void
     {
         /** ข้อความแจ้งเตือน */
         $msg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
