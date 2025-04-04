@@ -115,7 +115,7 @@ class LoanContractService extends BaseService
 
             if (!empty($msg)) {
                 /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
-                $notify->send(new DiscordNotify, $msg);
+                $this->send(new DiscordNotify, $msg);
 
                 /** อัพเดตฟิลด์ refund_notify */
                 $this->update($contract->id, ['refund_notify' => $refundNotify]);
@@ -138,7 +138,7 @@ class LoanContractService extends BaseService
         $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
 
         /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
-        $notify->send(new DiscordNotify, $msg);
+        $this->send(new DiscordNotify, $msg);
     }
 
     /**
