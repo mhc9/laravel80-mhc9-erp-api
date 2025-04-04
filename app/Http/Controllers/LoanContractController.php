@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Arr;
 use PhpOffice\PhpWord\Element\Field;
 use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
@@ -15,6 +16,7 @@ use PhpOffice\PhpWord\SimpleType\TblWidth;
 use PhpOffice\PhpWord\ComplexType\TblWidth as IndentWidth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LoanContractExport;
+use App\Services\LoanService;
 use App\Services\LoanContractService;
 use App\Models\Loan;
 use App\Models\LoanContract;
@@ -25,14 +27,11 @@ use App\Models\Department;
 
 class LoanContractController extends Controller
 {
-    /**
-    * @var $contractService
-    */
-    protected $contractService;
-
-    public function __construct(LoanContractService $contractService)
-    {
-        $this->contractService = $contractService;
+    public function __construct(
+        protected LoanContractService $contractService,
+        protected LoanService $loanService
+    ) {
+        // code here
     }
 
     public function search(Request $req)
@@ -166,15 +165,14 @@ class LoanContractController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $contract = LoanContract::find($id);
-            $loanId = $contract->loan_id;
+            $loanId = $this->contractService->getById($id)->loan_id;
 
-            if($contract->delete()) {
+            if($this->contractService->detroy($id)) {
                 /** Delete loan_contract_details according to deleted contract's id */
                 LoanContractDetail::where('contract_id', $id)->delete();
 
                 /** Update loans's status to 1 according to deleted contract's loan_id */
-                Loan::find($loanId)->update(['status' => 1]);
+                $this->loanService->update($loanId, ['status' => 1]);
 
                 /** Log info */
                 Log::channel('daily')->info('Deleted contract ID:' .$id. ' by ' . auth()->user()->name);
@@ -201,14 +199,11 @@ class LoanContractController extends Controller
     public function deposit(Request $req, $id)
     {
         try {
-            $contract = LoanContract::find($id);
-            $contract->deposited_date   = $req['deposited_date'];
-            $contract->refund_date      = $req['refund_date'];
-            $contract->status           = 2;
+            $depositData = Arr::add($req->only(['deposited_date','refund_date']), 'status', 2);
 
-            if($contract->save()) {
+            if($contract = $this->contractService->update($id, $depositData)) {
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=4 (4=เงินเข้าแล้ว) */
-                Loan::find($contract->loan_id)->update(['status' => 4]);
+                $this->loanService->update($contract->loan_id, ['status' => 4]);
 
                 /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
                 $this->contractService->notifyDeposit($contract->load($this->contractService->getRelations()));
@@ -219,7 +214,7 @@ class LoanContractController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Depositing successfully!!',
-                    'contract'  => $contract
+                    'contract'  => $contract->load($this->contractService->getRelations())
                 ];
             } else {
                 return [
@@ -238,14 +233,11 @@ class LoanContractController extends Controller
     public function cancel(Request $req, $id)
     {
         try {
-            $contract = LoanContract::find($id);
-            $contract->deposited_date   = null;
-            $contract->refund_date      = null;
-            $contract->status           = 1;
+            $cancelData = addMultipleInputs([], ['deposited_date' => null,'refund_date' => null,'status' => 1]);
 
-            if($contract->save()) {
+            if($contract = $this->contractService->update($id, $cancelData)) {
                 /** อัพเดตตาราง loans โดยเซตค่าฟิลด์ status=3 (3=อนุมัติแล้ว) */
-                Loan::find($contract->loan_id)->update(['status' => 3]);
+                $this->loanService->update($contract->loan_id, ['status' => 3]);
 
                 /** Log info */
                 Log::channel('daily')->info('Desposition of contract ID:' .$id. ' was cancelled by ' . auth()->user()->name);
@@ -253,10 +245,7 @@ class LoanContractController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Cancelation successfully!!',
-                    'contract'  => $contract->load('details','details.expense','details.loanDetail','loan.department',
-                                                    'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
-                                                    'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
-                                                    'loan.courses','loan.courses.place','loan.courses.place.changwat')
+                    'contract'  => $contract->load($this->contractService->getRelations())
                 ];
             } else {
                 return [
