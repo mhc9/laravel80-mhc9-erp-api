@@ -37,111 +37,30 @@ class LoanContractController extends Controller
 
     public function search(Request $req)
     {
-        /** Get params from query string */
-        $year       = $req->get('year');
-        $employee   = $req->get('employee');
-        $status     = $req->get('status');
+        /** ส่งแจ้งเตือนไลน์กลุ่ม "สัญญาเงินยืม09" */
+        $this->contractService->notifyRefund();
 
-        $contracts = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                                ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
-                                    $q->where('employee_id', auth()->user()->employee_id);
-                                })
-                                ->when(!empty($employee), function($q) use ($employee) {
-                                    $q->where('employee_id', $employee);
-                                })
-                                ->when(!empty($year), function($q) use ($year) {
-                                    $q->where('year', $year);
-                                })
-                                ->when(!empty($status), function($q) use ($status) {
-                                    $q->where('status', $status);
-                                })
-                                ->orderBy('approved_date', 'DESC')
-                                ->paginate(10);
-
-        return $contracts;
+        return $this->contractService->search($req->all());
     }
 
     public function getAll(Request $req)
     {
-        /** Get params from query string */
-        $project    = $req->get('project');
-        $plan       = $req->get('plan');
-        $name       = $req->get('name');
-        $status     = $req->get('status');
-
-        $activities = LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                                ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                                ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                                ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                                ->when(!empty($project), function($q) use ($project) {
-                                    $q->where('project_id', $project);
-                                })
-                                ->when(!empty($plan), function($q) use ($plan) {
-                                    $q->whereHas('project.plan', function($sq) use ($plan) {
-                                        $sq->where('plan_id', $plan);
-                                    });
-                                })
-                                // ->when($status != '', function($q) use ($status) {
-                                //     $q->where('status', $status);
-                                // })
-                                // ->when(!empty($name), function($q) use ($name) {
-                                //     $q->where('name', 'like', '%'.$name.'%');
-                                // })
-                                ->orderBy('approved_date', 'DESC')
-                                ->get();
-
-        return $activities;
+        return $this->contractService->getAll();
     }
 
     public function getById($id)
     {
-        return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                            ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                            ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                            ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                            ->find($id);
+        return $this->contractService->getById($id);
     }
 
-    public function getReport($year)
+    public function getReport(int $year)
     {
-        return LoanContract::with('details','details.expense','details.loanDetail','loan.department')
-                            ->with('loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level')
-                            ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan')
-                            ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                            ->with('refund')
-                            ->where('year', $year)
-                            ->orderBy('approved_date', 'DESC')
-                            ->paginate(10);
+        return $this->contractService->getReport($year);
     }
 
     public function getInitialFormData()
     {
-        $loanTypes = [
-            ['id' => 1, 'name' => 'ยืมเงินโครงการ'],
-            ['id' => 2, 'name' => 'ยืมเงินเดินทางไปราชการ'],
-        ];
-
-        $moneyTypes = [
-            ['id' => 1, 'name' => 'เงินทดลองราชการ'],
-            ['id' => 2, 'name' => 'เงินยืมนอกงบประมาณ'],
-            ['id' => 3, 'name' => 'เงินยืมราชการ'],
-        ];
-
-        $employees = Employee::with('prefix','position','level','memberOf')
-                                ->with('memberOf.duty','memberOf.department','memberOf.division')
-                                ->whereIn('status', [1,5,6])
-                                ->get();
-
-        return [
-            'departments'   => Department::all(),
-            'expenses'      => Expense::all(),
-            'loanTypes'     => $loanTypes,
-            'moneyTypes'    => $moneyTypes,
-            'employees'     => $employees,
-        ];
+        return $this->contractService->getFormData();
     }
 
     public function store(Request $req)

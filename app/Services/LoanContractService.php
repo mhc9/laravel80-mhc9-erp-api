@@ -42,12 +42,34 @@ class LoanContractService extends BaseService
 
     public function search(array $params, $all = false, $perPage = 10)
     {
-        $collections = $this->repo->getModelWithRelations();
+        $collections = $this->repo->getModelWithRelations()
+                            ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
+                                $q->where('employee_id', auth()->user()->employee_id);
+                            })
+                            ->when(!empty($params['employee']), function($q) use ($params) {
+                                $q->where('employee_id', $params['employee']);
+                            })
+                            ->when(!empty($params['year']), function($q) use ($params) {
+                                $q->where('year', $params['year']);
+                            })
+                            ->when(!empty($params['status']), function($q) use ($params) {
+                                $q->where('status', $params['status']);
+                            })
+                            ->orderBy('approved_date', 'DESC');
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
     }
 
-    public function findContractToNotify()
+    public function getReport(int $year)
+    {
+        return $this->repo->getModelWithRelations()
+                    ->with('refund')
+                    ->where('year', $year)
+                    ->orderBy('approved_date', 'DESC')
+                    ->paginate(10);
+    }
+
+    public function getContractToNotify()
     {
         return $this->repo->getModel()
                             ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
@@ -62,7 +84,7 @@ class LoanContractService extends BaseService
      */
     public function notifyRefund(): void
     {
-        $contracts = $this->findContractToNotify();
+        $contracts = $this->getContractToNotify();
 
         foreach($contracts as $contract) {
             $msg = '';
@@ -151,5 +173,32 @@ class LoanContractService extends BaseService
     {
         /** แจ้งเตือนไปในไลน์กลุ่ม "สัญญาเงินยืม09" */
         $notify->send($message);
+    }
+
+    public function getFormData(): array
+    {
+        $loanTypes = [
+            ['id' => 1, 'name' => 'ยืมเงินโครงการ'],
+            ['id' => 2, 'name' => 'ยืมเงินเดินทางไปราชการ'],
+        ];
+
+        $moneyTypes = [
+            ['id' => 1, 'name' => 'เงินทดลองราชการ'],
+            ['id' => 2, 'name' => 'เงินยืมนอกงบประมาณ'],
+            ['id' => 3, 'name' => 'เงินยืมราชการ'],
+        ];
+
+        $employees = Employee::with('prefix','position','level','memberOf')
+                                ->with('memberOf.duty','memberOf.department','memberOf.division')
+                                ->whereIn('status', [1,5,6])
+                                ->get();
+
+        return [
+            'departments'   => Department::all(),
+            'expenses'      => Expense::all(),
+            'loanTypes'     => $loanTypes,
+            'moneyTypes'    => $moneyTypes,
+            'employees'     => $employees,
+        ];
     }
 }
