@@ -20,11 +20,6 @@ class LoanContractService extends BaseService
      */
     protected $repo;
 
-    /**
-     * @var $destPath
-     */
-    protected $destPath = 'products';
-
     public function __construct(LoanContractRepository $repo)
     {
         $this->repo = $repo;
