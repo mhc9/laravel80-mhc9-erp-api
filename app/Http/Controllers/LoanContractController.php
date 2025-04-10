@@ -18,6 +18,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LoanContractExport;
 use App\Services\LoanService;
 use App\Services\LoanContractService;
+use App\Services\LoanContractDetailService;
 use App\Models\Loan;
 use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
@@ -29,6 +30,7 @@ class LoanContractController extends Controller
 {
     public function __construct(
         protected LoanContractService $contractService,
+        protected LoanContractDetailService $detailService,
         protected LoanService $loanService
     ) {
         // code here
@@ -153,9 +155,9 @@ class LoanContractController extends Controller
         try {
             $loanId = $this->contractService->getById($id)->loan_id;
 
-            if($this->contractService->detroy($id)) {
+            if($this->contractService->destroy($id)) {
                 /** Delete loan_contract_details according to deleted contract's id */
-                LoanContractDetail::where('contract_id', $id)->delete();
+                $this->detailService->deleteBy(['contract_id' => $id]);
 
                 /** Update loans's status to 1 according to deleted contract's loan_id */
                 $this->loanService->update($loanId, ['status' => 1]);
