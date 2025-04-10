@@ -59,6 +59,13 @@ abstract class BaseService
         return $this->repo->destroy($id);
     }
 
+    public function destroyBy(array $conditions)
+    {
+        return $this->repo->getModel()
+                    ->where($conditions)
+                    ->delete();
+    }
+
     public function getRelations()
     {
         return $this->repo->getRelations();

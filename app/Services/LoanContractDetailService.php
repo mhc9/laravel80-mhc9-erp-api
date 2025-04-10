@@ -18,11 +18,4 @@ class LoanContractDetailService extends BaseService
     {
         $this->repo = $repo;
     }
-
-    public function deleteBy(array $conditions)
-    {
-        return $this->repo->getModel()
-                    ->where($conditions)
-                    ->delete();
-    }
 }

@@ -79,7 +79,6 @@ class LoanContractController extends Controller
             $contract->sent_date        = $req['sent_date'];
             $contract->bill_no          = $req['bill_no'];
             $contract->bk02_date        = $req['bk02_date'];
-            $contract->year             = $req['year'];
             $contract->refund_days      = $req['refund_days'];
             $contract->refund_notify    = 0;
             $contract->remark           = $req['remark'];
@@ -157,7 +156,7 @@ class LoanContractController extends Controller
 
             if($this->contractService->destroy($id)) {
                 /** Delete loan_contract_details according to deleted contract's id */
-                $this->detailService->deleteBy(['contract_id' => $id]);
+                $this->detailService->destroyBy(['contract_id' => $id]);
 
                 /** Update loans's status to 1 according to deleted contract's loan_id */
                 $this->loanService->update($loanId, ['status' => 1]);
