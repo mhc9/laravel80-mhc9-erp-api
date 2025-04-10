@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use App\Services\BaseService;
 use App\Repositories\LoanContractRepository;
 use App\Common\Notifications\DiscordNotify;
@@ -35,7 +37,15 @@ class LoanContractService extends BaseService
         ]);
     }
 
-    public function search(array $params, $all = false, $perPage = 10)
+    /**
+     * Get LoanContract data with conditions
+     *
+     * @param array $params
+     * @param boolean $all
+     * @param integer $perPage
+     * @return LengthAwarePaginator | Collection
+     */
+    public function search(array $params, $all = false, $perPage = 10): LengthAwarePaginator | Collection
     {
         $collections = $this->repo->getModelWithRelations()
                             ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
@@ -55,16 +65,22 @@ class LoanContractService extends BaseService
         return $all ?  $collections->get() : $collections->paginate($perPage);
     }
 
-    public function getReport(int $year)
+    /**
+     * Get loan contract data for summary report
+     *
+     * @param integer $year
+     * @return LengthAwarePaginator | Collection
+     */
+    public function getReport(int $year, int $perPage = 10): LengthAwarePaginator | Collection
     {
         return $this->repo->getModelWithRelations()
                     ->with('refund')
                     ->where('year', $year)
                     ->orderBy('approved_date', 'DESC')
-                    ->paginate(10);
+                    ->paginate($perPage);
     }
 
-    public function getContractToNotify()
+    public function getContractToNotify(): Collection
     {
         return $this->repo->getModel()
                     ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
@@ -143,7 +159,6 @@ class LoanContractService extends BaseService
     /**
      * แจ้งเตือนเงินเข้า
      * @param LoanContract $contract
-     * 
      * @return void
      */
     public function notifyDeposit(LoanContract $contract): void
@@ -161,7 +176,6 @@ class LoanContractService extends BaseService
     /**
      * @param INotify $notify
      * @param string $message
-     * 
      * @return void
      */
     private function sendNotify(INotify $notify, string $message): void
