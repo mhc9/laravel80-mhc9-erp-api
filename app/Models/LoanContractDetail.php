@@ -10,6 +10,12 @@ class LoanContractDetail extends Model
     // protected $primaryKey = 'id';
     // public $incrementing = false; // false = ไม่ใช้ options auto increment
     // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
+    LoanContractDetail
+    /** Set particular field mass assignable */
+    // protected $fillable = [];
+
+    /** Set all the fields mass assignable */
+    protected $guarded = [];
 
     public function contract()
     {

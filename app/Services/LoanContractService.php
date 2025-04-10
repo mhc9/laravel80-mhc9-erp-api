@@ -72,10 +72,10 @@ class LoanContractService extends BaseService
     public function getContractToNotify()
     {
         return $this->repo->getModel()
-                            ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
-                            ->whereIn('refund_notify', [0,1])
-                            ->whereIn('status', [1, 2, 3])
-                            ->get();
+                    ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
+                    ->whereIn('refund_notify', [0,1])
+                    ->whereIn('status', [1, 2, 3])
+                    ->get();
     }
 
     /**
