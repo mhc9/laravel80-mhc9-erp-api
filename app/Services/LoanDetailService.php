@@ -18,14 +18,16 @@ class LoanDetailService extends BaseService
     public function __construct(LoanDetailRepository $repo)
     {
         $this->repo = $repo;
-
-        // $this->repo->setSortBy('doc_date');
-        // $this->repo->setSortOrder('desc');
-
-        // $this->repo->setRelations([]);
     }
 
-    public function createMany(array $data, Collection $courses = null)
+    /**
+     * Create many rows of loan_details data function
+     *
+     * @param array $data
+     * @param Collection|null $courses
+     * @return void
+     */
+    public function createMany(array $data, Collection $courses = null): void
     {
         foreach($data as $item) {
             $item['course_id'] = $item['expense_group'] == '1' ? $courses->firstWhere('guuid', $item['course_id'])->id : null;
