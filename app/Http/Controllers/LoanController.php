@@ -149,29 +149,12 @@ class LoanController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $loan = Loan::find($id);
-            $loan->doc_no           = $req['doc_no'];
-            $loan->doc_date         = $req['doc_date'];
-            $loan->loan_type_id     = $req['loan_type_id'];
-            $loan->money_type_id    = $req['money_type_id'];
-            $loan->year             = $req['year'];
-            $loan->department_id    = $req['department_id'];
-            $loan->division_id      = $req['division_id'];
-            $loan->employee_id      = $req['employee_id'];
-            $loan->project_no       = $req['project_no'];
-            $loan->project_date     = $req['project_date'];
-            $loan->project_owner    = $req['project_owner'];
-            $loan->project_name     = $req['project_name'];
-            $loan->project_sdate    = $req['project_sdate'];
-            $loan->project_edate    = $req['project_edate'];
-            $loan->expense_calc     = $req['expense_calc'];
-            $loan->budget_total     = currencyToNumber($req['budget_total']);
-            $loan->item_total       = currencyToNumber($req['item_total']);
-            $loan->order_total      = currencyToNumber($req['order_total']);
-            $loan->net_total        = currencyToNumber($req['net_total']);
-            $loan->remark           = $req['remark'];
+            $loanData = formatCurrency(
+                $req->except(['courses', 'budgets', 'items']),
+                ['budget_total','item_total','order_total','net_total']
+            );
 
-            if($loan->save()) {
+            if($loan = $this->loanService->update($id, $loanData)) {
                 foreach($req['courses'] as $course) {
                     /** ถ้า element ของ courses ไม่มี property loan_id (รายการใหม่) */
                     if (!array_key_exists('loan_id', $course)) {
@@ -250,11 +233,7 @@ class LoanController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'loan'      => $loan->load('details','details.expense','department',
-                                                'employee','employee.prefix','employee.position','employee.level',
-                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
-                                                'budgets.budget.activity.project','budgets.budget.activity.project.plan',
-                                                'courses','courses.place','courses.place.changwat')
+                    'loan'      => $loan->load($this->loanService->getRelations())
                 ];
             } else {
                 return [
