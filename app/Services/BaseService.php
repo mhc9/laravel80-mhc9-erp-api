@@ -54,6 +54,28 @@ abstract class BaseService
         return $this->repo->update($id, $input);
     }
 
+    /**
+     * Update many rows function
+     *
+     * @param array $data
+     * @param string $checkField
+     * @return void
+     */
+    public function updateMany(array $data, string $checkField): void
+    {
+        foreach($data as $item) {
+            /** ถ้า element ของ $data ไม่มี $checkField (รายการใหม่) */
+            if (!array_key_exists($checkField, $item)) {
+                $this->repo->getModel()->create($item);
+            } else {
+                /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed หรือไม่ */
+                if (array_key_exists('removed', $item) && $item['removed']) {
+                    $this->repo->destroy($item['id']);
+                }
+            }
+        }
+    }
+
     public function destroy($id)
     {
         return $this->repo->destroy($id);
