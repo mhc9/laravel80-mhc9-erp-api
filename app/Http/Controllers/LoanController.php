@@ -274,6 +274,15 @@ class LoanController extends Controller
     {
         try {
             if($this->loanService->destroy($id)) {
+                /** Delete loan_details data according to $id */
+                $this->detailService->destroyBy(['loan_id' => $id]);
+
+                /** Delete loan_budgets data according to $id */
+                $this->budgetService->destroyBy(['loan_id' => $id]);
+
+                /** Delete project_courses data according to $id */
+                $this->courseService->destroyBy(['loan_id' => $id]);
+
                 /** Log info */
                 Log::channel('daily')->info('Deleted loan ID:' .$id. ' by ' . auth()->user()->name);
 
