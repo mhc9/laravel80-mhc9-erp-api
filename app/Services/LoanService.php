@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use App\Services\BaseService;
 use App\Repositories\LoanRepository;
 use App\Models\Loan;
@@ -21,11 +23,6 @@ class LoanService extends BaseService
      */
     protected $repo;
 
-    /**
-     * @var $destPath
-     */
-    protected $destPath = 'products';
-
     public function __construct(LoanRepository $repo)
     {
         $this->repo = $repo;
@@ -42,7 +39,15 @@ class LoanService extends BaseService
         ]);
     }
 
-    public function search(array $params, $all = false, $perPage = 10)
+    /**
+     * Get Loan data with condition function
+     *
+     * @param array $params
+     * @param boolean $all
+     * @param integer $perPage
+     * @return LengthAwarePaginator | Collection
+     */
+    public function search(array $params, $all = false, $perPage = 10): LengthAwarePaginator | Collection
     {
         $collections = $this->repo->getModelWithRelations()
                             ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($qurey) {
@@ -53,12 +58,18 @@ class LoanService extends BaseService
                             })
                             ->when(!empty($params['status']), function($qurey) use ($params) {
                                 $qurey->where('status', $params['status']);
-                            });
+                            })
+                            ->orderBy('doc_date', 'desc');
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
     }
 
-    public function getFormData()
+    /**
+     * Get data for initialize form inputs function
+     *
+     * @return array
+     */
+    public function getFormData(): array
     {
         $loanTypes = [
             ['id' => 1, 'name' => 'ยืมเงินโครงการ'],
@@ -90,7 +101,13 @@ class LoanService extends BaseService
         ];
     }
 
-    public function create(array $input)
+    /**
+     * Create Loan data function
+     *
+     * @param array $input
+     * @return Loan
+     */
+    public function create(array $input): Loan
     {
         return $this->repo->create(formatCurrency($input, ['budget_total','item_total','order_total','net_total']));
     }

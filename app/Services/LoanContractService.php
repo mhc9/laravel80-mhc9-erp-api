@@ -60,7 +60,7 @@ class LoanContractService extends BaseService
                             ->when(!empty($params['status']), function($q) use ($params) {
                                 $q->where('status', $params['status']);
                             })
-                            ->orderBy('approved_date', 'DESC');
+                            ->orderBy('approved_date', 'desc');
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
     }
