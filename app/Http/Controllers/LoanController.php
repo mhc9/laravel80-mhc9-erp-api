@@ -102,7 +102,7 @@ class LoanController extends Controller
                 $this->courseService->createMany(
                     transformManyInputs(
                         $req['courses'],
-                        ['id','course_date','course_edate','room','place_id'],
+                        ['id','course_date','course_edate','room','place_id','remark'],
                         ['loan_id' => $loan->id]
                     )
                 );
