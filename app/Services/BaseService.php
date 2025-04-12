@@ -68,11 +68,11 @@ abstract class BaseService
         foreach($data as $item) {
             /** ถ้า element ของ $data ไม่มี $checkField (รายการใหม่) */
             if (!array_key_exists($checkField, $item) || empty($item[$checkField])) {
-                $this->repo->create(Arr::except($additions ? addMultipleInputs($item, $additions) : $item, 'id'));
+                $this->repo->getModel()->create(Arr::except($additions ? addMultipleInputs($item, $additions) : $item, 'id'));
             } else {
                 /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed หรือไม่ */
                 if (array_key_exists('removed', $item) && $item['removed']) {
-                    $this->repo->destroy($item['id']);
+                    $this->repo->getModel()->find($item['id'])->delete();
                 }
             }
         }

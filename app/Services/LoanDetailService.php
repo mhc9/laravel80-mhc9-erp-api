@@ -31,10 +31,12 @@ class LoanDetailService extends BaseService
     public function createMany(array $data, Collection $courses = null): void
     {
         foreach($data as $item) {
+            /** ดึงข้อมูล project course ที่มี id หรือ guuid ตรงกับ course_id ของ $item */
             $course = $courses->firstWhere('guuid', $item['course_id']);
+            /** เซตค่า course_id ของ $item ด้วย id ของ $course */
             $item['course_id'] = $course ? $course->id : null;
 
-            $this->repo->create(formatCurrency($item, ['total']));
+            $this->repo->getModel()->create(formatCurrency($item, ['total']));
         }
     }
 
@@ -49,12 +51,20 @@ class LoanDetailService extends BaseService
     public function updateMany(array $data, string $checkField, array $additions = null, Collection $courses = null): void
     {
         foreach($data as $item) {
-            $course = $courses->firstWhere('guuid', $item['course_id']);
-            $item['course_id'] = $course ? $course->id : null;
-
             /** ถ้า element ของ $data ไม่มี $checkField (รายการใหม่) */
             if (!array_key_exists($checkField, $item) || empty($item[$checkField])) {
-                $this->repo->create(
+                /**
+                 * ตรวจสอบว่า course_id ของ $item มีในรายการ courses หรือไม่
+                 * ถ้ายังให้เซตค่า course_id ของ $item ใหม่
+                 */
+                if (!$courses->firstWhere('id', $item['course_id'])) {
+                    /** ดึงข้อมูล project course ที่มี id หรือ guuid ตรงกับ course_id ของ $item */
+                    $course = $courses->firstWhere('guuid', $item['course_id']);
+                    /** เซตค่า course_id ของ $item ด้วย id ของ $course */
+                    $item['course_id'] = $course ? $course->id : null;
+                }
+
+                $this->repo->getModel()->create(
                     formatCurrency(
                         Arr::except($additions ? addMultipleInputs($item, $additions) : $item, 'id'),
                         ['total']
@@ -63,8 +73,7 @@ class LoanDetailService extends BaseService
             } else {
                 /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property updated หรือไม่ (รายการที่ต้องแก้ไข) */
                 if (array_key_exists('updated', $item) && $item['updated']) {
-                    $this->repo->update(
-                        $item['id'],
+                    $this->repo->getModel()->find($item['id'])->update(
                         formatCurrency(
                             Arr::except($item, 'updated'),
                             ['total']
@@ -74,7 +83,7 @@ class LoanDetailService extends BaseService
 
                 /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed หรือไม่ (รายการที่ต้องลบ) */
                 if (array_key_exists('removed', $item) && $item['removed']) {
-                    $this->repo->destroy($item['id']);
+                    $this->repo->getModel()->find($item['id'])->delete();
                 }
             }
         }

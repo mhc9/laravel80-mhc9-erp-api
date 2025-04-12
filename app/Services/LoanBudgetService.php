@@ -34,7 +34,7 @@ class LoanBudgetService extends BaseService
     public function createMany(array $data): void
     {
         foreach($data as $item) {
-            $this->repo->create(formatCurrency($item, ['total']));
+            $this->repo->getModel()->create(formatCurrency($item, ['total']));
         }
     }
 
@@ -51,7 +51,7 @@ class LoanBudgetService extends BaseService
         foreach($data as $item) {
             /** ถ้า element ของ $data ไม่มี $checkField (รายการใหม่) */
             if (!array_key_exists($checkField, $item) || empty($item[$checkField])) {
-                $this->repo->create(
+                $this->repo->getModel()->create(
                     formatCurrency(
                         Arr::except($additions ? addMultipleInputs($item, $additions) : $item, 'id'),
                         ['total']
@@ -60,7 +60,7 @@ class LoanBudgetService extends BaseService
             } else {
                 /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed หรือไม่ */
                 if (array_key_exists('removed', $item) && $item['removed']) {
-                    $this->repo->destroy($item['id']);
+                    $this->repo->getModel()->find($item['id'])->delete();
                 }
             }
         }
