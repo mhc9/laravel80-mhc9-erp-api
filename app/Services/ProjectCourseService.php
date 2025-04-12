@@ -30,7 +30,7 @@ class ProjectCourseService extends BaseService
             $item['guuid'] = $item['id'];
             unset($item['id']);
 
-            $this->repo->getModel()->create($item);
+            $this->repo->create($item);
         }
     }
 }

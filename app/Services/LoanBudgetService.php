@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Arr;
 use App\Services\BaseService;
 use App\Repositories\LoanBudgetRepository;
 use App\Models\LoanBudget;
@@ -33,7 +34,7 @@ class LoanBudgetService extends BaseService
     public function createMany(array $data): void
     {
         foreach($data as $item) {
-            $this->repo->getModel()->create(formatCurrency($item, ['total']));
+            $this->repo->create(formatCurrency($item, ['total']));
         }
     }
 
@@ -45,12 +46,17 @@ class LoanBudgetService extends BaseService
      * @param string $checkField
      * @return void
      */
-    public function updateMany(array $data, string $checkField): void
+    public function updateMany(array $data, string $checkField, array $additions = null): void
     {
         foreach($data as $item) {
             /** ถ้า element ของ $data ไม่มี $checkField (รายการใหม่) */
-            if (!array_key_exists($checkField, $item)) {
-                $this->repo->getModel()->create(formatCurrency($item, ['total']));
+            if (!array_key_exists($checkField, $item) || empty($item[$checkField])) {
+                $this->repo->create(
+                    formatCurrency(
+                        Arr::except($additions ? addMultipleInputs($item, $additions) : $item, 'id'),
+                        ['total']
+                    )
+                );
             } else {
                 /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed หรือไม่ */
                 if (array_key_exists('removed', $item) && $item['removed']) {

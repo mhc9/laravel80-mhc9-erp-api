@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Arr;
+
 abstract class BaseService
 {
     protected $repo;
@@ -61,12 +63,12 @@ abstract class BaseService
      * @param string $checkField
      * @return void
      */
-    public function updateMany(array $data, string $checkField): void
+    public function updateMany(array $data, string $checkField, array $additions = null): void
     {
         foreach($data as $item) {
             /** ถ้า element ของ $data ไม่มี $checkField (รายการใหม่) */
-            if (!array_key_exists($checkField, $item)) {
-                $this->repo->getModel()->create($item);
+            if (!array_key_exists($checkField, $item) || empty($item[$checkField])) {
+                $this->repo->create(Arr::except($additions ? addMultipleInputs($item, $additions) : $item, 'id'));
             } else {
                 /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed หรือไม่ */
                 if (array_key_exists('removed', $item) && $item['removed']) {

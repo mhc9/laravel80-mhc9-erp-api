@@ -153,79 +153,26 @@ class LoanController extends Controller
                 $req->except(['courses', 'budgets', 'items']),
                 ['budget_total','item_total','order_total','net_total']
             );
-
+            
             if($loan = $this->loanService->update($id, $loanData)) {
-                foreach($req['courses'] as $course) {
-                    /** ถ้า element ของ courses ไม่มี property loan_id (รายการใหม่) */
-                    if (!array_key_exists('loan_id', $course)) {
-                        $newCourse = new ProjectCourse();
-                        $newCourse->seq_no          = $course['id'];
-                        $newCourse->loan_id         = $loan->id;
-                        $newCourse->course_date     = $course['course_date'];
-                        $newCourse->course_edate    = $course['course_edate'];
-                        $newCourse->place_id        = $course['place_id'];
-                        $newCourse->save();
-                    } else {
-                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
-                        if (array_key_exists('removed', $course) && $course['removed']) {
-                            ProjectCourse::find($course['id'])->delete();
-                        }
-                    }
-                }
+                $this->courseService->updateMany(
+                    onlyInputs($req['courses'], ['id','loan_id','course_date','course_edate','room','place_id','remark','removed']),
+                    'loan_id',
+                    ['loan_id' => $loan->id]
+                );
 
-                foreach($req['budgets'] as $budget) {
-                    /** ถ้า element ของ budgets ไม่มี property id (รายการใหม่) */
-                    if (!array_key_exists('loan_id', $budget)) {
-                        $newBudget = new LoanBudget();
-                        $newBudget->loan_id    = $loan->id;
-                        $newBudget->budget_id  = $budget['budget_id'];
-                        $newBudget->total      = currencyToNumber($budget['total']);
-                        $newBudget->save();
-                    } else {
-                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
-                        if (array_key_exists('removed', $budget) && $budget['removed']) {
-                            LoanBudget::find($budget['id'])->delete();
-                        }
-                    }
-                }
+                $this->budgetService->updateMany(
+                    onlyInputs($req['budgets'], ['id','loan_id','budget_id','total','removed']),
+                    'loan_id',
+                    ['loan_id' => $loan->id]
+                );
 
-                foreach($req['items'] as $item) {
-                    $course = $item['expense_group'] == '1' ? ProjectCourse::where('id', $item['course_id'])->where('loan_id', $loan->id)->first() : null;
-
-                    /** ถ้า element ของ items ไม่มี property id (รายการใหม่) */
-                    if (empty($item['loan_id'])) {
-                        $detail = new LoanDetail();
-                        $detail->loan_id        = $loan->id;
-                        $detail->course_id      = $item['expense_group'] == '1' ? $course->id : $course;
-                        $detail->expense_id     = $item['expense_id'];
-                        $detail->expense_group  = $item['expense_group'];
-                        $detail->description    = $item['description'];
-                        $detail->total          = currencyToNumber($item['total']);
-                        $detail->save();
-                    } else {
-                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag updated หรือ removed หรือไม่ */
-                        if (array_key_exists('updated', $item) && $item['updated']) {
-                            /** This is item to update */
-                            $updated = LoanDetail::find($item['id']);
-                            $updated->loan_id       = $item['loan_id'];
-
-                            if ($item['expense_group'] == '1') {
-                                $updated->course_id     = $item['course_id'];
-                            }
-
-                            $updated->expense_id    = $item['expense_id'];
-                            $updated->expense_group = $item['expense_group'];
-                            $updated->description   = $item['description'];
-                            $updated->total         = currencyToNumber($item['total']);
-                            $updated->save();
-                        }
-
-                        if (array_key_exists('removed', $item) && $item['removed']) {
-                            /** This is item to remove */
-                            LoanDetail::find($item['id'])->delete();
-                        }
-                    }
-                }
+                $this->detailService->updateMany(
+                    onlyInputs($req['items'], ['id','loan_id','course_id','expense_id','expense_group','description','total','updated','removed']),
+                    'loan_id',
+                    ['loan_id' => $loan->id],
+                    $this->courseService->getAllWithConditions(['loan_id' => $loan->id])
+                );
 
                 /** Log info */
                 Log::channel('daily')->info('Updated loan ID:' .$id. ' by ' . auth()->user()->name);
