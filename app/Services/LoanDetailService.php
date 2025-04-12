@@ -31,7 +31,8 @@ class LoanDetailService extends BaseService
     public function createMany(array $data, Collection $courses = null): void
     {
         foreach($data as $item) {
-            $item['course_id'] = $item['expense_group'] == '1' ? $courses->firstWhere('guuid', $item['course_id'])->id : null;
+            $course = $courses->firstWhere('guuid', $item['course_id']);
+            $item['course_id'] = $course ? $course->id : null;
 
             $this->repo->create(formatCurrency($item, ['total']));
         }
@@ -48,10 +49,8 @@ class LoanDetailService extends BaseService
     public function updateMany(array $data, string $checkField, array $additions = null, Collection $courses = null): void
     {
         foreach($data as $item) {
-            $item['course_id'] = $item['expense_group'] == '1'
-                                    ? ($courses->firstWhere('guuid', $item['course_id'])
-                                        ? $courses->firstWhere('guuid', $item['course_id'])->id : null)
-                                    : null;
+            $course = $courses->firstWhere('guuid', $item['course_id']);
+            $item['course_id'] = $course ? $course->id : null;
 
             /** ถ้า element ของ $data ไม่มี $checkField (รายการใหม่) */
             if (!array_key_exists($checkField, $item) || empty($item[$checkField])) {
