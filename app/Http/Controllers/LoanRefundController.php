@@ -18,6 +18,7 @@ use App\Models\LoanContract;
 use App\Models\LoanContractDetail;
 use App\Models\LoanRefund;
 use App\Models\LoanRefundDetail;
+use App\Models\LoanRefundBudget;
 use App\Models\Expense;
 use App\Models\Department;
 
@@ -32,6 +33,8 @@ class LoanRefundController extends Controller
 
         $contracts = LoanRefund::with('details','details.contractDetail.expense','contract','contract.loan','contract.loan.department')
                         ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
+                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                         ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
                             $q->where('employee_id', auth()->user()->employee_id);
                         })
@@ -92,6 +95,8 @@ class LoanRefundController extends Controller
                         ->with('contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan')
                         ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat','contract.loan.department')
                         ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
+                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
                         ->find($id);
     }
 
@@ -133,13 +138,23 @@ class LoanRefundController extends Controller
             $refund->status         = 'N';
 
             if($refund->save()) {
+                /** เพิ่มรายการค่าใช้จ่ายจริง */
                 foreach($req['items'] as $item) {
-                    $detail = new LoanRefundDetail();
-                    $detail->refund_id      = $refund->id;
-                    $detail->contract_detail_id = $item['contract_detail_id'];
-                    $detail->description    = $item['description'];
-                    $detail->total          = currencyToNumber($item['total']);
-                    $detail->save();
+                    $newDetail = new LoanRefundDetail();
+                    $newDetail->refund_id          = $refund->id;
+                    $newDetail->contract_detail_id = $item['contract_detail_id'];
+                    $newDetail->description        = $item['description'];
+                    $newDetail->total              = currencyToNumber($item['total']);
+                    $newDetail->save();
+                }
+
+                /** เพิ่มรายการงบประมาณ */
+                foreach($req['budgets'] as $budget) {
+                    $newBudget = new LoanRefundBudget();
+                    $newBudget->refund_id      = $refund->id;
+                    $newBudget->budget_id      = $budget['budget_id'];
+                    $newBudget->total          = currencyToNumber($budget['total']);
+                    $newBudget->save();
                 }
 
                 /** อัตเดต status ของตาราง loan_contracts เป็น 3=รอเคลียร์ **/

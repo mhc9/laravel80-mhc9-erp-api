@@ -25,4 +25,9 @@ class LoanRefund extends Model
     {
         return $this->hasMany(LoanRefundDetail::class, 'refund_id', 'id');
     }
+
+    public function budgets()
+    {
+        return $this->hasMany(LoanRefundBudget::class, 'refund_id', 'id');
+    }
 }
