@@ -91,12 +91,12 @@ class LoanRefundController extends Controller
     {
         return LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail')
                         ->with('contract','contract.details','contract.details.expense','contract.details.loanDetail')
-                        ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.division')
+                        ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type')
                         ->with('contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan')
                         ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat','contract.loan.department')
                         ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
-                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
+                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project')
+                        ->with('budgets.budget.activity.project.plan','contract.loan.division')
                         ->find($id);
     }
 
@@ -382,9 +382,9 @@ class LoanRefundController extends Controller
     public function getForm(Request $req, $id)
     {
         $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
-                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place')
-                    ->with('contract.loan.courses.place.changwat','contract.loan.department','contract.loan.division','contract.loan.employee')
-                    ->with('contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type','contract.loan.courses')
+                    ->with('contract.loan.courses.place','contract.loan.courses.place.changwat','contract.loan.department','contract.loan.division')
+                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                     ->find($id);
 
         $template = 'refund.docx';

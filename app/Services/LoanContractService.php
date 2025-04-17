@@ -33,7 +33,7 @@ class LoanContractService extends BaseService
             'details','details.expense','details.loanDetail','loan.department',
             'loan.employee','loan.employee.prefix','loan.employee.position','loan.employee.level',
             'loan.budgets','loan.budgets.budget','loan.budgets.budget.activity.project','loan.budgets.budget.activity.project.plan',
-            'loan.courses','loan.courses.place','loan.courses.place.changwat'
+            'loan.budgets.budget.type','loan.courses','loan.courses.place','loan.courses.place.changwat'
         ]);
     }
 
