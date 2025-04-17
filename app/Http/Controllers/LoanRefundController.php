@@ -170,7 +170,7 @@ class LoanRefundController extends Controller
                     'message'   => 'Insertion successfully!!',
                     'refund'    => $refund->load('details','details.contractDetail.expense','details.contractDetail.loanDetail',
                                                 'contract','contract.details','contract.details.expense','contract.details.loanDetail',
-                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget',
+                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
                                                 'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
                                                 'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
                                                 'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
@@ -199,6 +199,7 @@ class LoanRefundController extends Controller
             $refund->refund_type_id = $req['refund_type_id'];
             $refund->employee_id    = $req['employee_id'];
             $refund->year           = $req['year'];
+            $refund->budget_total   = currencyToNumber($req['budget_total']);
             $refund->item_total     = currencyToNumber($req['item_total']);
             $refund->order_total    = currencyToNumber($req['order_total']);
             $refund->net_total      = currencyToNumber($req['net_total']);
@@ -217,15 +218,31 @@ class LoanRefundController extends Controller
                 foreach($req['items'] as $item) {
                     if (!array_key_exists('refund_id', $item)) {
                         $detail = new LoanRefundDetail();
-                        $detail->refund_id      = $refund->id;
-                        $detail->contract_detail_id = $item['contract_detail_id'];
-                        $detail->description    = $item['description'];
-                        $detail->total          = currencyToNumber($item['total']);
+                        $detail->refund_id            = $refund->id;
+                        $detail->contract_detail_id   = $item['contract_detail_id'];
+                        $detail->description          = $item['description'];
+                        $detail->total                = currencyToNumber($item['total']);
                         $detail->save();
                     } else {
                         /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
                         if (array_key_exists('removed', $item) && $item['removed']) {
                             LoanRefundDetail::find($item['id'])->delete();
+                        }
+                    }
+                }
+
+                foreach($req['budgets'] as $bg) {
+                    if (!array_key_exists('refund_id', $bg)) {
+                        $budget = new LoanRefundBudget();
+                        $budget->refund_id        = $refund->id;
+                        $budget->loan_budget_id   = $bg['loan_budget_id'];
+                        $budget->budget_id        = $bg['budget_id'];
+                        $budget->total            = currencyToNumber($bg['total']);
+                        $budget->save();
+                    } else {
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี property flag removed หรือไม่ */
+                        if (array_key_exists('removed', $bg) && $bg['removed']) {
+                            LoanRefundBudget::find($bg['id'])->delete();
                         }
                     }
                 }
@@ -238,7 +255,7 @@ class LoanRefundController extends Controller
                     'message'   => 'Updating successfully!!',
                     'refund'    => $refund->load('details','details.contractDetail.expense','details.contractDetail.loanDetail',
                                                 'contract','contract.details','contract.details.expense','contract.details.loanDetail',
-                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget',
+                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
                                                 'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
                                                 'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
                                                 'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
