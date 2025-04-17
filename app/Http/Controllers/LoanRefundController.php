@@ -173,7 +173,9 @@ class LoanRefundController extends Controller
                                                 'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
                                                 'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
                                                 'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
-                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level',
+                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project',
+                                                'budgets.budget.activity.project.plan','contract.loan.division')
                 ];
             } else {
                 return [
@@ -258,7 +260,9 @@ class LoanRefundController extends Controller
                                                 'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
                                                 'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
                                                 'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
-                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level',
+                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project',
+                                                'budgets.budget.activity.project.plan','contract.loan.division')
                 ];
             } else {
                 return [
