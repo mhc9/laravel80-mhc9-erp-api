@@ -122,6 +122,7 @@ class LoanRefundController extends Controller
             $refund->refund_type_id = $req['refund_type_id'];
             $refund->employee_id    = $req['employee_id'];
             $refund->year           = $req['year'];
+            $refund->budget_total   = currencyToNumber($req['budget_total']);
             $refund->item_total     = currencyToNumber($req['item_total']);
             $refund->order_total    = currencyToNumber($req['order_total']);
             $refund->net_total      = currencyToNumber($req['net_total']);
@@ -151,9 +152,10 @@ class LoanRefundController extends Controller
                 /** เพิ่มรายการงบประมาณ */
                 foreach($req['budgets'] as $budget) {
                     $newBudget = new LoanRefundBudget();
-                    $newBudget->refund_id      = $refund->id;
-                    $newBudget->budget_id      = $budget['budget_id'];
-                    $newBudget->total          = currencyToNumber($budget['total']);
+                    $newBudget->refund_id       = $refund->id;
+                    $newBudget->loan_budget_id  = $budget['loan_budget_id'];
+                    $newBudget->budget_id       = $budget['budget_id'];
+                    $newBudget->total           = currencyToNumber($budget['total']);
                     $newBudget->save();
                 }
 
