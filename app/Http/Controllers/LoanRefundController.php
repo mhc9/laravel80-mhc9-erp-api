@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\MessageBag;
 use PhpOffice\PhpWord\Element\Field;
 use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Element\TextRun;
@@ -21,74 +19,24 @@ use App\Models\LoanRefundDetail;
 use App\Models\LoanRefundBudget;
 use App\Models\Expense;
 use App\Models\Department;
+use App\Services\LoanRefundService;
 
 class LoanRefundController extends Controller
 {
+    public function __construct(
+        protected LoanRefundService $refundService
+    ) {
+
+    }
+
     public function search(Request $req)
     {
-        /** Get params from query string */
-        $type       = $req->get('type');
-        $year       = $req->get('year');
-        $status     = $req->get('status');
-
-        $contracts = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail')
-                                ->with('contract','contract.details','contract.details.expense','contract.details.loanDetail')
-                                ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type')
-                                ->with('contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan')
-                                ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat')
-                                ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                                ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project')
-                                ->with('budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
-                                ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
-                                    $q->where('employee_id', auth()->user()->employee_id);
-                                })
-                                // ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
-                                // ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                                ->when(!empty($type), function($q) use ($type) {
-                                    $q->where('refund_type_id', $type);
-                                })
-                                ->when(!empty($year), function($q) use ($year) {
-                                    $q->where('year', $year);
-                                })
-                                ->when(!empty($status), function($q) use ($status) {
-                                    $q->where('status', $status);
-                                })
-                                ->orderBy('doc_date', 'DESC')
-                                ->paginate(10);
-
-        return $contracts;
+        return $this->refundService->serach($req->all());
     }
 
     public function getAll(Request $req)
     {
-        /** Get params from query string */
-        $project    = $req->get('project');
-        $plan       = $req->get('plan');
-        $name       = $req->get('name');
-        $status     = $req->get('status');
-
-        $activities = LoanRefund::with('budget','budget.project','budget.project.plan')
-                        ->with('project','project.place','project.owner')
-                        ->with('details','details.expense','department')
-                        ->with('employee','employee.prefix','employee.position','employee.level')
-                        ->when(!empty($project), function($q) use ($project) {
-                            $q->where('project_id', $project);
-                        })
-                        ->when(!empty($plan), function($q) use ($plan) {
-                            $q->whereHas('project.plan', function($sq) use ($plan) {
-                                $sq->where('plan_id', $plan);
-                            });
-                        })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
-                        // ->when(!empty($name), function($q) use ($name) {
-                        //     $q->where('name', 'like', '%'.$name.'%');
-                        // })
-                        ->orderBy('doc_date', 'DESC')
-                        ->get();
-
-        return $activities;
+        return $this->refundService->getAll();
     }
 
     public function getById($id)
@@ -106,14 +54,7 @@ class LoanRefundController extends Controller
 
     public function getInitialFormData()
     {
-        $statuses = [
-            ['id' => 'N', 'name' => 'ยังไม่เคลียร์'],
-            ['id' => 'Y', 'name' => 'เคลียร์แล้ว'],
-        ];
-
-        return [
-            'statuses'   => $statuses,
-        ];
+        return $this->refundService->getFormData();
     }
 
     public function store(Request $req)
@@ -172,14 +113,7 @@ class LoanRefundController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'refund'    => $refund->load('details','details.contractDetail.expense','details.contractDetail.loanDetail',
-                                                'contract','contract.details','contract.details.expense','contract.details.loanDetail',
-                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
-                                                'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
-                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat',
-                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level',
-                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project',
-                                                'budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
+                    'refund'    => $refund->load($this->refundService->getRelations())
                 ];
             } else {
                 return [
@@ -259,14 +193,7 @@ class LoanRefundController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'refund'    => $refund->load('details','details.contractDetail.expense','details.contractDetail.loanDetail',
-                                                'contract','contract.details','contract.details.expense','contract.details.loanDetail',
-                                                'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
-                                                'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
-                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat',
-                                                'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level',
-                                                'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project',
-                                                'budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
+                    'refund'    => $refund->load($this->refundService->getRelations())
                 ];
             } else {
                 return [
@@ -346,10 +273,7 @@ class LoanRefundController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Approval successfully!!',
-                    'refund'    => $refund->load('details','details.contractDetail.expense','contract','contract.loan',
-                                                'contract.loan.budgets','contract.loan.budgets.budget','contract.loan.department',
-                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.employee',
-                                                'contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                    'refund'    => $refund->load($this->refundService->getRelations())
                 ];
             } else {
                 return [
@@ -387,10 +311,7 @@ class LoanRefundController extends Controller
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'refund'    => $refund->load('details','details.contractDetail.expense','contract','contract.loan',
-                                                'contract.loan.budgets','contract.loan.budgets.budget','contract.loan.department',
-                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.employee',
-                                                'contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                    'refund'    => $refund->load($this->refundService->getRelations())
                 ];
             } else {
                 return [
