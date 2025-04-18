@@ -41,15 +41,7 @@ class LoanRefundController extends Controller
 
     public function getById($id)
     {
-        return LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail')
-                        ->with('contract','contract.details','contract.details.expense','contract.details.loanDetail')
-                        ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type')
-                        ->with('contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan')
-                        ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat')
-                        ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project')
-                        ->with('budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
-                        ->find($id);
+        return $this->refundService->getById($id);
     }
 
     public function getInitialFormData()
