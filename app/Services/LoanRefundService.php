@@ -19,11 +19,9 @@ use Carbon\Carbon;
 class LoanRefundService extends BaseService
 {
     /**
-     * Repository object variable
-     *
-     * @var LoanRefundRepository $repo
+     * @var $repo
      */
-    protected LoanRefundRepository $repo;
+    protected $repo;
 
     public function __construct(LoanRefundRepository $repo)
     {

@@ -31,7 +31,7 @@ class LoanRefundController extends Controller
 
     public function search(Request $req)
     {
-        return $this->refundService->serach($req->all());
+        return $this->refundService->search($req->all());
     }
 
     public function getAll(Request $req)
