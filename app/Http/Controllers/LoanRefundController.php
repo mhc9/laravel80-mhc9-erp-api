@@ -31,26 +31,30 @@ class LoanRefundController extends Controller
         $year       = $req->get('year');
         $status     = $req->get('status');
 
-        $contracts = LoanRefund::with('details','details.contractDetail.expense','contract','contract.loan','contract.loan.department')
-                        ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                        ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type')
-                        ->with('budgets.budget.activity.project','budgets.budget.activity.project.plan')
-                        ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
-                            $q->where('employee_id', auth()->user()->employee_id);
-                        })
-                        // ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
-                        // ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
-                        ->when(!empty($type), function($q) use ($type) {
-                            $q->where('refund_type_id', $type);
-                        })
-                        ->when(!empty($year), function($q) use ($year) {
-                            $q->where('year', $year);
-                        })
-                        ->when(!empty($status), function($q) use ($status) {
-                            $q->where('status', $status);
-                        })
-                        ->orderBy('doc_date', 'DESC')
-                        ->paginate(10);
+        $contracts = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail')
+                                ->with('contract','contract.details','contract.details.expense','contract.details.loanDetail')
+                                ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type')
+                                ->with('contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan')
+                                ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat')
+                                ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                                ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project')
+                                ->with('budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
+                                ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($q) {
+                                    $q->where('employee_id', auth()->user()->employee_id);
+                                })
+                                // ->with('loan.budgets','loan.budgets.budget','loan.budgets.budget.project','loan.budgets.budget.project.plan')
+                                // ->with('loan.courses','loan.courses.place','loan.courses.place.changwat')
+                                ->when(!empty($type), function($q) use ($type) {
+                                    $q->where('refund_type_id', $type);
+                                })
+                                ->when(!empty($year), function($q) use ($year) {
+                                    $q->where('year', $year);
+                                })
+                                ->when(!empty($status), function($q) use ($status) {
+                                    $q->where('status', $status);
+                                })
+                                ->orderBy('doc_date', 'DESC')
+                                ->paginate(10);
 
         return $contracts;
     }
@@ -93,10 +97,10 @@ class LoanRefundController extends Controller
                         ->with('contract','contract.details','contract.details.expense','contract.details.loanDetail')
                         ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type')
                         ->with('contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan')
-                        ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat','contract.loan.department')
+                        ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat')
                         ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
                         ->with('budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project')
-                        ->with('budgets.budget.activity.project.plan','contract.loan.division')
+                        ->with('budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
                         ->find($id);
     }
 
@@ -104,7 +108,7 @@ class LoanRefundController extends Controller
     {
         $statuses = [
             ['id' => 'N', 'name' => 'ยังไม่เคลียร์'],
-            ['id' => 'Y', 'name' => 'เคลียร์แล้ว	'],
+            ['id' => 'Y', 'name' => 'เคลียร์แล้ว'],
         ];
 
         return [
@@ -172,10 +176,10 @@ class LoanRefundController extends Controller
                                                 'contract','contract.details','contract.details.expense','contract.details.loanDetail',
                                                 'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
                                                 'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
-                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
+                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat',
                                                 'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level',
                                                 'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project',
-                                                'budgets.budget.activity.project.plan','contract.loan.division')
+                                                'budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
                 ];
             } else {
                 return [
@@ -259,10 +263,10 @@ class LoanRefundController extends Controller
                                                 'contract','contract.details','contract.details.expense','contract.details.loanDetail',
                                                 'contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type',
                                                 'contract.loan.budgets.budget.activity.project','contract.loan.budgets.budget.activity.project.plan',
-                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.department',
+                                                'contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat',
                                                 'contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level',
                                                 'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type','budgets.budget.activity.project',
-                                                'budgets.budget.activity.project.plan','contract.loan.division')
+                                                'budgets.budget.activity.project.plan','contract.loan.division','contract.loan.department')
                 ];
             } else {
                 return [
