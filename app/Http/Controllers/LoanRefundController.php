@@ -213,6 +213,9 @@ class LoanRefundController extends Controller
                 /** ลบรายการในตาราง loan_refund_details */
                 LoanRefundDetail::where('refund_id', $id)->delete();
 
+                /** ลบรายการในตาราง loan_refund_budgets */
+                LoanRefundBudget::where('refund_id', $id)->delete();
+
                 /** Revert status ของตาราง loan_contracts เป็น 2=เงินเข้าแล้ว **/
                 $contract->update(['status' => 2]);
 
