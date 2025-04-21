@@ -324,11 +324,13 @@ class LoanRefundController extends Controller
 
     public function getForm(Request $req, $id)
     {
-        $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
-                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type','contract.loan.courses')
-                    ->with('contract.loan.courses.place','contract.loan.courses.place.changwat','contract.loan.department','contract.loan.division')
-                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                    ->find($id);
+        $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail')
+                            ->with('contract')
+                            ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type')
+                            ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat')
+                            ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                            ->with('contract.loan.department','contract.loan.division')
+                            ->find($id);
 
         $template = 'refund.docx';
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
@@ -513,9 +515,9 @@ class LoanRefundController extends Controller
     public function getOver20(Request $req, $id)
     {
         $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
-                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
-                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                    ->find($id);
+                            ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
+                            ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
+                            ->find($id);
 
         $template = 'over20.docx';
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
