@@ -324,13 +324,7 @@ class LoanRefundController extends Controller
 
     public function getForm(Request $req, $id)
     {
-        $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail')
-                            ->with('contract')
-                            ->with('contract.loan','contract.loan.budgets','contract.loan.budgets.budget','contract.loan.budgets.budget.type')
-                            ->with('contract.loan.courses','contract.loan.courses.place','contract.loan.courses.place.changwat')
-                            ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                            ->with('contract.loan.department','contract.loan.division')
-                            ->find($id);
+        $refund = $this->refundService->getById($id);
 
         $template = 'refund.docx';
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
@@ -514,10 +508,7 @@ class LoanRefundController extends Controller
 
     public function getOver20(Request $req, $id)
     {
-        $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
-                            ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
-                            ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                            ->find($id);
+        $refund = $this->refundService->getById($id);
 
         $template = 'over20.docx';
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));
@@ -536,7 +527,7 @@ class LoanRefundController extends Controller
         if ($refund->contract->loan->loan_type_id == 1) {
             $word->setValue('objective', 'ได้ขออนุมัติยืมเงินราชการในการจัด' . $refund->contract->loan->project_name);
         } else {
-            $word->setValue('objective', 'เรื่อง ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $refund->contract->loan->project_name);
+            $word->setValue('objective', 'ขออนุมัติยืมเงินราชการ เพื่อเป็นค่าใช้จ่ายในการเดินทางไปราชการเข้าร่วม' . $refund->contract->loan->project_name);
         }
 
         $word->setValue('projectSDate', convDbDateToLongThDate($refund->contract->loan->project_sdate));
@@ -591,10 +582,7 @@ class LoanRefundController extends Controller
 
     public function getReturn(Request $req, $id)
     {
-        $refund = LoanRefund::with('details','details.contractDetail.expense','details.contractDetail.loanDetail','contract','contract.loan')
-                    ->with('contract.loan.budgets','contract.loan.budgets.budget','contract.loan.courses','contract.loan.courses.place','contract.loan.department')
-                    ->with('contract.loan.employee','contract.loan.employee.prefix','contract.loan.employee.position','contract.loan.employee.level')
-                    ->find($id);
+        $refund = $this->refundService->getById($id);
 
         $template = 'return.docx';
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/loans/' . $template));

@@ -84,7 +84,7 @@ class LoanContractService extends BaseService
     {
         return $this->repo->getModel()
                     ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
-                    ->whereIn('refund_notify', [0,1])
+                    ->whereIn('refund_notify', [0, 1])
                     ->whereIn('status', [1, 2, 3])
                     ->get();
     }
