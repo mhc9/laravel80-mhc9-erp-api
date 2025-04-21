@@ -72,7 +72,9 @@ class TaskController extends Controller
         $group      = $req->get('group');
         $type       = $req->get('type');
         $reporter   = $req->get('reporter');
-        $status     = $req->get('status');
+        $year       = $req->get('year');
+        $sdate      = $year-1 . '-10-01';
+        $edate      = date("Y-m-t", strtotime($year . '-09-01'));
 
         $tasks = Task::with('group','group.type','reporter','assets','assets.asset')
                     ->when(!empty($type), function($q) use ($type) {
@@ -81,9 +83,10 @@ class TaskController extends Controller
                     ->when(!empty($group), function($q) use ($group) {
                         $q->where('task_group_id', $group);
                     })
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
+                    ->when(!empty($year), function($q) use ($sdate, $edate) {
+                        $q->whereBetween('task_date', [$sdate, $edate]);
+                    })
+                    ->whereIn('status', [1,2,3,4])
                     ->get();
 
         return $tasks;
