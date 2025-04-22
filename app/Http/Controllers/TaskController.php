@@ -74,7 +74,7 @@ class TaskController extends Controller
         $reporter   = $req->get('reporter');
         $year       = $req->get('year');
         $sdate      = $year-1 . '-10-01';
-        $edate      = date("Y-m-t", strtotime($year . '-09-01'));
+        $edate      = date("Y-m-t", strtotime($year . '-09-30'));
 
         $tasks = Task::with('group','group.type','reporter','assets','assets.asset')
                     ->when(!empty($type), function($q) use ($type) {
