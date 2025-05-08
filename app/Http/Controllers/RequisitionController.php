@@ -666,7 +666,7 @@ class RequisitionController extends Controller
                         ->with('requester','requester.prefix','requester.position','requester.level')
                         ->with('committees','committees.employee','committees.employee.prefix')
                         ->with('committees.employee.position','committees.employee.level')
-                        ->with('approvals','approvals.procuring')
+                        ->with('approvals','approvals.procuring','approvals.supplier','project','category')
                         ->find($id);
 
         // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
@@ -692,6 +692,7 @@ class RequisitionController extends Controller
             $word->setValue('no#' . $no, $no);
             $word->setValue('item#' . $no, $detail->item->name . ' ' . $detail->description);
             $word->setValue('amt#' . $no, number_format($detail->amount));
+            $word->setValue('supplier#' . $no, $requisition->approvals[0]->supplier->name);
             $word->setValue('unit#' . $no, $detail->unit->name);
             $word->setValue('price#' . $no, number_format($detail->price, 2));
             $word->setValue('total#' . $no, number_format($detail->total, 2));
