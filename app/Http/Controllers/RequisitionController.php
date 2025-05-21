@@ -568,7 +568,7 @@ class RequisitionController extends Controller
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('deliver_date', convDbDateToLongThDate($requisition->approvals[0]->deliver_date));
         $word->setValue('reason', $requisition->reason);
-        $word->setValue('year', $requisition->year);
+        $word->setValue('year', $requisition->year+543);
 
         /** แผนงาน */
         $budgets = '';
@@ -578,8 +578,8 @@ class RequisitionController extends Controller
         }
         $word->setValue('budget', $budgets);
 
-        $word->setValue('netTotal', number_format($requisition->net_total));
-        $word->setValue('netTotalText', baht_text($requisition->net_total));
+        $word->setValue('netTotal', number_format($requisition->net_total, 2));
+        $word->setValue('netTotalText', baht_text($requisition->net_total, 2));
         $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
         $word->setValue('requesterPosition', $requisition->requester->position->name . ($requisition->requester->level ? $requisition->requester->level->name : ''));
         
@@ -685,6 +685,7 @@ class RequisitionController extends Controller
         
         /** ================================== CONTENT ================================== */
         $word->setValue('objective', $requisition->order_type_id == 1 ? 'ซื้อ' . $requisition->category->name : $requisition->contract_desc);
+        $word->setValue('itemCount', $requisition->item_count);
 
         $no = 1;
         $word->cloneRow('item', sizeof($requisition->details));
@@ -746,8 +747,8 @@ class RequisitionController extends Controller
         $word->setValue('item', $requisition->order_type_id == 1 ? $requisition->category->name : $requisition->contract_desc);
         $word->setValue('itemCount', $requisition->item_count);
         $word->setValue('supplier', $requisition->approvals[0]->supplier->name);
-        $word->setValue('netTotal', number_format($requisition->net_total));
-        $word->setValue('netTotalText', baht_text($requisition->net_total));
+        $word->setValue('netTotal', number_format($requisition->net_total, 2));
+        $word->setValue('netTotalText', baht_text($requisition->net_total, 2));
         /** ================================== CONTENT ================================== */
         
         /** ================================== SIGNATURE ================================== */
