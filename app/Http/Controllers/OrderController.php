@@ -29,8 +29,8 @@ class OrderController extends Controller
                         ->with('supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
                         ->with('requisition','requisition.requester','requisition.requester.prefix')
                         ->with('requisition.requester.position','requisition.requester.level')
-                        ->with('requisition.category','requisition.budget','requisition.budget.project')
-                        ->with('requisition.budget.project.plan','requisition.project')
+                        ->with('requisition.category','requisition.budgets.budget.type','requisition.budgets','requisition.budgets.budget.activity')
+                        ->with('requisition.budgets.budget.activity.project','requisition.budgets.budget.activity.project.plan')
                         ->with('requisition.requester.position','requisition.requester.level')
                         ->with('requisition.division','requisition.division.department')
                         ->with('requisition.committees','requisition.committees.employee','requisition.committees.employee.prefix')
@@ -81,8 +81,8 @@ class OrderController extends Controller
         $order = Order::with('details','details.item','details.unit','supplier')
                         ->with('supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
                         ->with('requisition','requisition.requester','requisition.requester.prefix')
-                        ->with('requisition.category','requisition.budget','requisition.budget.project')
-                        ->with('requisition.budget.project.plan','requisition.project')
+                        ->with('requisition.category','requisition.budgets.budget.type','requisition.budgets','requisition.budgets.budget.activity')
+                        ->with('requisition.budgets.budget.activity.project','requisition.budgets.budget.activity.project.plan')
                         ->with('requisition.requester.position','requisition.requester.level')
                         ->with('requisition.division','requisition.division.department')
                         ->with('requisition.committees','requisition.committees.employee','requisition.committees.employee.prefix')
@@ -179,7 +179,7 @@ class OrderController extends Controller
                     if (!array_key_exists('order_id', $item) || empty($item['order_id'])) {
                         $detail  = new OrderDetail();
                         $detail->order_id       = $order->id;
-                        $detail->pr_detail_id   = $item['pr_detail_id'];
+                        $detail->pr_detail_id   = $item['id'];
                         $detail->item_id        = $item['item_id'];
                         $detail->description    = $item['description'];
                         $detail->price          = $item['price'];
