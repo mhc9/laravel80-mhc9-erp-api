@@ -578,6 +578,18 @@ class RequisitionController extends Controller
         }
         $word->setValue('budget', $budgets);
 
+        $no = 1;
+        $word->cloneRow('item', sizeof($requisition->details));
+        foreach($requisition->details as $item => $detail) {
+            $word->setValue('no#' . $no, $no);
+            $word->setValue('item#' . $no, $detail->item->name . ' ' . $detail->description);
+            $word->setValue('amt#' . $no, number_format($detail->amount, 2));
+            $word->setValue('unit#' . $no, $detail->unit->name);
+            $word->setValue('price#' . $no, number_format($detail->price, 2));
+            $word->setValue('total#' . $no, number_format($detail->total, 2));
+            $no++;
+        }
+
         $word->setValue('netTotal', number_format($requisition->net_total, 2));
         $word->setValue('netTotalText', baht_text($requisition->net_total, 2));
         $word->setValue('requester', $requisition->requester->prefix->name.$requisition->requester->firstname . ' ' . $requisition->requester->lastname);
