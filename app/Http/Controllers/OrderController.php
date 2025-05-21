@@ -131,10 +131,10 @@ class OrderController extends Controller
                     $detail->total          = $item['total'];
                     $detail->status         = 0;
                     $detail->save();
-
-                    /** อัพเดตสถานะของคำขอเป็น 4=จัดซื้อแล้ว */
-                    Requisition::where('id', $order->requisition_id)->update(['status' => 4]);
                 }
+
+                /** อัพเดตสถานะของคำขอเป็น 4=จัดซื้อแล้ว */
+                Requisition::where('id', $order->requisition_id)->update(['status' => 4]);
 
                 return [
                     'status'    => 1,
@@ -158,16 +158,61 @@ class OrderController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $division = Division::find($id);
-            $division->name             = $req['name'];
-            $division->department_id    = $req['department_id'];
-            $division->status           = $req['status'] ? 1 : 0;
+            $order = new Order();
+            $order->po_no           = $req['po_no'];
+            $order->po_date         = $req['po_date'];
+            $order->requisition_id  = $req['requisition_id'];
+            $order->supplier_id     = $req['supplier_id'];
+            $order->item_count      = $req['item_count'];
+            $order->total           = currencyToNumber($req['total']);
+            $order->vat_rate        = currencyToNumber($req['vat_rate']);
+            $order->vat             = currencyToNumber($req['vat']);
+            $order->net_total       = currencyToNumber($req['net_total']);
+            $order->deliver_days    = $req['deliver_days'];
+            $order->deliver_date    = convThDateToDbDate($req['deliver_date']);
+            $order->year            = $req['year'];
+            $order->status          = $req['status'];
 
-            if($division->save()) {
+            if($order->save()) {
+                foreach ($req['items'] as $item) {
+                    /** ถ้า element ของ $item ไม่มี checkField (รายการใหม่) */
+                    if (!array_key_exists('order_id', $item) || empty($item['order_id'])) {
+                        $detail  = new OrderDetail();
+                        $detail->order_id       = $order->id;
+                        $detail->pr_detail_id   = $item['pr_detail_id'];
+                        $detail->item_id        = $item['item_id'];
+                        $detail->description    = $item['description'];
+                        $detail->price          = $item['price'];
+                        $detail->amount         = $item['amount'];
+                        $detail->unit_id        = $item['unit_id'];
+                        $detail->total          = $item['total'];
+                        $detail->status         = 0;
+                        $detail->save();
+                    } else {
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property updated หรือไม่ (รายการที่ต้องแก้ไข) */
+                        if (array_key_exists('updated', $item) && $item['updated']) {
+                            $detail  = OrderDetail::find($item['id']);
+                            $detail->pr_detail_id   = $item['pr_detail_id'];
+                            $detail->item_id        = $item['item_id'];
+                            $detail->description    = $item['description'];
+                            $detail->price          = $item['price'];
+                            $detail->amount         = $item['amount'];
+                            $detail->unit_id        = $item['unit_id'];
+                            $detail->total          = $item['total'];
+                            $detail->status         = $item['status'];
+                            $detail->save();
+                        }
+
+                        /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property removed หรือไม่ (รายการที่ต้องลบ) */
+                        if (array_key_exists('removed', $item) && $item['removed']) {
+                            OrderDetail::find($item['id'])->delete();
+                        }
+                    }
+                }
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'division'  => $division
+                    'order'     => $order
                 ];
             } else {
                 return [
@@ -186,20 +231,24 @@ class OrderController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            // $item = Item::find($id);
+            $order = Order::find($id);
 
-            // if($item->delete()) {
-            //     return [
-            //         'status'    => 1,
-            //         'message'   => 'Deleting successfully!!',
-            //         'item'      => $item
-            //     ];
-            // } else {
-            //     return [
-            //         'status'    => 0,
-            //         'message'   => 'Something went wrong!!'
-            //     ];
-            // }
+            if($order->delete()) {
+                /** อัพเดตสถานะของคำขอเป็น 3=ประกาศผู้ชนะ */
+                Requisition::where('id', $order->requisition_id)->update(['status' => 3]);
+
+                return [
+                    'status'    => 1,
+                    'message'   => 'Deleting successfully!!',
+                    'id'        => $id
+                ];
+
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,
