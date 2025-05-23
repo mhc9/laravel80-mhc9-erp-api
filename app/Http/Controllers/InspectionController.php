@@ -192,16 +192,27 @@ class InspectionController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $division = Division::find($id);
-            $division->name             = $req['name'];
-            $division->department_id    = $req['department_id'];
-            $division->status           = $req['status'] ? 1 : 0;
+            $inspection = new Inspection();
+            $inspection->inspect_date   = $req['inspect_date'];
+            $inspection->deliver_no     = $req['deliver_no'];
+            $inspection->deliver_date   = $req['deliver_date'];
+            $inspection->report_no      = $req['report_no'];
+            $inspection->report_date    = $req['report_date'];
+            $inspection->order_id       = $req['order_id'];
+            $inspection->item_count     = $req['item_count'];
+            $inspection->item_received  = $req['item_received'];
+            $inspection->total          = currencyToNumber($req['total']);
+            $inspection->vat_rate       = currencyToNumber($req['vat_rate']);
+            $inspection->vat            = currencyToNumber($req['vat']);
+            $inspection->net_total      = currencyToNumber($req['net_total']);
+            $inspection->year           = $req['year'];
+            $inspection->status         = 1;
 
-            if($division->save()) {
+            if($inspection->save()) {
                 return [
-                    'status'    => 1,
-                    'message'   => 'Updating successfully!!',
-                    'division'  => $division
+                    'status'        => 1,
+                    'message'       => 'Updating successfully!!',
+                    'inspection'    => $inspection
                 ];
             } else {
                 return [
@@ -220,20 +231,20 @@ class InspectionController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            // $item = Item::find($id);
+            $inspection = Inspection::find($id);
 
-            // if($item->delete()) {
-            //     return [
-            //         'status'    => 1,
-            //         'message'   => 'Deleting successfully!!',
-            //         'item'      => $item
-            //     ];
-            // } else {
-            //     return [
-            //         'status'    => 0,
-            //         'message'   => 'Something went wrong!!'
-            //     ];
-            // }
+            if($inspection->delete()) {
+                return [
+                    'status'     => 1,
+                    'message'    => 'Deleting successfully!!',
+                    'id'         => $id
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
         } catch (\Exception $ex) {
             return [
                 'status'    => 0,
