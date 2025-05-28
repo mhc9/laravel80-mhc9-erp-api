@@ -7,9 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $table = 'orders';
+
     // protected $primaryKey = 'id';
-    // public $incrementing = false; // false = ไม่ใช้ options auto increment
-    // public $timestamps = false; // false = ไม่ใช้ field updated_at และ created_at
+
+    /** false = ไม่ใช้ options auto increment */
+    // public $incrementing = false;
+
+    /** false = ไม่ใช้ field updated_at และ created_at */
+    // public $timestamps = false;
+
+    /** Set particular field mass assignable */
+    // protected $fillable = ['status'];
+
+    /** Set all the fields mass assignable */
+    protected $guarded = [];
 
     public function supplier()
     {
