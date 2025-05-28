@@ -10,6 +10,7 @@ use Illuminate\Support\MessageBag;
 use App\Models\Inspection;
 use App\Models\InspectionDetail;
 use App\Models\Order;
+use App\Models\Requisition;
 use App\Models\Supplier;
 use App\Models\Division;
 use App\Models\Department;
@@ -144,13 +145,14 @@ class InspectionController extends Controller
             $inspection->report_no      = $req['report_no'];
             $inspection->report_date    = $req['report_date'];
             $inspection->order_id       = $req['order_id'];
+            $inspection->supplier_id    = $req['supplier_id'];
+            $inspection->year           = $req['year'];
             $inspection->item_count     = $req['item_count'];
             $inspection->item_received  = $req['item_received'];
             $inspection->total          = currencyToNumber($req['total']);
             $inspection->vat_rate       = currencyToNumber($req['vat_rate']);
             $inspection->vat            = currencyToNumber($req['vat']);
             $inspection->net_total      = currencyToNumber($req['net_total']);
-            $inspection->year           = $req['year'];
             $inspection->status         = 1;
 
             if($inspection->save()) {
@@ -163,7 +165,7 @@ class InspectionController extends Controller
                     $detail->amount         = $item['amount'];
                     $detail->unit_id        = $item['unit_id'];
                     $detail->total          = $item['total'];
-                    $detail->is_received    = $item['is_received'];
+                    $detail->is_received    = array_key_exists('is_received', $item) ? $item['is_received'] : 0;
                     $detail->save();
 
                     /** อัพเดตสถานะของคำขอเป็น 2=ตรวจรับแล้ว */
@@ -199,13 +201,14 @@ class InspectionController extends Controller
             $inspection->report_no      = $req['report_no'];
             $inspection->report_date    = $req['report_date'];
             $inspection->order_id       = $req['order_id'];
+            $inspection->supplier_id    = $req['supplier_id'];
+            $inspection->year           = $req['year'];
             $inspection->item_count     = $req['item_count'];
             $inspection->item_received  = $req['item_received'];
             $inspection->total          = currencyToNumber($req['total']);
             $inspection->vat_rate       = currencyToNumber($req['vat_rate']);
             $inspection->vat            = currencyToNumber($req['vat']);
             $inspection->net_total      = currencyToNumber($req['net_total']);
-            $inspection->year           = $req['year'];
             $inspection->status         = 1;
 
             if($inspection->save()) {
@@ -234,6 +237,15 @@ class InspectionController extends Controller
             $inspection = Inspection::find($id);
 
             if($inspection->delete()) {
+                /** ลบรายการสินค้า/บริการของการตรวจรับ */
+                InspectionDetail::where('inspection_id', $id)->delete();
+
+                /** อัพเดตสถานะของใบสั่งซื้อ/จ้างเป็น 1=รอดำเนินการ */
+                $order = Order::find($inspection->order_id)->update(['status' => 1]);
+
+                /** อัพเดตสถานะของคำขอเป็น 4=จัดซื้อแล้ว */
+                Requisition::where('id', $order->requisition_id)->update(['status' => 4]);
+
                 return [
                     'status'     => 1,
                     'message'    => 'Deleting successfully!!',
