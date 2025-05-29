@@ -17,48 +17,14 @@ use App\Models\Department;
 
 class InspectionController extends Controller
 {
-    public function formValidate (Request $request)
-    {
-        $rules = [
-            'name'          => 'required',
-            'department_id' => 'required',
-        ];
-
-        $messages = [
-            'name.required'             => 'กรุณาระบุชื่องาน',
-            'department_id.required'    => 'กรุณาเลือกกลุ่มงาน',
-        ];
-
-        $validator = \Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            $messageBag = $validator->getMessageBag();
-
-            // if (!$messageBag->has('start_date')) {
-            //     if ($this->isDateExistsValidation(convThDateToDbDate($request['start_date']), 'start_date') > 0) {
-            //         $messageBag->add('start_date', 'คุณมีการลาในวันที่ระบุแล้ว');
-            //     }
-            // }
-
-            return [
-                'success' => 0,
-                'errors' => $messageBag->toArray(),
-            ];
-        } else {
-            return [
-                'success' => 1,
-                'errors' => $validator->getMessageBag()->toArray(),
-            ];
-        }
-    }
-
     public function search(Request $req)
     {
         /** Get params from query string */
-        $po_no          = $req->get('po_no');
+        $deliver_no     = $req->get('deliver_no');
         $inspect_date   = $req->get('inspect_date');
         $supplier       = $req->get('supplier');
         $status         = $req->get('status');
+        $year           = $req->get('year');
 
         $inspections = Inspection::with('details','details.item','details.unit')
                         ->with('supplier','supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
@@ -71,8 +37,8 @@ class InspectionController extends Controller
                         // ->with('requisition.division','requisition.division.department')
                         // ->with('requisition.committees','requisition.committees.employee','requisition.committees.employee.prefix')
                         // ->with('requisition.committees.employee.position','requisition.committees.employee.level')
-                        ->when(!empty($po_no), function($q) use ($po_no) {
-                            $q->where('po_no', 'like', '%'.$po_no.'%');
+                        ->when(!empty($deliver_no), function($q) use ($deliver_no) {
+                            $q->where('deliver_no', 'like', '%'.$deliver_no.'%');
                         })
                         ->when(!empty($inspect_date), function($q) use ($inspect_date) {
                             $q->where('inspect_date', $inspect_date);
@@ -80,8 +46,11 @@ class InspectionController extends Controller
                         ->when(!empty($supplier), function($q) use ($supplier) {
                             $q->where('supplier_id', $supplier);
                         })
-                        ->when($status != '', function($q) use ($status) {
+                        ->when(!empty($status), function($q) use ($status) {
                             $q->where('status', $status);
+                        })
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
                         })
                         ->orderBy('inspect_date','DESC')
                         ->paginate(10);
@@ -158,19 +127,22 @@ class InspectionController extends Controller
             if($inspection->save()) {
                 foreach ($req['items'] as $item) {
                     $detail  = new InspectionDetail();
-                    $detail->inspection_id  = $inspection->id;
-                    $detail->order_detail_id = $item['id'];
-                    $detail->item_id        = $item['item_id'];
-                    $detail->price          = $item['price'];
-                    $detail->amount         = $item['amount'];
-                    $detail->unit_id        = $item['unit_id'];
-                    $detail->total          = $item['total'];
-                    $detail->is_received    = array_key_exists('is_received', $item) ? $item['is_received'] : 0;
+                    $detail->inspection_id      = $inspection->id;
+                    $detail->order_detail_id    = $item['id'];
+                    $detail->item_id            = $item['item_id'];
+                    $detail->price              = $item['price'];
+                    $detail->amount             = $item['amount'];
+                    $detail->unit_id            = $item['unit_id'];
+                    $detail->total              = $item['total'];
+                    $detail->is_received        = array_key_exists('is_received', $item) ? $item['is_received'] : 0;
                     $detail->save();
-
-                    /** อัพเดตสถานะของคำขอเป็น 2=ตรวจรับแล้ว */
-                    Order::where('id', $inspection->order_id)->update(['status' => 2]);
                 }
+
+                /** อัพเดตสถานะของคำขอเป็น 2=ตรวจรับแล้ว */
+                $order = Order::where('id', $inspection->order_id)->update(['status' => 2]);
+
+                /** อัพเดตสถานะของคำขอเป็น 5=ตรวจรับแล้ว */
+                Requisition::where('id', $order->requisition_id)->update(['status' => 5]);
 
                 return [
                     'status'        => 1,
