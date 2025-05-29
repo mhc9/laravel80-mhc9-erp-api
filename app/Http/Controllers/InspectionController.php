@@ -139,7 +139,9 @@ class InspectionController extends Controller
                 }
 
                 /** อัพเดตสถานะของคำขอเป็น 2=ตรวจรับแล้ว */
-                $order = Order::where('id', $inspection->order_id)->update(['status' => 2]);
+                $order = Order::find($inspection->order_id);
+                $order->status = 2;
+                $order->save();
 
                 /** อัพเดตสถานะของคำขอเป็น 5=ตรวจรับแล้ว */
                 Requisition::where('id', $order->requisition_id)->update(['status' => 5]);
@@ -212,8 +214,10 @@ class InspectionController extends Controller
                 /** ลบรายการสินค้า/บริการของการตรวจรับ */
                 InspectionDetail::where('inspection_id', $id)->delete();
 
-                /** อัพเดตสถานะของใบสั่งซื้อ/จ้างเป็น 1=รอดำเนินการ */
-                $order = Order::find($inspection->order_id)->update(['status' => 1]);
+                /** อัพเดตสถานะของคำขอเป็น 1=รอดำเนินการ */
+                $order = Order::find($inspection->order_id);
+                $order->status = 1;
+                $order->save();
 
                 /** อัพเดตสถานะของคำขอเป็น 4=จัดซื้อแล้ว */
                 Requisition::where('id', $order->requisition_id)->update(['status' => 4]);
