@@ -27,33 +27,33 @@ class InspectionController extends Controller
         $year           = $req->get('year');
 
         $inspections = Inspection::with('details','details.item','details.unit')
-                        ->with('supplier','supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
-                        ->with('order','order.requisition','order.requisition.category')
-                        ->with('order.requisition.requester','order.requisition.requester.prefix')
-                        ->with('order.requisition.requester.position','order.requisition.requester.level')
-                        // ->with('requisition.budget','requisition.budget.project')
-                        // ->with('requisition.budget.project.plan','requisition.project')
-                        // ->with('requisition.requester.position','requisition.requester.level')
-                        // ->with('requisition.division','requisition.division.department')
-                        // ->with('requisition.committees','requisition.committees.employee','requisition.committees.employee.prefix')
-                        // ->with('requisition.committees.employee.position','requisition.committees.employee.level')
-                        ->when(!empty($deliver_no), function($q) use ($deliver_no) {
-                            $q->where('deliver_no', 'like', '%'.$deliver_no.'%');
-                        })
-                        ->when(!empty($inspect_date), function($q) use ($inspect_date) {
-                            $q->where('inspect_date', $inspect_date);
-                        })
-                        ->when(!empty($supplier), function($q) use ($supplier) {
-                            $q->where('supplier_id', $supplier);
-                        })
-                        ->when(!empty($status), function($q) use ($status) {
-                            $q->where('status', $status);
-                        })
-                        ->when(!empty($year), function($q) use ($year) {
-                            $q->where('year', $year);
-                        })
-                        ->orderBy('inspect_date','DESC')
-                        ->paginate(10);
+                                ->with('supplier','supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
+                                ->with('order','order.requisition','order.requisition.category')
+                                ->with('order.requisition.requester','order.requisition.requester.prefix')
+                                ->with('order.requisition.requester.position','order.requisition.requester.level')
+                                ->with('order.requisition.budgets.budget.type','order.requisition.budgets')
+                                ->with('order.requisition.budgets.budget.activity','order.requisition.budgets.budget.activity.project')
+                                ->with('order.requisition.budgets.budget.activity.project.plan')
+                                // ->with('order.requisition.division','order.requisition.division.department')
+                                // ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
+                                // ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->when(!empty($deliver_no), function($q) use ($deliver_no) {
+                                    $q->where('deliver_no', 'like', '%'.$deliver_no.'%');
+                                })
+                                ->when(!empty($inspect_date), function($q) use ($inspect_date) {
+                                    $q->where('inspect_date', $inspect_date);
+                                })
+                                ->when(!empty($supplier), function($q) use ($supplier) {
+                                    $q->where('supplier_id', $supplier);
+                                })
+                                ->when(!empty($status), function($q) use ($status) {
+                                    $q->where('status', $status);
+                                })
+                                ->when(!empty($year), function($q) use ($year) {
+                                    $q->where('year', $year);
+                                })
+                                ->orderBy('inspect_date','DESC')
+                                ->paginate(10);
 
         return $inspections;
     }
@@ -81,17 +81,17 @@ class InspectionController extends Controller
     public function getById($id)
     {
         $inspection = Inspection::with('details','details.item','details.unit')
-                        ->with('supplier','supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
-                        ->with('order','order.requisition','order.requisition.category')
-                        ->with('order.requisition.requester','order.requisition.requester.prefix')
-                        ->with('order.requisition.requester.position','order.requisition.requester.level')
-                        // ->with('requisition.budget','requisition.budget.project')
-                        // ->with('requisition.budget.project.plan','requisition.project')
-                        // ->with('requisition.requester.position','requisition.requester.level')
-                        // ->with('requisition.division','requisition.division.department')
-                        // ->with('requisition.committees','requisition.committees.employee','requisition.committees.employee.prefix')
-                        // ->with('requisition.committees.employee.position','requisition.committees.employee.level')
-                        ->find($id);
+                                ->with('supplier','supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
+                                ->with('order','order.requisition','order.requisition.category')
+                                ->with('order.requisition.requester','order.requisition.requester.prefix')
+                                ->with('order.requisition.requester.position','order.requisition.requester.level')
+                                ->with('order.requisition.budgets.budget.type','order.requisition.budgets')
+                                ->with('order.requisition.budgets.budget.activity','order.requisition.budgets.budget.activity.project')
+                                ->with('order.requisition.budgets.budget.activity.project.plan')
+                                // ->with('order.requisition.division','order.requisition.division.department')
+                                // ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
+                                // ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->find($id);
 
         return $inspection;
     }
