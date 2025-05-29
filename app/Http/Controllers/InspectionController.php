@@ -168,14 +168,14 @@ class InspectionController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $inspection = new Inspection();
+            $inspection = Inspection::find($id);
             $inspection->inspect_date   = $req['inspect_date'];
             $inspection->deliver_no     = $req['deliver_no'];
             $inspection->deliver_date   = $req['deliver_date'];
             $inspection->report_no      = $req['report_no'];
             $inspection->report_date    = $req['report_date'];
-            $inspection->order_id       = $req['order_id'];
-            $inspection->supplier_id    = $req['supplier_id'];
+            // $inspection->order_id       = $req['order_id'];
+            // $inspection->supplier_id    = $req['supplier_id'];
             $inspection->year           = $req['year'];
             $inspection->item_count     = $req['item_count'];
             $inspection->item_received  = $req['item_received'];
@@ -186,6 +186,22 @@ class InspectionController extends Controller
             $inspection->status         = 1;
 
             if($inspection->save()) {
+                foreach ($req['items'] as $item) {
+                    /** ถ้าเป็นรายการเดิมให้ตรวจสอบว่ามี flag property updated หรือไม่ (รายการที่ต้องแก้ไข) */
+                    if (array_key_exists('updated', $item) && $item['updated']) {
+                        $detail  = InspectionDetail::find($item['id']);
+                        // $detail->inspection_id      = $inspection->id;
+                        // $detail->order_detail_id    = $item['id'];
+                        // $detail->item_id            = $item['item_id'];
+                        // $detail->price              = $item['price'];
+                        // $detail->amount             = $item['amount'];
+                        // $detail->unit_id            = $item['unit_id'];
+                        // $detail->total              = $item['total'];
+                        $detail->is_received        = $item['is_received'];
+                        $detail->save();
+                    }
+                }
+
                 return [
                     'status'        => 1,
                     'message'       => 'Updating successfully!!',
