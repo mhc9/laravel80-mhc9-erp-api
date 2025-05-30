@@ -256,4 +256,142 @@ class InspectionController extends Controller
             ];
         }
     }
+
+    public function getForm(Request $req, $id)
+    {
+        $inspection = Inspection::with('details','details.item','details.unit')
+                                ->with('supplier','supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
+                                ->with('order','order.requisition','order.requisition.category')
+                                ->with('order.requisition.requester','order.requisition.requester.prefix')
+                                ->with('order.requisition.requester.position','order.requisition.requester.level')
+                                ->with('order.requisition.budgets.budget.type','order.requisition.budgets')
+                                ->with('order.requisition.budgets.budget.activity','order.requisition.budgets.budget.activity.project')
+                                ->with('order.requisition.budgets.budget.activity.project.plan')
+                                // ->with('order.requisition.division','order.requisition.division.department')
+                                ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
+                                ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->with('order.requisition.approvals','order.requisition.approvals.procuring','order.requisition.approvals.supplier')
+                                ->find($id);
+
+        // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
+        //                     ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+        //                     ->where('status', 1)
+        //                     ->first();
+
+        $template = 'form.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/inspections/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('deliverDate', convDbDateToLongThDate($inspection->deliver_date));
+        /** ================================== HEADER ================================== */
+
+        /** ================================== CONTENT ================================== */
+        $word->setValue('objective', $inspection->order->requisition->order_type_id == 1 ? 'ซื้อ' . $inspection->order->requisition->category->name : $inspection->order->requisition->contract_desc);
+        $word->setValue('itemCount', $inspection->item_count);
+
+        $word->setValue('considerNo', $inspection->order->requisition->approvals[0]->consider_no);
+        $word->setValue('considerDate', convDbDateToLongThDate($inspection->order->requisition->approvals[0]->consider_date));
+
+        $word->setValue('supplier', $inspection->supplier->name);
+
+        $word->setValue('netTotal', number_format($inspection->net_total));
+        $word->setValue('netTotalText', baht_text($inspection->net_total));
+
+        $cx = 1;
+        $word->cloneRow('inspector', sizeof($inspection->order->requisition->committees));
+        foreach($inspection->order->requisition->committees as $inspector => $committee) {
+            $word->setValue('no#' . $cx, sizeof($inspection->order->requisition->committees) > 1 ? $cx . '.' : '');
+            $word->setValue('inspector#' . $cx, $committee->employee->prefix->name.$committee->employee->firstname . ' ' . $committee->employee->lastname);
+            $word->setValue('inspectorPosition#' . $cx, $committee->employee->position->name . ($committee->employee->level ? $committee->employee->level->name : ''));
+
+            if (sizeof($inspection->order->requisition->committees) == 1) {
+                $word->setValue('committee#' . $cx, 'ผู้ตรวจรับพัสดุ');
+            } else {
+                $word->setValue('committee#' . $cx, $cx == 1 ? 'ประธานกรรรมการฯ' : 'กรรรมการฯ');
+            }
+            $cx++;
+        }
+        /** ================================== CONTENT ================================== */
+
+        /** ================================== SIGNATURE ================================== */
+        // $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
+        // $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
+        // $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
+        /** ================================== SIGNATURE ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
+    }
+
+    public function getReport(Request $req, $id)
+    {
+        $inspection = Inspection::with('details','details.item','details.unit')
+                                ->with('supplier','supplier.tambon','supplier.amphur','supplier.changwat','supplier.bank')
+                                ->with('order','order.requisition','order.requisition.category')
+                                ->with('order.requisition.requester','order.requisition.requester.prefix')
+                                ->with('order.requisition.requester.position','order.requisition.requester.level')
+                                ->with('order.requisition.budgets.budget.type','order.requisition.budgets')
+                                ->with('order.requisition.budgets.budget.activity','order.requisition.budgets.budget.activity.project')
+                                ->with('order.requisition.budgets.budget.activity.project.plan')
+                                // ->with('order.requisition.division','order.requisition.division.department')
+                                ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
+                                ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->with('order.requisition.approvals','order.requisition.approvals.procuring','order.requisition.approvals.supplier')
+                                ->find($id);
+
+        // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
+        //                     ->whereIn('id', Member::where('department_id', $requisition->division->department_id)->whereIn('duty_id', [2, 5])->pluck('employee_id'))
+        //                     ->where('status', 1)
+        //                     ->first();
+
+        $template = 'report.docx';
+        $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/inspections/' . $template));
+
+        /** ================================== HEADER ================================== */
+        $word->setValue('reportNo', $inspection->report_no);
+        $word->setValue('reportDate', convDbDateToLongThDate($inspection->report_date));
+        /** ================================== HEADER ================================== */
+        
+        /** ================================== CONTENT ================================== */
+        $word->setValue('orderType', $inspection->order->requisition->order_type_id == 1 ? 'ซื้อ' : 'จ้าง');
+        $word->setValue('objective', $inspection->order->requisition->order_type_id == 1 ? 'ซื้อ' . $inspection->order->requisition->category->name : $inspection->order->requisition->contract_desc);
+        $word->setValue('itemCount', $inspection->item_count);
+
+        $word->setValue('considerNo', $inspection->order->requisition->approvals[0]->consider_no);
+        $word->setValue('considerDate', convDbDateToLongThDate($inspection->order->requisition->approvals[0]->consider_date));
+
+        $word->setValue('supplier', $inspection->supplier->name);
+
+        $word->setValue('netTotal', number_format($inspection->net_total));
+        $word->setValue('netTotalText', baht_text($inspection->net_total));
+
+        $cx = 1;
+        $word->cloneRow('inspector', sizeof($inspection->order->requisition->committees));
+        foreach($inspection->order->requisition->committees as $inspector => $committee) {
+            $word->setValue('no#' . $cx, sizeof($inspection->order->requisition->committees) > 1 ? $cx . '.' : '');
+            $word->setValue('inspector#' . $cx, $committee->employee->prefix->name.$committee->employee->firstname . ' ' . $committee->employee->lastname);
+            $word->setValue('inspectorPosition#' . $cx, $committee->employee->position->name . ($committee->employee->level ? $committee->employee->level->name : ''));
+
+            if (sizeof($inspection->order->requisition->committees) == 1) {
+                $word->setValue('committee#' . $cx, 'ผู้ตรวจรับพัสดุ');
+            } else {
+                $word->setValue('committee#' . $cx, $cx == 1 ? 'ประธานกรรรมการฯ' : 'กรรรมการฯ');
+            }
+            $cx++;
+        }
+        /** ================================== CONTENT ================================== */
+        
+        /** ================================== SIGNATURE ================================== */
+        // $word->setValue('headOfDepart', $headOfDepart->prefix->name.$headOfDepart->firstname . ' ' . $headOfDepart->lastname);
+        // $word->setValue('headOfDepartPosition', $headOfDepart->position->name . $headOfDepart->level->name);
+        // $word->setValue('headOfDepartRole', ($headOfDepart->memberOf[0]->duty_id == 2 ? 'หัวหน้า' : $headOfDepart->memberOf[0]->duty->name) . $requisition->division->department->name);
+        /** ================================== SIGNATURE ================================== */
+
+        $pathToSave = public_path('temp/' . $template);
+        $filepath = $word->saveAs($pathToSave);
+
+        return response()->download($pathToSave);
+    }
 }

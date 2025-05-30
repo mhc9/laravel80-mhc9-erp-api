@@ -33,6 +33,10 @@ Route::get('/requisitions/{id}/directive', [App\Http\Controllers\RequisitionCont
 Route::get('/requisitions/{id}/consider', [App\Http\Controllers\RequisitionController::class, 'getConsider']);
 Route::get('/requisitions/{id}/notice', [App\Http\Controllers\RequisitionController::class, 'getNotice']);
 
+/** Inspection */
+Route::get('/inspections/{id}/form', [App\Http\Controllers\InspectionController::class, 'getForm']);
+Route::get('/inspections/{id}/report', [App\Http\Controllers\InspectionController::class, 'getReport']);
+
 /** Loan */
 Route::get('/loans/{id}/form', [App\Http\Controllers\LoanController::class, 'getForm']);
 Route::get('/loans/{id}/contract', [App\Http\Controllers\LoanController::class, 'getContract']);
