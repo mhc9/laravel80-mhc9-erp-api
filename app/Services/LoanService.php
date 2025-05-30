@@ -74,6 +74,7 @@ class LoanService extends BaseService
         $loanTypes = [
             ['id' => 1, 'name' => 'ยืมเงินโครงการ'],
             ['id' => 2, 'name' => 'ยืมเงินเดินทางไปราชการ'],
+            ['id' => 3, 'name' => 'ยืมเงินค่าลงทะเบียน'],
         ];
 
         $moneyTypes = [
