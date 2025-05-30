@@ -84,7 +84,7 @@ class LoanContractService extends BaseService
     {
         return $this->repo->getModel()
                     ->where(\DB::Raw('MONTH(refund_date)'), date('m'))
-                    ->whereIn('refund_notify', [0, 1])
+                    ->whereIn('refund_notify', [0, 1, 2 ,3])
                     ->whereIn('status', [1, 2, 3])
                     ->get();
     }
@@ -102,18 +102,27 @@ class LoanContractService extends BaseService
             $refundNotify = 0;
             $remainDays = Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date));
 
-            if ($remainDays < 0) { // กรณีครบหรือเลยกำหนดคืนเงิน
+            if ($contract->refund_notify == 3 && $remainDays < 0) { // กรณีเลยกำหนดคืนเงิน
                 /** เซตค่า refundNotify เป็น 2 = แจ้งเตือนครบแล้ว */
-                $refundNotify = 2;
+                $refundNotify = 4;
 
                 /** ข้อความแจ้งเตือน */
                 $msg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
                 $msg .= ' เลขที่สัญญา ' .$contract->contract_no;
                 $msg .= ' เลยกำหนดคืนเงินแล้ว ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
                 $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
+            } else if ($contract->refund_notify == 2 && $remainDays == 0) { // กรณีครบกำหนดคืนเงิน
+                /** เซตค่า refundNotify เป็น 2 = แจ้งเตือนครบแล้ว */
+                $refundNotify = 3;
+
+                /** ข้อความแจ้งเตือน */
+                $msg = 'เงินยืมราชการของคุณ' .$contract->loan->employee->firstname. ' ' .$contract->loan->employee->lastname;
+                $msg .= ' เลขที่สัญญา ' .$contract->contract_no;
+                $msg .= ' ครบกำหนดคืนเงินแล้ววันนี้';
+                $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
             } else {
                 if ($contract->refund_days == 15) { // กรณียืมไปราชการ
-                    if ($remainDays <= 5) {
+                    if ($contract->refund_notify == 0 && $remainDays <= 5) {
                         /** เซตค่า refundNotify เป็น 2 = แจ้งเตือนครบแล้ว */
                         $refundNotify = 2;
 
