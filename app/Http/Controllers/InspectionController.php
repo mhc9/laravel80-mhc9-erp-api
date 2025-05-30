@@ -35,8 +35,9 @@ class InspectionController extends Controller
                                 ->with('order.requisition.budgets.budget.activity','order.requisition.budgets.budget.activity.project')
                                 ->with('order.requisition.budgets.budget.activity.project.plan')
                                 // ->with('order.requisition.division','order.requisition.division.department')
-                                // ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
-                                // ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
+                                ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->with('order.requisition.approvals','order.requisition.approvals.procuring')
                                 ->when(!empty($deliver_no), function($q) use ($deliver_no) {
                                     $q->where('deliver_no', 'like', '%'.$deliver_no.'%');
                                 })
@@ -89,8 +90,9 @@ class InspectionController extends Controller
                                 ->with('order.requisition.budgets.budget.activity','order.requisition.budgets.budget.activity.project')
                                 ->with('order.requisition.budgets.budget.activity.project.plan')
                                 // ->with('order.requisition.division','order.requisition.division.department')
-                                // ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
-                                // ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
+                                ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
+                                ->with('order.requisition.approvals','order.requisition.approvals.procuring')
                                 ->find($id);
 
         return $inspection;
@@ -270,7 +272,7 @@ class InspectionController extends Controller
                                 // ->with('order.requisition.division','order.requisition.division.department')
                                 ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
                                 ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
-                                ->with('order.requisition.approvals','order.requisition.approvals.procuring','order.requisition.approvals.supplier')
+                                ->with('order.requisition.approvals','order.requisition.approvals.procuring')
                                 ->find($id);
 
         // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
@@ -338,7 +340,7 @@ class InspectionController extends Controller
                                 // ->with('order.requisition.division','order.requisition.division.department')
                                 ->with('order.requisition.committees','order.requisition.committees.employee','order.requisition.committees.employee.prefix')
                                 ->with('order.requisition.committees.employee.position','order.requisition.committees.employee.level')
-                                ->with('order.requisition.approvals','order.requisition.approvals.procuring','order.requisition.approvals.supplier')
+                                ->with('order.requisition.approvals','order.requisition.approvals.procuring')
                                 ->find($id);
 
         // $headOfDepart = Employee::with('prefix','position','level','memberOf','memberOf.duty','memberOf.department')
