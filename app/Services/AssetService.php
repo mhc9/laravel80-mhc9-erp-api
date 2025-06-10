@@ -40,35 +40,27 @@ class AssetService extends BaseService
 
     public function search(array $params, $all = false, $perPage = 10)
     {
-        $collections;
-        $conditions = [];
-        if (!empty($params['category'])) {
-            array_push($conditions, ['asset_category_id', '=', $params['category']]);
-        }
-
-        //             ->when(!empty($group), function($q) use ($group) {
-        //                 $q->where('asset_group_id', $group);
-        //             })
-
-        //             ->when(!empty($no), function($q) use ($no) {
-        //                 $q->where('asset_no', 'like', '%'.$no.'%');
-        //             })
-
-        if (!empty($params['name'])) {
-            array_push($conditions, ['name', 'like', '%'.$params['name'].'%']);
-        }
-
-        //             ->when(!empty($status), function($q) use ($status) {
-        //                 $q->where('status', $status);
-        //             })
-
         $collections = $this->repo->getModelWithRelations()
-                                ->where($conditions)
-                                ->when(!empty($params['owner']), function($query) use ($params) {
-                                    $query->whereHas('currentOwner', function($subquery) use ($params) {
-                                        $subquery->where('owner_id', $params['owner']);
-                                    });
+                            ->when(!empty($params['category']), function($q) use ($params) {
+                                $q->where('asset_category_id', $params['category']);
+                            })
+                            ->when(!empty($params['group']), function($q) use ($params) {
+                                $q->where('asset_group_id', $params['group']);
+                            })
+                            ->when(!empty($params['no']), function($q) use ($params) {
+                                $q->where('asset_no', 'like', '%'.$params['no'].'%');
+                            })
+                            ->when(!empty($params['name']), function($q) use ($params) {
+                                $q->where('name', 'like', '%'.$params['name'].'%');
+                            })
+                            ->when(!empty($params['status']), function($q) use ($params) {
+                                $q->where('status', $params['status']);
+                            })
+                            ->when(!empty($params['owner']), function($q) use ($params) {
+                                $q->whereHas('currentOwner', function($subquery) use ($params) {
+                                    $subquery->where('owner_id', $params['owner']);
                                 });
+                            });
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
     }
