@@ -332,7 +332,9 @@ class LoanController extends Controller
 
             foreach($items as $item => $detail) {
                 /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
-                $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+                $description = ($detail['description'] != '' && $detail['expense']['pattern'] != '')
+                                    ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description'])
+                                    : '';
 
                 /** เพิ่มแถวในตาราง */
                 $itemTable->addRow();
@@ -360,13 +362,15 @@ class LoanController extends Controller
                 /** เพิ่มแถวในตาราง */
                 $itemTable->addRow();
                 $itemTable
-                ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                ->addText('วันที่ ' . convDbDateToLongThDateRange($cs->course_date, $cs->course_edate) . ' ณ ' . $cs->place->name, $couseFontStyle);
-                
+                    ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
+                    ->addText('วันที่ ' . convDbDateToLongThDateRange($cs->course_date, $cs->course_edate) . ' ณ ' . $cs->place->name, $couseFontStyle);
+
                 $items = array_filter($loan->details->toArray(), function($detail) use ($cs) { return $detail['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
                     /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
-                    $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+                    $description = ($detail['description'] != '' && $detail['expense']['pattern'] != '')
+                                        ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description'])
+                                        : '';
 
                     /** เพิ่มแถวในตาราง */
                     $itemTable->addRow();
@@ -514,7 +518,10 @@ class LoanController extends Controller
             $items = array_filter($loan->details->toArray(), function($detail) { return $detail['expense_group'] == 1; });
 
             foreach($items as $item => $detail) {
-                $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+                $description = ($detail['description'] != '' && $detail['expense']['pattern'] != '')
+                                    ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description'])
+                                    : '';
+
                 /** เพิ่มแถวในตาราง */
                 $itemTable->addRow();
                 $itemTable
@@ -547,7 +554,9 @@ class LoanController extends Controller
                 $items = array_filter($loan->details->toArray(), function($detail) use ($cs) { return $detail['expense_group'] == 1 && $detail['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
                     /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
-                    $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description']) : '';
+                    $description = ($detail['description'] != '' && $detail['expense']['pattern'] != '') 
+                                        ? replaceExpensePatternFromDesc($detail['expense']['pattern'], $detail['description'])
+                                        : '';
 
                     /** เพิ่มแถวในตาราง */
                     $itemTable->addRow();
