@@ -255,6 +255,7 @@ class InvitationController extends Controller
             }
         }
 
+        \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
         $word = new \PhpOffice\PhpWord\TemplateProcessor(public_path('uploads/templates/speakers/' . $template));
 
         /** ================================== HEADER ================================== */
