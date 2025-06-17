@@ -486,11 +486,18 @@ class LoanRefundController extends Controller
         $word->setValue('netTotal', number_format($refund->net_total, 2));
         $word->setValue('netTotalText', baht_text($refund->net_total, 2));
 
+        /** แผนงาน */
+        $_budget = '';
+        foreach($refund->budgets as $data) {
+            $_budget .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
+            $_budget .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+        }
+
         /** =================== เงื่อนไขการคืนเงิน =================== */
         if ($refund->refund_type_id == 1) {
-            $word->setValue('refundType', 'และคืนเงินยืม จำนวนเงิน ' . number_format($refund->balance, 2) . ' บาท (' . baht_text($refund->balance, 2) . ')');
+            $word->setValue('refundType', 'และคืนเงินยืม' .$_budget. ' เป็นจำนวนเงินทั้งสิ้น ' . number_format($refund->balance, 2) . ' บาท (' . baht_text($refund->balance, 2) . ')');
         } else if ($refund->refund_type_id == 2) {
-            $word->setValue('refundType', 'และเบิกเงินเพิ่ม จำนวนเงิน ' . number_format(abs($refund->balance)) . ' บาท (' . baht_text(abs($refund->balance)) . ')');
+            $word->setValue('refundType', 'และเบิกเงินเพิ่ม เป็นจำนวนเงินทั้งสิ้น ' . number_format(abs($refund->balance)) . ' บาท (' . baht_text(abs($refund->balance)) . ')');
         } else {
             $word->setValue('refundType', '');
         }
