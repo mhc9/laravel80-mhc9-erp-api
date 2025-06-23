@@ -417,7 +417,9 @@ class LoanRefundController extends Controller
             /** คิดรวม */
             $items = array_filter($refund->details->toArray(), function($detail) { return $detail['contract_detail']['expense_group'] == 1; });
             foreach($items as $item => $detail) {
-                $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description']) : '';
+                $description = ($detail['description'] != '' && $detail['contract_detail']['expense']['pattern'] != '')
+                                ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description'])
+                                : '';
 
                 $itemTable->addRow();
                 $itemTable
@@ -450,7 +452,9 @@ class LoanRefundController extends Controller
                 $items = array_filter($refund->details->toArray(), function($detail) use ($cs) { return $detail['contract_detail']['expense_group'] == 1 && $detail['contract_detail']['loan_detail']['course_id'] == $cs->id; });
                 foreach($items as $item => $detail) {
                     /** สร้างรายละเอียดของค่าใช้จ่ายจากสูตร */
-                    $description = $detail['description'] != '' ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description']) : '';
+                    $description = ($detail['description'] != '' && $detail['contract_detail']['expense']['pattern'])
+                                    ? replaceExpensePatternFromDesc($detail['contract_detail']['expense']['pattern'], $detail['description'])
+                                    : '';
 
                     /** เพิ่มแถวในตาราง */
                     $itemTable->addRow();
