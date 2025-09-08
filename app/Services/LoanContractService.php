@@ -103,7 +103,7 @@ class LoanContractService extends BaseService
             $remainDays = Carbon::parse(date('Y-m-d'))->diffInDays(Carbon::parse($contract->refund_date));
 
             if ($contract->refund_notify == 3 && $remainDays < 0) { // กรณีเลยกำหนดคืนเงิน
-                /** เซตค่า refundNotify เป็น 2 = แจ้งเตือนครบแล้ว */
+                /** เซตค่า refundNotify เป็น 4 = แจ้งเตือนเลยกำหนดคืนเงิน */
                 $refundNotify = 4;
 
                 /** ข้อความแจ้งเตือน */
@@ -112,7 +112,7 @@ class LoanContractService extends BaseService
                 $msg .= ' เลยกำหนดคืนเงินแล้ว ' .$remainDays .' วัน (ครบกำหนดวันที่ ' .convDbDateToThDate($contract->refund_date) . ')';
                 $msg .= ' แจ้งเตือน ณ วันที่ ' .convDbDateToThDate(date('Y-m-d')). ' เวลา ' .date('H:i'). 'น.';
             } else if ($contract->refund_notify == 2 && $remainDays == 0) { // กรณีครบกำหนดคืนเงิน
-                /** เซตค่า refundNotify เป็น 2 = แจ้งเตือนครบแล้ว */
+                /** เซตค่า refundNotify เป็น 3 = แจ้งเตือนครบกำหนดคืนเงิน */
                 $refundNotify = 3;
 
                 /** ข้อความแจ้งเตือน */
