@@ -517,11 +517,11 @@ class RequisitionController extends Controller
         $word->setValue('headOfDepartRole', $headOfDepart->memberOf[0]->duty->display_name . $requisition->department->name);
         
         /** ผู้ลงนาม */
-        $word->setValue('director', is_null($requisition->deputy) ? 'นายนิตย์ ทองเพชรศรี' : $requisition->deputy->prefix->name.$requisition->deputy->firstname . ' ' . $requisition->deputy->lastname);
+        $word->setValue('director', is_null($requisition->deputy) ? 'นางสาวจุฑามาศ วรรณศิลป์' : $requisition->deputy->prefix->name.$requisition->deputy->firstname . ' ' . $requisition->deputy->lastname);
         $word->setValue(
             'directorPosition',
             is_null($requisition->deputy)
-                ? 'ผู้อำนวยการศูนย์สุขภาพจิตที่ 9'
+                ? 'ผู้อำนวยการศูนย์สุขภาพจิตที่ 7 รักษาราชการแทนผู้อำนวยการศูนย์สุขภาพจิตที่ 9'
                 : $requisition->deputy->position->name . $requisition->deputy->level->name . (is_null($requisition->deputy->position_text) ? '' : ' ' . $requisition->deputy->position_text)
         );
         
