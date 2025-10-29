@@ -398,4 +398,4 @@ Route::middleware('auth:api')->group(function() {
 // Route::post( '/reservation-assignments/{id}/update', [App\Http\Controllers\ReservationAssignmentController::class, 'update'])->middleware('api.key');
 // Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy'])->middleware('api.key');
 
-Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll'])->middleware('api.key');
+Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll'])->middleware('api.key');
