@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
-use App\Models\Event;
+use App\Models\WpmEvent;
 
 class EventController extends Controller
 {
@@ -60,7 +60,8 @@ class EventController extends Controller
         $edate  = $req->get('edate');
         $type   = $req->get('type');
 
-        $events = Event::when(!empty($type), function($q) use ($type) {
+        $events = WpmEvent::with('employee')
+                    ->when(!empty($type), function($q) use ($type) {
                         $q->where('OTType', $type);
                     })
                     ->when(!empty($sdate) && !empty($edate), function($q) use ($sdate, $edate) {
