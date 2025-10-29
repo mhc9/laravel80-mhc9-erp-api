@@ -18,6 +18,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+/**
+ * ===============================
+ * Public routes
+ * ===============================
+ */
 Route::post('/forgot-password', [App\Http\Controllers\ForgotPasswordController::class, 'forgotPassword']);
 Route::post('/verify/pin', [App\Http\Controllers\ForgotPasswordController::class, 'verifyPin']);
 Route::post( '/reset-password', [App\Http\Controllers\ResetPasswordController::class, 'resetPassword']);
@@ -30,6 +35,23 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function() {
     Route::get('/me', [App\Http\Controllers\AuthController::class, 'me']);
 });
 
+/** Test db connection */
+Route::get('/db-connection', function () {
+    try {
+        $dbconnect = \DB::connection()->getPDO();
+        $dbname = \DB::connection()->getDatabaseName();
+
+        echo "Connected successfully to the database. Database name is :".$dbname;
+    } catch(Exception $e) {
+        echo $e->getMessage();
+    }
+});
+
+/**
+ * ===============================
+ * Authenticated routes
+ * ===============================
+ */
 Route::middleware('auth:api')->group(function() {
     /** System */
     Route::get('system', [App\Http\Controllers\SystemController::class, 'getAll']);
@@ -340,6 +362,11 @@ Route::middleware('auth:api')->group(function() {
     // Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
 });
 
+/**
+ * ===============================
+ * API Key protected routes
+ * ===============================
+ */
 /** Vehicles */
 // Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search'])->middleware('api.key');
 // Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById'])->middleware('api.key');
@@ -371,14 +398,4 @@ Route::middleware('auth:api')->group(function() {
 // Route::post( '/reservation-assignments/{id}/update', [App\Http\Controllers\ReservationAssignmentController::class, 'update'])->middleware('api.key');
 // Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy'])->middleware('api.key');
 
-/** Check db connection */
-Route::get('/db-connection', function () {
-    try {
-        $dbconnect = \DB::connection()->getPDO();
-        $dbname = \DB::connection()->getDatabaseName();
-
-        echo "Connected successfully to the database. Database name is :".$dbname;
-    } catch(Exception $e) {
-        echo $e->getMessage();
-    }
-});
+Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll'])->middleware('api.key');
