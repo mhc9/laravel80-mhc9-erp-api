@@ -307,6 +307,8 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/loan-refunds', [App\Http\Controllers\LoanRefundController::class, 'getAll']);
     Route::get('/loan-refunds/search', [App\Http\Controllers\LoanRefundController::class, 'search']);
     Route::get('/loan-refunds/{id}', [App\Http\Controllers\LoanRefundController::class, 'getById']);
+    // Get latest bill no
+    Route::get('/loan-refunds/bill/no', [App\Http\Controllers\LoanRefundController::class, 'getLatestBillNo']);
     Route::get('/loan-refunds/init/form', [App\Http\Controllers\LoanRefundController::class, 'getInitialFormData']);
     Route::post('/loan-refunds', [App\Http\Controllers\LoanRefundController::class, 'store']);
     Route::post('/loan-refunds/{id}/update', [App\Http\Controllers\LoanRefundController::class, 'update']);

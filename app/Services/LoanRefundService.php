@@ -14,6 +14,7 @@ use App\Models\LoanRefundDetail;
 use App\Models\LoanRefundBudget;
 use App\Models\Expense;
 use App\Models\Department;
+use App\Models\BudgetYear;
 use Carbon\Carbon;
 
 class LoanRefundService extends BaseService
@@ -84,6 +85,26 @@ class LoanRefundService extends BaseService
 
         return [
             'statuses'   => $statuses,
+        ];
+    }
+
+    /**
+     * Get latest bill no function
+     *
+     * @return string
+     */
+    public function getLatestBillNo()
+    {
+        $currentYear = BudgetYear::where('actived', '1')->first();
+
+        $latestNo = $this->repo->getModel()
+                        ->select('bill_no')
+                        ->orderBy('bill_no', 'desc')
+                        ->where('year', $currentYear->year)
+                        ->first();
+
+        return [
+            $latestNo ? $latestNo->bill_no : '0/' . substr(Carbon::parse($currentYear->year . '-10-01')->format('Y') + 543, -2)
         ];
     }
 

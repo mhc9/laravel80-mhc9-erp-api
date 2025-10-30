@@ -44,6 +44,11 @@ class LoanRefundController extends Controller
         return $this->refundService->getById($id);
     }
 
+    public function getLatestBillNo()
+    {
+        return $this->refundService->getLatestBillNo();
+    }
+
     public function getInitialFormData()
     {
         return $this->refundService->getFormData();
