@@ -53,6 +53,10 @@ class LoanRefundService extends BaseService
      */
     public function search(array $params, $all = false, $perPage = 10): LengthAwarePaginator | Collection
     {
+        $sort = array_key_exists('sort', $params) ? $params['sort'] : null;
+        $sortBy = $sort ? explode(':', $sort)[0] : 'doc_date';
+        $sortOrder = explode(':', $sort)[1] ?? 'desc';
+
         $collections = $this->repo->getModelWithRelations()
                             ->when((!auth()->user()->isAdmin() && !auth()->user()->isFinancial()), function($query) {
                                 $query->where('employee_id', auth()->user()->employee_id);
@@ -66,7 +70,7 @@ class LoanRefundService extends BaseService
                             ->when(!empty($params['status']), function($query) use ($params) {
                                 $query->where('status', $params['status']);
                             })
-                            ->orderBy('doc_date', 'desc');
+                            ->orderBy($sortBy, $sortOrder);
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
     }
