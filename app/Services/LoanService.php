@@ -35,7 +35,7 @@ class LoanService extends BaseService
             'employee','employee.prefix','employee.position','employee.level',
             'budgets','budgets.budget','budgets.budget.activity','budgets.budget.type',
             'budgets.budget.activity.project','budgets.budget.activity.project.plan',
-            'courses','courses.place','courses.place.changwat'
+            'courses','courses.place','courses.place.changwat','contract'
         ]);
     }
 

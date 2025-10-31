@@ -51,4 +51,9 @@ class Loan extends Model
     {
         return $this->hasMany(ProjectCourse::class, 'loan_id', 'id')->orderBy('course_date');
     }
+
+    public function contract()
+    {
+        return $this->hasOne(LoanContract::class, 'loan_id', 'id');
+    }
 }
