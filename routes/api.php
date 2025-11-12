@@ -401,3 +401,6 @@ Route::middleware('auth:api')->group(function() {
 // Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy'])->middleware('api.key');
 
 Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll'])->middleware('api.key');
+Route::get( '/attendances', [App\Http\Controllers\EventController::class, 'getAll'])->middleware('api.key');
+Route::get( '/employees/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize'])->middleware('api.key');
+Route::POST( '/employees/check-in/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor'])->middleware('api.key');
