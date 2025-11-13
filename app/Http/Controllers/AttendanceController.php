@@ -34,9 +34,9 @@ class AttendanceController extends Controller
         return $this->attendanceService->getById($id);
     }
 
-    public function getFaceRecognize($date)
+    public function getFaceRecognize()
     {
-        return $this->attendanceService->getEmployeeDescriptor($id);
+        return $this->attendanceService->getEmployeeDescriptor();
     }
 
     public function getInitialFormData()

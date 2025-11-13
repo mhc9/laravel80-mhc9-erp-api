@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Services\BaseService;
 use App\Repositories\AttendanceRepository;
+use App\Models\Employee;
 use App\Models\Prefix;
 use App\Models\Position;
 use App\Models\Level;
@@ -62,6 +63,11 @@ class AttendanceService extends BaseService
                             });
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
+    }
+
+    public function getEmployeeDescriptor()
+    {
+        return Employee::select('id', 'face_descriptor')->get();
     }
 
     public function getFormData()

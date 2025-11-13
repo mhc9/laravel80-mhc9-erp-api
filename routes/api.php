@@ -402,5 +402,6 @@ Route::middleware('auth:api')->group(function() {
 
 Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll'])->middleware('api.key');
 Route::get( '/attendances', [App\Http\Controllers\EventController::class, 'getAll'])->middleware('api.key');
-Route::get( '/employees/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize'])->middleware('api.key');
-Route::POST( '/employees/check-in/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor'])->middleware('api.key');
+Route::get( '/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize'])->middleware('api.key');
+Route::POST( '/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn'])->middleware('api.key');
+Route::POST( '/attendances/check-in/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor'])->middleware('api.key');
