@@ -362,6 +362,12 @@ Route::middleware('auth:api')->group(function() {
     // Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
     // Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
     // Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
+
+    /** Attendances */
+    Route::get( '/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
+    Route::get( '/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
+    Route::POST( '/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
+    Route::POST( '/attendances/check-in/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor']);
 });
 
 /**
@@ -402,8 +408,9 @@ Route::prefix('v1')->middleware('api.key')->group(function() {
     // Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy']);
 
     Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll']);
-    Route::get( '/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
-    Route::get( '/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
-    Route::POST( '/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
-    Route::POST( '/attendances/check-in/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor']);
+
+    Route::prefix('time-attendance')->group(function() {
+        Route::get( '/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
+        Route::POST( '/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
+    });
 });
