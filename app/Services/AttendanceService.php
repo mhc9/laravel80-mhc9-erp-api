@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
 use App\Repositories\AttendanceRepository;
 use App\Models\Employee;
@@ -67,7 +68,11 @@ class AttendanceService extends BaseService
 
     public function getEmployeeDescriptor()
     {
-        return Employee::select('id', 'face_descriptor')->get();
+        return Employee::select([
+            'id',
+            DB::raw("CONCAT(firstname, ' ', lastname) AS fullname"),
+            'face_descriptor'
+        ])->get();
     }
 
     public function getFormData()
