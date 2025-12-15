@@ -65,9 +65,13 @@ class EventController extends Controller
                         $q->where('OTType', $type);
                     })
                     ->when(!empty($sdate) && !empty($edate), function($q) use ($sdate, $edate) {
-                        $q->whereBetween('OTDateProject', [$sdate, $edate]);
+                        $q->whereBetween('OTDateGo', [$sdate, $edate]);
+                        $q->orWhere(function($sq) use ($sdate, $edate) {
+                            $sq->where('OTDateBack', '>=', $sdate);
+                            $sq->where('OTDateBack', '<=', $edate);
+                        });
                     })
-                    ->orderBy('OTDateProject', 'DESC')
+                    ->orderBy('OTDateGo', 'ASC')
                     ->get();
 
         return $events;

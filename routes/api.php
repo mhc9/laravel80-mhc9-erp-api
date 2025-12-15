@@ -375,7 +375,7 @@ Route::middleware('auth:api')->group(function() {
  * API Key protected routes
  * ===============================
  */
-Route::prefix('v1')->middleware('api.key')->group(function() {
+Route::middleware('api.key')->group(function() {
     /** Vehicles */
     // Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
     // Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
@@ -407,8 +407,10 @@ Route::prefix('v1')->middleware('api.key')->group(function() {
     // Route::post( '/reservation-assignments/{id}/update', [App\Http\Controllers\ReservationAssignmentController::class, 'update']);
     // Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy']);
 
+    /** Calendar events */
     Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll']);
 
+    /** Time Attendances */
     Route::prefix('time-attendance')->group(function() {
         Route::get( '/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
         Route::POST( '/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
