@@ -138,6 +138,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/employees/{id}/update', 'App\Http\Controllers\EmployeeController@update');
     Route::post('/employees/{id}/delete', 'App\Http\Controllers\EmployeeController@destroy');
     Route::post('/employees/{id}/upload', 'App\Http\Controllers\EmployeeController@uploadAvatar');
+    Route::post('/employees/{id}/update/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor']);
 
     /** Departments */
     Route::get('/departments', 'App\Http\Controllers\DepartmentController@getAll');
@@ -364,10 +365,9 @@ Route::middleware('auth:api')->group(function() {
     // Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
 
     /** Attendances */
-    Route::get( '/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
-    Route::get( '/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
-    Route::POST( '/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
-    Route::POST( '/attendances/check-in/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor']);
+    Route::get('/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
+    Route::get('/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
+    Route::post('/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
 });
 
 /**
@@ -413,6 +413,6 @@ Route::middleware('api.key')->group(function() {
     /** Time Attendances */
     Route::prefix('time-attendance')->group(function() {
         Route::get( '/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
-        Route::POST( '/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
+        Route::post( '/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
     });
 });
