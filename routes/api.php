@@ -130,14 +130,14 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/suppliers', 'App\Http\Controllers\SupplierController@store');
 
     /** Employees */
-    Route::get('/employees', 'App\Http\Controllers\EmployeeController@getAll');
-    Route::get('/employees/search', 'App\Http\Controllers\EmployeeController@search');
-    Route::get('/employees/{id}', 'App\Http\Controllers\EmployeeController@getById');
-    Route::get('/employees/init/form', 'App\Http\Controllers\EmployeeController@getInitialFormData');
-    Route::post('/employees', 'App\Http\Controllers\EmployeeController@store');
-    Route::post('/employees/{id}/update', 'App\Http\Controllers\EmployeeController@update');
-    Route::post('/employees/{id}/delete', 'App\Http\Controllers\EmployeeController@destroy');
-    Route::post('/employees/{id}/upload', 'App\Http\Controllers\EmployeeController@uploadAvatar');
+    Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'getAll']);
+    Route::get('/employees/search', [App\Http\Controllers\EmployeeController::class, 'search']);
+    Route::get('/employees/{id}', [App\Http\Controllers\EmployeeController::class, 'getById']);
+    Route::get('/employees/init/form', [App\Http\Controllers\EmployeeController::class, 'getInitialFormData']);
+    Route::post('/employees', [App\Http\Controllers\EmployeeController::class, 'store']);
+    Route::post('/employees/{id}/update', [App\Http\Controllers\EmployeeController::class, 'update']);
+    Route::post('/employees/{id}/delete', [App\Http\Controllers\EmployeeController::class, 'destroy']);
+    Route::post('/employees/{id}/upload', [App\Http\Controllers\EmployeeController::class, 'uploadAvatar']);
     Route::post('/employees/{id}/update/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor']);
 
     /** Departments */

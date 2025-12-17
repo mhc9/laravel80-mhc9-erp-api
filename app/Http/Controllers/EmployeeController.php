@@ -138,4 +138,27 @@ class EmployeeController extends Controller
             ];
         }
     }
+
+    public function updateDescriptor(Request $req, $id)
+    {
+        try {
+            if($updatedEmployee = $this->employeeService->update($id, $req->all())) {
+                return [
+                    'status'    => 1,
+                    'message'   => 'Updating successfully!!',
+                    'employee'  => $updatedEmployee
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
 }
