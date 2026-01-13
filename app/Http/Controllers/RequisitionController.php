@@ -123,6 +123,60 @@ class RequisitionController extends Controller
         ];
     }
 
+    public function getSummary(Request $req)
+    {
+        /** Get params from query string */
+        $pr_no      = $req->get('pr_no');
+        $pr_date    = $req->get('pr_date');
+        $division   = $req->get('division');
+        $category   = $req->get('category');
+        $status     = explode(',', $req->get('status'));
+        $year       = $req->get('year');
+        $sdate      = $req->get('sdate');
+        $edate      = $req->get('edate');
+        $limit      = $req->get('limit') ? $req->get('limit') : 10;
+
+        $approvals = Approval::whereBetween('consider_date', [$sdate, $edate])->pluck('requisition_id')->toArray();
+
+        $requisitions = Requisition::with('budgets','budgets.budget.activity','budgets.budget.activity.project','budgets.budget.activity.project.plan','budgets.budget.type')
+                            ->with('division','department','details','details.unit','details.item','details.item.category')
+                            ->with('requester','requester.prefix','requester.position','requester.level')
+                            ->with('deputy','deputy.prefix','deputy.position','deputy.level')
+                            ->with('committees','committees.employee','committees.employee.prefix')
+                            ->with('committees.employee.position','committees.employee.level')
+                            ->with('approvals','approvals.procuring','approvals.supplier','approvals.supplier.tambon')
+                            ->with('approvals.supplier.amphur','approvals.supplier.changwat','project','category')
+                            ->when((!auth()->user()->isAdmin() && !auth()->user()->isParcel()), function($q) {
+                                $q->where('requester_id', auth()->user()->employee_id);
+                            })
+                            ->when(!empty($pr_no), function($q) use ($pr_no) {
+                                $q->where('pr_no', 'like', '%'.$pr_no.'%');
+                            })
+                            ->when(!empty($sdate) && !empty($edate), function($q) use ($approvals) {
+                                $q->whereIn('id', $approvals);
+                            })
+                            ->when(!empty($division), function($q) use ($division) {
+                                $q->where('division_id', $division);
+                            })
+                            ->when(!empty($category), function($q) use ($category) {
+                                $q->where('category_id', $category);
+                            })
+                            ->when(!empty($year), function($q) use ($year) {
+                                $q->where('year', $year);
+                            })
+                            ->when(!empty($status), function($q) use ($status) {
+                                if (count($status) == 1) {
+                                    $q->where('status', $status[0]);
+                                } else {
+                                    $q->where('status', $status[0], $status[1]);
+                                }
+                            })
+                            ->orderBy('pr_date', 'DESC')
+                            ->paginate($limit);
+
+        return $requisitions;
+    }
+
     public function getInitialFormData()
     {
         $year           = 2566;
