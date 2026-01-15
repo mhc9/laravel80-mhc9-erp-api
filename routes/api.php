@@ -369,6 +369,9 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
     Route::get('/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
     Route::post('/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
+
+    Route::get('/attendances/check-time/{date}/daily', [App\Http\Controllers\WpmCheckTimeController::class, 'getCheckTimeDaily']);
+    Route::post('/attendances/check-time/store', [App\Http\Controllers\WpmCheckTimeController::class, 'store']);
 });
 
 /**

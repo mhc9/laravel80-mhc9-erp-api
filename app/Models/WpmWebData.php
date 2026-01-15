@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class WebData extends Model
+class WpmWebData extends Model
 {
     protected $connection = "sqlsrv";
     protected $table = 'WebData';
