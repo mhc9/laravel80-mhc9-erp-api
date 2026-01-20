@@ -89,6 +89,15 @@ return [
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
+            'trust_server_certificate' => true, // New line added
+            'options' => [
+                /** Key settings for your scenario */
+                // PDO::SQLSRV_ATTR_QUERY_TIMEOUT => 0,
+                // PDO::SQLSRV_ATTR_FETCHMODE => PDO::FETCH_ASSOC,
+                // PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY,
+                /** For SSL/Trust Certificate */
+                // PDO::SQLSRV_ATTR_TRUST_SERVER_CERTIFICATE => true,
+            ]
         ],
 
     ],
