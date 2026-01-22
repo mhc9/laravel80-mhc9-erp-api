@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Arr;
+use Carbon\Carbon;
 use App\Services\AttendanceService;
-use App\Models\Employee;
 use App\Models\Attendance;
+use App\Models\Employee;
+use App\Models\WpmCheckTime;
 
 class AttendanceController extends Controller
 {
@@ -47,20 +49,32 @@ class AttendanceController extends Controller
     public function store(Request $req)
     {
         try {
-            $employeeData = addMultipleInputs(
-                $req->except(['id','avatar_url']),
+            $attendanceData = addMultipleInputs(
+                $req->except(['id','check_in_image']),
                 [
-                    'avatar_url'    => $this->attendanceService->saveImage($req->file('avatar_url'), 'employees'),
-                    'status'        => 1, 
+                    'check_in_image' => $this->attendanceService->saveImage($req->file('check_in_image'), 'attendances'),
                 ]
             );
 
-            if($newEmployee = $this->attendanceService->create($employeeData)) {
-                return [
-                    'status'    => 1,
-                    'message'   => 'Insertion successfully!!',
-                    'employee'  => $newEmployee
-                ];
+            if($newAtt = $this->attendanceService->create($attendanceData)) {
+                // TODO: บันทึกข้อมูลเข้าระบบ WPM
+                $employee = Employee::find($req['employee_id']);
+
+                $chkTime = new WpmCheckTime();
+                $chkTime->CheTmEmId     = $employee->employee_no;
+                $chkTime->CheTmDate     = $newAtt->check_in_time;
+                $chkTime->CheTmPic      = $newAtt->check_in_image;
+                $chkTime->CheTmMark     = '';
+                $chkTime->CheTmLastDate = Carbon::now();
+                $chkTime->CheTmType     = 'เข้า';
+
+                if ($chkTime->save()) {
+                    return [
+                        'status'        => 1,
+                        'message'       => 'Insertion successfully!!',
+                        'attendance'    => $newAtt
+                    ];
+                }
             } else {
                 return [
                     'status'    => 0,

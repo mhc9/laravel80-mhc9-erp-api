@@ -417,6 +417,6 @@ Route::middleware('api.key')->group(function() {
     /** Time Attendances */
     Route::prefix('time-attendance')->group(function() {
         Route::get( '/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
-        Route::post( '/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
+        Route::post( '/check-in', [App\Http\Controllers\AttendanceController::class, 'store']);
     });
 });
