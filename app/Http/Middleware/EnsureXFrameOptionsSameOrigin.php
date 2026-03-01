@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class Cors
+class EnsureXFrameOptionsSameOrigin
 {
     /**
      * Handle an incoming request.
@@ -16,8 +16,10 @@ class Cors
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header( 'Access-Control-Allow-Headers', 'Origin, Content-Type' );
+        $response = $next($request);
+
+        $response->headers->set('X-Frame-Options', 'SAMEORIGIN', false);
+
+        return $response;
     }
 }
