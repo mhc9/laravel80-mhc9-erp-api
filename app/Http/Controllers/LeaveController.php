@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
-use App\Models\WpmEvent;
+use App\Models\WpmLeave;
 
-class EventController extends Controller
+class LeaveController extends Controller
 {
     public function search(Request $req)
     {
@@ -60,18 +60,19 @@ class EventController extends Controller
         $edate  = $req->get('edate');
         $type   = $req->get('type');
 
-        $events = WpmEvent::with('employee', 'employee.department', 'employee.position')
+        $events = WpmLeave::with('employee', 'employee.department', 'employee.position')
                     ->when(!empty($type), function($q) use ($type) {
-                        $q->where('OTType', $type);
+                        $q->where('LeaveName', $type);
                     })
                     ->when(!empty($sdate) && !empty($edate), function($q) use ($sdate, $edate) {
-                        $q->whereBetween('OTDateGo', [$sdate, $edate]);
+                        $q->whereBetween(\DB::raw('CAST(LeaveDate1 AS DATE)'), [$sdate, $edate]);
                         $q->orWhere(function($sq) use ($sdate, $edate) {
-                            $sq->where('OTDateBack', '>=', $sdate);
-                            $sq->where('OTDateBack', '<=', $edate);
+                            $sq->where(\DB::raw('CAST(LeaveDate2 AS DATE)'), '>=', $sdate);
+                            $sq->where(\DB::raw('CAST(LeaveDate2 AS DATE)'), '<=', $edate);
                         });
                     })
-                    ->orderBy('OTDateGo', 'ASC')
+                    ->where('LeaveStatus', 'อนุญาต')
+                    ->orderBy('LeaveDate1', 'ASC')
                     ->get();
 
         return $events;

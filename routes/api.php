@@ -414,6 +414,9 @@ Route::middleware('api.key')->group(function() {
     /** Calendar events */
     Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll']);
 
+    /** Leaves */
+    Route::get( '/leaves', [App\Http\Controllers\LeaveController::class, 'getAll']);
+
     /** Time Attendances */
     Route::prefix('time-attendance')->group(function() {
         Route::get( '/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
