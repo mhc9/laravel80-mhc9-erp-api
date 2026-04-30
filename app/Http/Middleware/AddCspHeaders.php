@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class Cors
+class AddCspHeaders
 {
     /**
      * Handle an incoming request.
@@ -16,8 +16,11 @@ class Cors
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header( 'Access-Control-Allow-Headers', 'Origin, Content-Type' );
+        $response = $next($request);
+
+        // Set the Content-Security-Policy header
+        $response->headers->set('Content-Security-Policy', "default-src 'none'");
+
+        return $response;
     }
 }
