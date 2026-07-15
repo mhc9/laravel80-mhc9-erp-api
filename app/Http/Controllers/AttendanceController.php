@@ -41,6 +41,32 @@ class AttendanceController extends Controller
         return $this->attendanceService->getEmployeeDescriptor();
     }
 
+    public function getCheckTimeDaily($date)
+    {
+        return [
+            'daily' => Attendance::with('employee')->whereRaw('CAST(check_time AS DATE) = ?', [$date])->get(),
+        ];
+    }
+
+    public function getCheckTimeByEmployee($date, $employeeId)
+    {
+        return Attendance::with('employee')
+                    ->whereRaw('CAST(check_time AS DATE) = ?', [$date])
+                    ->where('employee_id', $employeeId)
+                    ->orderBy('check_type', 'asc')
+                    ->get();
+    }
+
+    public function getCheckTypeByEmployee($date, $type, $employeeId)
+    {
+        return Attendance::with('employee')
+                    ->whereRaw('CAST(check_time AS DATE) = ?', [$date])
+                    ->where('employee_id', $employeeId)
+                    ->where('check_type', $type)
+                    ->orderBy('check_type', 'asc')
+                    ->first();
+    }
+
     public function getInitialFormData()
     {
         return $this->attendanceService->getFormData();
@@ -50,9 +76,9 @@ class AttendanceController extends Controller
     {
         try {
             $attendanceData = addMultipleInputs(
-                $req->except(['id','check_in_image']),
+                $req->except(['id','check_image']),
                 [
-                    'check_in_image' => $this->attendanceService->saveImage($req->file('check_in_image'), 'attendances'),
+                    'check_image' => $this->attendanceService->saveImage($req->file('check_image'), 'attendances'),
                 ]
             );
 
@@ -62,11 +88,11 @@ class AttendanceController extends Controller
 
                 $chkTime = new WpmCheckTime();
                 $chkTime->CheTmEmId     = $employee->employee_no;
-                $chkTime->CheTmDate     = $newAtt->check_in_time;
-                $chkTime->CheTmPic      = $newAtt->check_in_image;
-                $chkTime->CheTmMark     = '';
+                $chkTime->CheTmDate     = $newAtt->check_time;
+                $chkTime->CheTmType     = $newAtt->check_type === '1' ? 'เข้า' : 'ออก';
+                $chkTime->CheTmPic      = $newAtt->check_image;
                 $chkTime->CheTmLastDate = Carbon::now();
-                $chkTime->CheTmType     = 'เข้า';
+                $chkTime->CheTmMark     = '';
 
                 if ($chkTime->save()) {
                     return [
@@ -92,12 +118,34 @@ class AttendanceController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            if($updatedEmployee = $this->attendanceService->update($id, $req->all())) {
-                return [
-                    'status'    => 1,
-                    'message'   => 'Updating successfully!!',
-                    'employee'  => $updatedEmployee
-                ];
+            $attendanceData = addMultipleInputs(
+                $req->except(['id','check_image']),
+                [
+                    'check_image' => $this->attendanceService->updateImage($id, $req->file('check_image'))->check_image,
+                ]
+            );
+
+            if($updatedAtt = $this->attendanceService->update($id, $attendanceData)) {
+                // TODO: อัพเดตข้อมูลในระบบ WPM
+                $employee = Employee::find($req['employee_id']);
+                $updatedChkTime = WpmCheckTime::where('CheTmEmId', $employee->employee_no)
+                                    ->where('CheTmDate', $updatedAtt->check_time)
+                                    ->where('CheTmType', $updatedAtt->check_type === '1' ? 'เข้า' : 'ออก')
+                                    ->first();
+
+                $updatedChkTime->CheTmDate     = $updatedAtt->check_time;
+                $updatedChkTime->CheTmType     = $updatedAtt->check_type === '1' ? 'เข้า' : 'ออก';
+                $updatedChkTime->CheTmPic      = $updatedAtt->check_image;
+                $updatedChkTime->CheTmLastDate = Carbon::now();
+                $updatedChkTime->CheTmMark     = '';
+
+                if ($updatedChkTime->save()) {
+                    return [
+                        'status'        => 1,
+                        'message'       => 'Updating successfully!!',
+                        'attendance'    => $updatedAtt
+                    ];
+                }
             } else {
                 return [
                     'status'    => 0,

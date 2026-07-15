@@ -114,7 +114,10 @@ class ApprovalController extends Controller
 
             if($approval->save()) {
                 /** อัพเดตสถานะของรายการตาราง requisitions เป็น 2 (แต่งตั้งผู้ตรวจรับ) */
-                Requisition::find($approval->requisition_id)->update(['status' => 2]);
+                $requisition = Requisition::find($approval->requisition_id);
+                if ($requisition && $requisition->requisition_type_id == 1) {
+                    $requisition->update(['status' => 2]);
+                }
 
                 return [
                     'status'    => 1,
@@ -206,7 +209,10 @@ class ApprovalController extends Controller
 
             if($approval->save()) {
                 /** อัพเดตสถานะของรายการตาราง requisitions เป็น 3 (ประกาศผู้ชนะ) */
-                Requisition::find($approval->requisition_id)->update(['status' => 3]);
+                $requisition = Requisition::find($approval->requisition_id);
+                if ($requisition && $requisition->requisition_type_id == 1) {
+                    $requisition->update(['status' => 3]);
+                }
 
                 return [
                     'status'    => 1,

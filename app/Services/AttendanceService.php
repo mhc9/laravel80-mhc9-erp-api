@@ -91,18 +91,18 @@ class AttendanceService extends BaseService
 
     public function updateImage($id, $image)
     {
-        $employee = $this->repo->findOne($id);
-        $destPath = 'employees';
+        $attendance = $this->repo->findOne($id);
+        $destPath = 'attendances';
 
         /** Remove old uploaded file */
-        if (\File::exists($destPath . $employee->avatar_url)) {
-            \File::delete($destPath . $employee->avatar_url);
+        if (\File::exists($destPath . $attendance->check_image)) {
+            \File::delete($destPath . $attendance->check_image);
         }
 
-        $employee->avatar_url = $this->saveImage($image, $destPath);
+        $attendance->check_image = $this->saveImage($image, $destPath);
 
-        if (!empty($employee->avatar_url) && $employee->save()) {
-            return $employee;
+        if (!empty($attendance->check_image) && $attendance->save()) {
+            return $attendance;
         } else {
             return false;
         }

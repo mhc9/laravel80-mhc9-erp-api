@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  */
 Route::post('/forgot-password', [App\Http\Controllers\ForgotPasswordController::class, 'forgotPassword']);
 Route::post('/verify/pin', [App\Http\Controllers\ForgotPasswordController::class, 'verifyPin']);
-Route::post( '/reset-password', [App\Http\Controllers\ResetPasswordController::class, 'resetPassword']);
+Route::post('/reset-password', [App\Http\Controllers\ResetPasswordController::class, 'resetPassword']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function() {
     Route::post('/register', [App\Http\Controllers\AuthController::class, 'register']);
@@ -36,10 +36,15 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function() {
 });
 
 /** Test db connection */
-Route::get('/db-connection', function () {
+Route::get('/db-connection/{dbname}', function ($dbname) {
     try {
-        $dbconnect = \DB::connection()->getPDO();
-        $dbname = \DB::connection()->getDatabaseName();
+        if ($dbname == 0) {
+            $dbconnect = \DB::connection()->getPDO();
+            $dbname = \DB::connection()->getDatabaseName();
+        } else {
+            $dbconnect = \DB::connection($dbname)->getPDO();
+            $dbname = \DB::connection($dbname)->getDatabaseName();
+        }
 
         echo "Connected successfully to the database. Database name is :".$dbname;
     } catch(Exception $e) {
@@ -57,77 +62,77 @@ Route::middleware('auth:api')->group(function() {
     Route::get('system', [App\Http\Controllers\SystemController::class, 'getAll']);
 
     /** Password */
-    Route::post( '/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
+    Route::post('/change-password', [App\Http\Controllers\ResetPasswordController::class, 'changePassword']);
 
     /** Users */
-    Route::get( '/users/search', [App\Http\Controllers\UserController::class, 'search']);
-    Route::get( '/users', [App\Http\Controllers\UserController::class, 'getAll']);
-    Route::get( '/users/{id}', [App\Http\Controllers\UserController::class, 'getById']);
+    Route::get('/users/search', [App\Http\Controllers\UserController::class, 'search']);
+    Route::get('/users', [App\Http\Controllers\UserController::class, 'getAll']);
+    Route::get('/users/{id}', [App\Http\Controllers\UserController::class, 'getById']);
     Route::get('/users/init/form', [App\Http\Controllers\UserController::class, 'getInitialFormData']);
-    Route::post( '/users/{id}', [App\Http\Controllers\UserController::class, 'store']);
-    Route::post( '/users/{id}/update', [App\Http\Controllers\UserController::class, 'update']);
-    Route::post( '/users/{id}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
-    Route::post( '/users/{id}/send-mail', [App\Http\Controllers\UserController::class, 'sendMail']);
+    Route::post('/users/{id}', [App\Http\Controllers\UserController::class, 'store']);
+    Route::post('/users/{id}/update', [App\Http\Controllers\UserController::class, 'update']);
+    Route::post('/users/{id}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
+    Route::post('/users/{id}/send-mail', [App\Http\Controllers\UserController::class, 'sendMail']);
 
     /** Tasks */
-    Route::get('/tasks', 'App\Http\Controllers\TaskController@getAll');
-    Route::get('/tasks/search', 'App\Http\Controllers\TaskController@search');
-    Route::get('/tasks/{id}', 'App\Http\Controllers\TaskController@getById');
-    Route::get('/tasks/count/status', 'App\Http\Controllers\TaskController@getCountByStatus');
-    Route::get('/tasks/init/form', 'App\Http\Controllers\TaskController@getInitialFormData');
-    Route::post('/tasks', 'App\Http\Controllers\TaskController@store');
-    Route::post('/tasks/{id}/update', 'App\Http\Controllers\TaskController@update');
-    Route::post('/tasks/{id}/delete', 'App\Http\Controllers\TaskController@destroy');
-    Route::post('/tasks/{id}/handle', 'App\Http\Controllers\TaskController@handle');
+    Route::get('/tasks', [App\Http\Controllers\TaskController::class, 'getAll']);
+    Route::get('/tasks/search', [App\Http\Controllers\TaskController::class, 'search']);
+    Route::get('/tasks/{id}', [App\Http\Controllers\TaskController::class, 'getById']);
+    Route::get('/tasks/count/status', [App\Http\Controllers\TaskController::class, 'getCountByStatus']);
+    Route::get('/tasks/init/form', [App\Http\Controllers\TaskController::class, 'getInitialFormData']);
+    Route::post('/tasks', [App\Http\Controllers\TaskController::class, 'store']);
+    Route::post('/tasks/{id}/update', [App\Http\Controllers\TaskController::class, 'update']);
+    Route::post('/tasks/{id}/delete', [App\Http\Controllers\TaskController::class, 'destroy']);
+    Route::post('/tasks/{id}/handle', [App\Http\Controllers\TaskController::class, 'handle']);
 
     /** Repairations */
-    Route::get('/repairations', 'App\Http\Controllers\RepairationController@getAll');
-    Route::get('/repairations/search', 'App\Http\Controllers\RepairationController@search');
-    Route::get('/repairations/{id}', 'App\Http\Controllers\RepairationController@getById');
-    Route::get('/repairations/asset/{assetId}', 'App\Http\Controllers\RepairationController@getByAsset');
-    Route::get('/repairations/init/form', 'App\Http\Controllers\RepairationController@getInitialFormData');
-    Route::post('/repairations', 'App\Http\Controllers\RepairationController@store');
-    Route::post('/repairations/{id}/update', 'App\Http\Controllers\RepairationController@update');
-    Route::post('/repairations/{id}/repair', 'App\Http\Controllers\RepairationController@repair');
-    Route::post('/repairations/{id}/delete', 'App\Http\Controllers\RepairationController@destroy');
+    Route::get('/repairations', [App\Http\Controllers\RepairationController::class, 'getAll']);
+    Route::get('/repairations/search', [App\Http\Controllers\RepairationController::class, 'search']);
+    Route::get('/repairations/{id}', [App\Http\Controllers\RepairationController::class, 'getById']);
+    Route::get('/repairations/asset/{assetId}', [App\Http\Controllers\RepairationController::class, 'getByAsset']);
+    Route::get('/repairations/init/form', [App\Http\Controllers\RepairationController::class, 'getInitialFormData']);
+    Route::post('/repairations', [App\Http\Controllers\RepairationController::class, 'store']);
+    Route::post('/repairations/{id}/update', [App\Http\Controllers\RepairationController::class, 'update']);
+    Route::post('/repairations/{id}/repair', [App\Http\Controllers\RepairationController::class, 'repair']);
+    Route::post('/repairations/{id}/delete', [App\Http\Controllers\RepairationController::class, 'destroy']);
 
     /** Computer Sets */
-    Route::get('/comsets', 'App\Http\Controllers\ComsetController@getAll');
-    Route::get('/comsets/search', 'App\Http\Controllers\ComsetController@search');
-    Route::get('/comsets/{id}', 'App\Http\Controllers\ComsetController@getById');
-    Route::get('/comsets/init/form', 'App\Http\Controllers\ComsetController@getInitialFormData');
-    Route::post('/comsets', 'App\Http\Controllers\ComsetController@store');
-    Route::post('/comsets/{id}/update', 'App\Http\Controllers\ComsetController@update');
+    Route::get('/comsets', [App\Http\Controllers\ComsetController::class, 'getAll']);
+    Route::get('/comsets/search', [App\Http\Controllers\ComsetController::class, 'search']);
+    Route::get('/comsets/{id}', [App\Http\Controllers\ComsetController::class, 'getById']);
+    Route::get('/comsets/init/form', [App\Http\Controllers\ComsetController::class, 'getInitialFormData']);
+    Route::post('/comsets', [App\Http\Controllers\ComsetController::class, 'store']);
+    Route::post('/comsets/{id}/update', [App\Http\Controllers\ComsetController::class, 'update']);
 
     /** Assets */
-    Route::get('/assets', 'App\Http\Controllers\AssetController@getAll');
-    Route::get('/assets/search', 'App\Http\Controllers\AssetController@search');
-    Route::get('/assets/{id}', 'App\Http\Controllers\AssetController@getById');
-    Route::get('/assets/init/form', 'App\Http\Controllers\AssetController@getInitialFormData');
-    Route::post('/assets', 'App\Http\Controllers\AssetController@store');
-    Route::post('/assets/{id}/update', 'App\Http\Controllers\AssetController@update');
-    Route::post('/assets/{id}/delete', 'App\Http\Controllers\AssetController@destroy');
-    Route::post('/assets/{id}/upload', 'App\Http\Controllers\AssetController@uploadImage');
+    Route::get('/assets', [App\Http\Controllers\AssetController::class, 'getAll']);
+    Route::get('/assets/search', [App\Http\Controllers\AssetController::class, 'search']);
+    Route::get('/assets/{id}', [App\Http\Controllers\AssetController::class, 'getById']);
+    Route::get('/assets/init/form', [App\Http\Controllers\AssetController::class, 'getInitialFormData']);
+    Route::post('/assets', [App\Http\Controllers\AssetController::class, 'store']);
+    Route::post('/assets/{id}/update', [App\Http\Controllers\AssetController::class, 'update']);
+    Route::post('/assets/{id}/delete', [App\Http\Controllers\AssetController::class, 'destroy']);
+    Route::post('/assets/{id}/upload', [App\Http\Controllers\AssetController::class, 'uploadImage']);
 
     /** Asset Ownerships */
-    Route::get('/asset-ownerships', 'App\Http\Controllers\AssetOwnershipController@getAll');
-    Route::get('/asset-ownerships/{id}', 'App\Http\Controllers\AssetOwnershipController@getById');
-    Route::get('/asset-ownerships/asset/{id}', 'App\Http\Controllers\AssetOwnershipController@getByAsset');
-    Route::get('/asset-ownerships/owner/{id}', 'App\Http\Controllers\AssetOwnershipController@getByOwner');
-    Route::get('/asset-ownerships/init/form', 'App\Http\Controllers\AssetOwnershipController@getInitialFormData');
-    Route::post('/asset-ownerships', 'App\Http\Controllers\AssetOwnershipController@store');
+    Route::get('/asset-ownerships', [App\Http\Controllers\AssetOwnershipController::class, 'getAll']);
+    Route::get('/asset-ownerships/{id}', [App\Http\Controllers\AssetOwnershipController::class, 'getById']);
+    Route::get('/asset-ownerships/asset/{id}', [App\Http\Controllers\AssetOwnershipController::class, 'getByAsset']);
+    Route::get('/asset-ownerships/owner/{id}', [App\Http\Controllers\AssetOwnershipController::class, 'getByOwner']);
+    Route::get('/asset-ownerships/init/form', [App\Http\Controllers\AssetOwnershipController::class, 'getInitialFormData']);
+    Route::post('/asset-ownerships', [App\Http\Controllers\AssetOwnershipController::class, 'store']);
 
-    Route::get('/asset-types', 'App\Http\Controllers\AssetTypeController@getAll');
-    
-    Route::get('/asset-categories', 'App\Http\Controllers\AssetCategoryController@getAll');
-    Route::get('/asset-categories/init/form', 'App\Http\Controllers\AssetCategoryController@getInitialFormData');
+    Route::get('/asset-types', [App\Http\Controllers\AssetTypeController::class, 'getAll']);
+
+    Route::get('/asset-categories', [App\Http\Controllers\AssetCategoryController::class, 'getAll']);
+    Route::get('/asset-categories/init/form', [App\Http\Controllers\AssetCategoryController::class, 'getInitialFormData']);
 
     /** Suppliers */
-    Route::get('/suppliers', 'App\Http\Controllers\SupplierController@getAll');
-    Route::get('/suppliers/search', 'App\Http\Controllers\SupplierController@search');
-    Route::get('/suppliers/{id}', 'App\Http\Controllers\SupplierController@getById');
-    Route::get('/suppliers/init/form', 'App\Http\Controllers\SupplierController@getInitialFormData');
-    Route::post('/suppliers', 'App\Http\Controllers\SupplierController@store');
+    Route::get('/suppliers', [App\Http\Controllers\SupplierController::class, 'getAll']);
+    Route::get('/suppliers/search', [App\Http\Controllers\SupplierController::class, 'search']);
+    Route::get('/suppliers/{id}', [App\Http\Controllers\SupplierController::class, 'getById']);
+    Route::get('/suppliers/init/form', [App\Http\Controllers\SupplierController::class, 'getInitialFormData']);
+    Route::post('/suppliers', [App\Http\Controllers\SupplierController::class, 'store']);
 
     /** Employees */
     Route::get('/employees', [App\Http\Controllers\EmployeeController::class, 'getAll']);
@@ -141,41 +146,41 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/employees/{id}/update/descriptor', [App\Http\Controllers\EmployeeController::class, 'updateDescriptor']);
 
     /** Departments */
-    Route::get('/departments', 'App\Http\Controllers\DepartmentController@getAll');
-    Route::get('/departments/{id}', 'App\Http\Controllers\DepartmentController@getById');
-    Route::post('/departments', 'App\Http\Controllers\DepartmentController@store');
-    Route::post('/departments/{id}/update', 'App\Http\Controllers\DepartmentController@update');
-    Route::post('/departments/{id}/delete', 'App\Http\Controllers\DepartmentController@destroy');
+    Route::get('/departments', [App\Http\Controllers\DepartmentController::class, 'getAll']);
+    Route::get('/departments/{id}', [App\Http\Controllers\DepartmentController::class, 'getById']);
+    Route::post('/departments', [App\Http\Controllers\DepartmentController::class, 'store']);
+    Route::post('/departments/{id}/update', [App\Http\Controllers\DepartmentController::class, 'update']);
+    Route::post('/departments/{id}/delete', [App\Http\Controllers\DepartmentController::class, 'destroy']);
 
     /** Divisions */
-    Route::get('/divisions', 'App\Http\Controllers\DivisionController@getAll');
-    Route::get('/divisions/{id}', 'App\Http\Controllers\DivisionController@getById');
-    Route::get('/divisions/init/form', 'App\Http\Controllers\DivisionController@getInitialFormData');
-    Route::post('/divisions', 'App\Http\Controllers\DivisionController@store');
-    Route::post('/divisions/{id}/update', 'App\Http\Controllers\DivisionController@update');
-    Route::post('/divisions/{id}/delete', 'App\Http\Controllers\DivisionController@destroy');
+    Route::get('/divisions', [App\Http\Controllers\DivisionController::class, 'getAll']);
+    Route::get('/divisions/{id}', [App\Http\Controllers\DivisionController::class, 'getById']);
+    Route::get('/divisions/init/form', [App\Http\Controllers\DivisionController::class, 'getInitialFormData']);
+    Route::post('/divisions', [App\Http\Controllers\DivisionController::class, 'store']);
+    Route::post('/divisions/{id}/update', [App\Http\Controllers\DivisionController::class, 'update']);
+    Route::post('/divisions/{id}/delete', [App\Http\Controllers\DivisionController::class, 'destroy']);
 
     /** Members */
-    Route::get('/members', 'App\Http\Controllers\MemberController@getAll');
-    // Route::get('/members/search', 'App\Http\Controllers\MemberController@search');
-    Route::get('/members/{id}', 'App\Http\Controllers\MemberController@getById');
-    Route::get('/members/employee/{employeeId}', 'App\Http\Controllers\MemberController@getByEmployee');
-    // Route::get('/members/init/form', 'App\Http\Controllers\MemberController@getInitialFormData');
-    Route::post('/members', 'App\Http\Controllers\MemberController@store');
+    Route::get('/members', [App\Http\Controllers\MemberController::class, 'getAll']);
+    // Route::get('/members/search', [App\Http\Controllers\MemberController::class, 'search']);
+    Route::get('/members/{id}', [App\Http\Controllers\MemberController::class, 'getById']);
+    Route::get('/members/employee/{employeeId}', [App\Http\Controllers\MemberController::class, 'getByEmployee']);
+    // Route::get('/members/init/form', [App\Http\Controllers\MemberController::class, 'getInitialFormData']);
+    Route::post('/members', [App\Http\Controllers\MemberController::class, 'store']);
 
     /** Rooms */
-    Route::get('/rooms', 'App\Http\Controllers\RoomController@getAll');
-    Route::get('/rooms/{id}', 'App\Http\Controllers\RoomController@getById');
-    Route::post('/rooms', 'App\Http\Controllers\RoomController@store');
-    Route::post('/rooms/{id}/update', 'App\Http\Controllers\RoomController@update');
-    Route::post('/rooms/{id}/delete', 'App\Http\Controllers\RoomController@destroy');
+    Route::get('/rooms', [App\Http\Controllers\RoomController::class, 'getAll']);
+    Route::get('/rooms/{id}', [App\Http\Controllers\RoomController::class, 'getById']);
+    Route::post('/rooms', [App\Http\Controllers\RoomController::class, 'store']);
+    Route::post('/rooms/{id}/update', [App\Http\Controllers\RoomController::class, 'update']);
+    Route::post('/rooms/{id}/delete', [App\Http\Controllers\RoomController::class, 'destroy']);
 
     /** Units */
-    Route::get('/units', 'App\Http\Controllers\UnitController@getAll');
-    Route::get('/units/{id}', 'App\Http\Controllers\UnitController@getById');
-    Route::post('/units', 'App\Http\Controllers\UnitController@store');
-    Route::post('/units/{id}/update', 'App\Http\Controllers\UnitController@update');
-    Route::post('/units/{id}/delete', 'App\Http\Controllers\UnitController@destroy');
+    Route::get('/units', [App\Http\Controllers\UnitController::class, 'getAll']);
+    Route::get('/units/{id}', [App\Http\Controllers\UnitController::class, 'getById']);
+    Route::post('/units', [App\Http\Controllers\UnitController::class, 'store']);
+    Route::post('/units/{id}/update', [App\Http\Controllers\UnitController::class, 'update']);
+    Route::post('/units/{id}/delete', [App\Http\Controllers\UnitController::class, 'destroy']);
 
     /** budget-plans */
     Route::get('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'getAll']);
@@ -235,53 +240,53 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/projects/{id}/delete', [App\Http\Controllers\ProjectController::class, 'destroy']);
 
     /** Items */
-    Route::get('/items', 'App\Http\Controllers\ItemController@getAll');
-    Route::get('/items/search', 'App\Http\Controllers\ItemController@search');
-    Route::get('/items/{id}', 'App\Http\Controllers\ItemController@getById');
-    Route::get('/items/init/form', 'App\Http\Controllers\ItemController@getInitialFormData');
-    Route::post('/items', 'App\Http\Controllers\ItemController@store');
-    Route::post('/items/{id}/update', 'App\Http\Controllers\ItemController@update');
-    Route::post('/items/{id}/delete', 'App\Http\Controllers\ItemController@destroy');
-    Route::post('/items/{id}/upload', 'App\Http\Controllers\ItemController@uploadImage');
+    Route::get('/items', [App\Http\Controllers\ItemController::class, 'getAll']);
+    Route::get('/items/search', [App\Http\Controllers\ItemController::class, 'search']);
+    Route::get('/items/{id}', [App\Http\Controllers\ItemController::class, 'getById']);
+    Route::get('/items/init/form', [App\Http\Controllers\ItemController::class, 'getInitialFormData']);
+    Route::post('/items', [App\Http\Controllers\ItemController::class, 'store']);
+    Route::post('/items/{id}/update', [App\Http\Controllers\ItemController::class, 'update']);
+    Route::post('/items/{id}/delete', [App\Http\Controllers\ItemController::class, 'destroy']);
+    Route::post('/items/{id}/upload', [App\Http\Controllers\ItemController::class, 'uploadImage']);
 
     /** Requisitions */
-    Route::get('/requisitions', 'App\Http\Controllers\RequisitionController@getAll');
-    Route::get('/requisitions/search', 'App\Http\Controllers\RequisitionController@search');
-    Route::get('/requisitions/{id}', 'App\Http\Controllers\RequisitionController@getById');
-    Route::get('/requisitions/{id}/with', 'App\Http\Controllers\RequisitionController@getByIdWithHeadOfDepart');
-    Route::get('/requisitions/report/data', 'App\Http\Controllers\RequisitionController@getSummary');
-    Route::get('/requisitions/init/form', 'App\Http\Controllers\RequisitionController@getInitialFormData');
-    Route::post('/requisitions', 'App\Http\Controllers\RequisitionController@store');
-    Route::post('/requisitions/{id}/update', 'App\Http\Controllers\RequisitionController@update');
-    Route::post('/requisitions/{id}/delete', 'App\Http\Controllers\RequisitionController@destroy');
+    Route::get('/requisitions', [App\Http\Controllers\RequisitionController::class, 'getAll']);
+    Route::get('/requisitions/search', [App\Http\Controllers\RequisitionController::class, 'search']);
+    Route::get('/requisitions/{id}', [App\Http\Controllers\RequisitionController::class, 'getById']);
+    Route::get('/requisitions/{id}/with', [App\Http\Controllers\RequisitionController::class, 'getByIdWithHeadOfDepart']);
+    Route::get('/requisitions/report/data', [App\Http\Controllers\RequisitionController::class, 'getSummary']);
+    Route::get('/requisitions/init/form', [App\Http\Controllers\RequisitionController::class, 'getInitialFormData']);
+    Route::post('/requisitions', [App\Http\Controllers\RequisitionController::class, 'store']);
+    Route::post('/requisitions/{id}/update', [App\Http\Controllers\RequisitionController::class, 'update']);
+    Route::post('/requisitions/{id}/delete', [App\Http\Controllers\RequisitionController::class, 'destroy']);
 
     /** Approval */
-    Route::get('/approvals', 'App\Http\Controllers\ApprovalController@getAll');
-    Route::get('/approvals/search', 'App\Http\Controllers\ApprovalController@search');
-    Route::get('/approvals/{id}', 'App\Http\Controllers\ApprovalController@getById');
-    Route::get('/approvals/init/form', 'App\Http\Controllers\ApprovalController@getInitialFormData');
-    Route::post('/approvals', 'App\Http\Controllers\ApprovalController@store');
-    Route::post('/approvals/{id}/update', 'App\Http\Controllers\ApprovalController@update');
-    Route::post('/approvals/{id}/delete', 'App\Http\Controllers\ApprovalController@destroy');
-    Route::post('/approvals/{id}/consider', 'App\Http\Controllers\ApprovalController@consider');
+    Route::get('/approvals', [App\Http\Controllers\ApprovalController::class, 'getAll']);
+    Route::get('/approvals/search', [App\Http\Controllers\ApprovalController::class, 'search']);
+    Route::get('/approvals/{id}', [App\Http\Controllers\ApprovalController::class, 'getById']);
+    Route::get('/approvals/init/form', [App\Http\Controllers\ApprovalController::class, 'getInitialFormData']);
+    Route::post('/approvals', [App\Http\Controllers\ApprovalController::class, 'store']);
+    Route::post('/approvals/{id}/update', [App\Http\Controllers\ApprovalController::class, 'update']);
+    Route::post('/approvals/{id}/delete', [App\Http\Controllers\ApprovalController::class, 'destroy']);
+    Route::post('/approvals/{id}/consider', [App\Http\Controllers\ApprovalController::class, 'consider']);
 
     /** Orders */
-    Route::get('/orders', 'App\Http\Controllers\OrderController@getAll');
-    Route::get('/orders/search', 'App\Http\Controllers\OrderController@search');
-    Route::get('/orders/{id}', 'App\Http\Controllers\OrderController@getById');
-    Route::get('/orders/init/form', 'App\Http\Controllers\OrderController@getInitialFormData');
-    Route::post('/orders', 'App\Http\Controllers\OrderController@store');
-    Route::post('/orders/{id}/update', 'App\Http\Controllers\OrderController@update');
-    Route::post('/orders/{id}/delete', 'App\Http\Controllers\OrderController@destroy');
+    Route::get('/orders', [App\Http\Controllers\OrderController::class, 'getAll']);
+    Route::get('/orders/search', [App\Http\Controllers\OrderController::class, 'search']);
+    Route::get('/orders/{id}', [App\Http\Controllers\OrderController::class, 'getById']);
+    Route::get('/orders/init/form', [App\Http\Controllers\OrderController::class, 'getInitialFormData']);
+    Route::post('/orders', [App\Http\Controllers\OrderController::class, 'store']);
+    Route::post('/orders/{id}/update', [App\Http\Controllers\OrderController::class, 'update']);
+    Route::post('/orders/{id}/delete', [App\Http\Controllers\OrderController::class, 'destroy']);
 
     /** Inspections */
-    Route::get('/inspections', 'App\Http\Controllers\InspectionController@getAll');
-    Route::get('/inspections/search', 'App\Http\Controllers\InspectionController@search');
-    Route::get('/inspections/{id}', 'App\Http\Controllers\InspectionController@getById');
-    Route::get('/inspections/init/form', 'App\Http\Controllers\InspectionController@getInitialFormData');
-    Route::post('/inspections', 'App\Http\Controllers\InspectionController@store');
-    Route::post('/inspections/{id}/update', 'App\Http\Controllers\InspectionController@update');
-    Route::post('/inspections/{id}/delete', 'App\Http\Controllers\InspectionController@destroy');
+    Route::get('/inspections', [App\Http\Controllers\InspectionController::class, 'getAll']);
+    Route::get('/inspections/search', [App\Http\Controllers\InspectionController::class, 'search']);
+    Route::get('/inspections/{id}', [App\Http\Controllers\InspectionController::class, 'getById']);
+    Route::get('/inspections/init/form', [App\Http\Controllers\InspectionController::class, 'getInitialFormData']);
+    Route::post('/inspections', [App\Http\Controllers\InspectionController::class, 'store']);
+    Route::post('/inspections/{id}/update', [App\Http\Controllers\InspectionController::class, 'update']);
+    Route::post('/inspections/{id}/delete', [App\Http\Controllers\InspectionController::class, 'destroy']);
 
     /** Loans */
     Route::get('/loans', [App\Http\Controllers\LoanController::class, 'getAll']);
@@ -337,38 +342,41 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/agencies/{id}/delete', [App\Http\Controllers\AgencyController::class, 'destroy']);
 
     /** Vehicles */
-    // Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
-    // Route::get( '/vehicles', [App\Http\Controllers\VehicleController::class, 'getAll']);
-    // Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
+    // Route::get('/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
+    // Route::get('/vehicles', [App\Http\Controllers\VehicleController::class, 'getAll']);
+    // Route::get('/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
     // Route::get('/vehicles/init/form', [App\Http\Controllers\VehicleController::class, 'getInitialFormData']);
-    // Route::post( '/vehicles', [App\Http\Controllers\VehicleController::class, 'store']);
-    // Route::post( '/vehicles/{id}/update', [App\Http\Controllers\VehicleController::class, 'update']);
-    // Route::post( '/vehicles/{id}/delete', [App\Http\Controllers\VehicleController::class, 'destroy']);
-    // Route::post( '/vehicles/{id}/send-mail', [App\Http\Controllers\VehicleController::class, 'sendMail']);
+    // Route::post('/vehicles', [App\Http\Controllers\VehicleController::class, 'store']);
+    // Route::post('/vehicles/{id}/update', [App\Http\Controllers\VehicleController::class, 'update']);
+    // Route::post('/vehicles/{id}/delete', [App\Http\Controllers\VehicleController::class, 'destroy']);
+    // Route::post('/vehicles/{id}/send-mail', [App\Http\Controllers\VehicleController::class, 'sendMail']);
 
     /** Drivers */
-    // Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
-    // Route::get( '/drivers', [App\Http\Controllers\DriverController::class, 'getAll']);
-    // Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById']);
+    // Route::get('/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
+    // Route::get('/drivers', [App\Http\Controllers\DriverController::class, 'getAll']);
+    // Route::get('/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById']);
     // Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData']);
-    // Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store']);
-    // Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
-    // Route::post( '/drivers/{id}/delete', [App\Http\Controllers\DriverController::class, 'destroy']);
-    // Route::post( '/drivers/{id}/send-mail', [App\Http\Controllers\DriverController::class, 'sendMail']);
+    // Route::post('/drivers', [App\Http\Controllers\DriverController::class, 'store']);
+    // Route::post('/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
+    // Route::post('/drivers/{id}/delete', [App\Http\Controllers\DriverController::class, 'destroy']);
+    // Route::post('/drivers/{id}/send-mail', [App\Http\Controllers\DriverController::class, 'sendMail']);
 
     /** Reservations */
-    // Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
-    // Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
-    // Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById']);
+    // Route::get('/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
+    // Route::get('/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
+    // Route::get('/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById']);
     // Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData']);
-    // Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
-    // Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
-    // Route::post( '/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
+    // Route::post('/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
+    // Route::post('/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
+    // Route::post('/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
 
     /** Attendances */
     Route::get('/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
     Route::get('/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
     Route::post('/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
+    Route::get('/attendances/{date}/daily', [App\Http\Controllers\AttendanceController::class, 'getCheckTimeDaily']);
+    Route::get('/attendances/{date}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTimeByEmployee']);
+    Route::get('/attendances/{date}/{type}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTypeByEmployee']);
 
     Route::get('/attendances/check-time/{date}/daily', [App\Http\Controllers\WpmCheckTimeController::class, 'getCheckTimeDaily']);
     Route::post('/attendances/check-time/store', [App\Http\Controllers\WpmCheckTimeController::class, 'store']);
@@ -381,45 +389,47 @@ Route::middleware('auth:api')->group(function() {
  */
 Route::middleware('api.key')->group(function() {
     /** Vehicles */
-    // Route::get( '/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
-    // Route::get( '/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
+    // Route::get('/vehicles/search', [App\Http\Controllers\VehicleController::class, 'search']);
+    // Route::get('/vehicles/{id}', [App\Http\Controllers\VehicleController::class, 'getById']);
 
     /** Drivers */
-    // Route::get( '/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
-    // Route::get( '/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById']);
-    // Route::get( '/drivers/{id}/assignments/{date}', [App\Http\Controllers\DriverController::class, 'getAssignments']);
+    // Route::get('/drivers/search', [App\Http\Controllers\DriverController::class, 'search']);
+    // Route::get('/drivers/{id}', [App\Http\Controllers\DriverController::class, 'getById']);
+    // Route::get('/drivers/{id}/assignments/{date}', [App\Http\Controllers\DriverController::class, 'getAssignments']);
     // Route::get('/drivers/init/form', [App\Http\Controllers\DriverController::class, 'getInitialFormData']);
-    // Route::post( '/drivers', [App\Http\Controllers\DriverController::class, 'store']);
-    // Route::post( '/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
+    // Route::post('/drivers', [App\Http\Controllers\DriverController::class, 'store']);
+    // Route::post('/drivers/{id}/update', [App\Http\Controllers\DriverController::class, 'update']);
 
     /** Reservations */
-    // Route::get( '/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
-    // Route::get( '/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
-    // Route::get( '/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById']);
+    // Route::get('/reservations/search', [App\Http\Controllers\ReservationController::class, 'search']);
+    // Route::get('/reservations', [App\Http\Controllers\ReservationController::class, 'getAll']);
+    // Route::get('/reservations/{id}', [App\Http\Controllers\ReservationController::class, 'getById']);
     // Route::get('/reservations/init/form', [App\Http\Controllers\ReservationController::class, 'getInitialFormData']);
-    // Route::post( '/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
-    // Route::post( '/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
-    // Route::post( '/reservations/{id}/assign', [App\Http\Controllers\ReservationController::class, 'assign']);
-    // Route::post( '/reservations/{id}/status', [App\Http\Controllers\ReservationController::class, 'status']);
+    // Route::post('/reservations', [App\Http\Controllers\ReservationController::class, 'store']);
+    // Route::post('/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
+    // Route::post('/reservations/{id}/assign', [App\Http\Controllers\ReservationController::class, 'assign']);
+    // Route::post('/reservations/{id}/status', [App\Http\Controllers\ReservationController::class, 'status']);
 
     /** Reservation Assignments */
-    // Route::get( '/reservation-assignments/search', [App\Http\Controllers\ReservationAssignmentController::class, 'search']);
-    // Route::get( '/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'getAll']);
-    // Route::get( '/reservation-assignments/{id}', [App\Http\Controllers\ReservationAssignmentController::class, 'getById']);
+    // Route::get('/reservation-assignments/search', [App\Http\Controllers\ReservationAssignmentController::class, 'search']);
+    // Route::get('/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'getAll']);
+    // Route::get('/reservation-assignments/{id}', [App\Http\Controllers\ReservationAssignmentController::class, 'getById']);
     // Route::get('/reservation-assignments/init/form', [App\Http\Controllers\ReservationAssignmentController::class, 'getInitialFormData']);
-    // Route::post( '/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'store']);
-    // Route::post( '/reservation-assignments/{id}/update', [App\Http\Controllers\ReservationAssignmentController::class, 'update']);
-    // Route::post( '/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy']);
+    // Route::post('/reservation-assignments', [App\Http\Controllers\ReservationAssignmentController::class, 'store']);
+    // Route::post('/reservation-assignments/{id}/update', [App\Http\Controllers\ReservationAssignmentController::class, 'update']);
+    // Route::post('/reservation-assignments/{id}/delete', [App\Http\Controllers\ReservationAssignmentController::class, 'destroy']);
 
     /** Calendar events */
-    Route::get( '/events', [App\Http\Controllers\EventController::class, 'getAll']);
+    Route::get('/events', [App\Http\Controllers\EventController::class, 'getAll']);
 
     /** Leaves */
-    Route::get( '/leaves', [App\Http\Controllers\LeaveController::class, 'getAll']);
+    Route::get('/leaves', [App\Http\Controllers\LeaveController::class, 'getAll']);
 
     /** Time Attendances */
     Route::prefix('time-attendance')->group(function() {
-        Route::get( '/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
-        Route::post( '/check-in', [App\Http\Controllers\AttendanceController::class, 'store']);
+        Route::get('/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
+        Route::get('/check-type/{date}/{type}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTypeByEmployee']);
+        Route::post('/create', [App\Http\Controllers\AttendanceController::class, 'store']);
+        Route::post('/update/{id}', [App\Http\Controllers\AttendanceController::class, 'update']);
     });
 });
