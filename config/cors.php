@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://app.mhc9dmh.com', 'http://localhost:5002'],
+    'allowed_origins' => ['https://app.mhc9dmh.com', 'http://localhost:5173'],
 
     'allowed_origins_patterns' => [],
 
