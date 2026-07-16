@@ -129,7 +129,7 @@ class AttendanceController extends Controller
                 // TODO: อัพเดตข้อมูลในระบบ WPM
                 $employee = Employee::find($req['employee_id']);
                 $updatedChkTime = WpmCheckTime::where('CheTmEmId', $employee->employee_no)
-                                    ->where('CheTmDate', $updatedAtt->check_time)
+                                    ->whereRaw('CAST(CheTmDate AS DATE) = ?', [Carbon::parse($updatedAtt->check_time)->format('Y-m-d')])
                                     ->where('CheTmType', $updatedAtt->check_type === '1' ? 'เข้า' : 'ออก')
                                     ->first();
 
