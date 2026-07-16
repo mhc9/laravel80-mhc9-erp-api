@@ -428,7 +428,7 @@ Route::middleware('api.key')->group(function() {
     /** Time Attendances */
     Route::prefix('time-attendance')->group(function() {
         Route::get('/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
-        Route::get('/check-type/{date}/{type}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTypeByEmployee']);
+        Route::get('/{date}/{type}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTypeByEmployee']);
         Route::post('/create', [App\Http\Controllers\AttendanceController::class, 'store']);
         Route::post('/update/{id}', [App\Http\Controllers\AttendanceController::class, 'update']);
     });
