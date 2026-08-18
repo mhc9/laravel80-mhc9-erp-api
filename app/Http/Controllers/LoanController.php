@@ -275,11 +275,11 @@ class LoanController extends Controller
         $budgetText = '';
         foreach($loan->budgets as $data) {
             $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgetText .= sizeof($loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+            $budgetText .= sizeof($loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format((float)$data->total, 2, '.', ',') . ' บาท ' : '';
         }
         $word->setValue('budget', $budgetText);
 
-        $word->setValue('budgetTotal', number_format($loan->budget_total));
+        $word->setValue('budgetTotal', number_format((float)$loan->budget_total, 2, '.', ','));
         $word->setValue('budgetTotalText', baht_text($loan->budget_total));
 
         /** Style ของตาราง */
@@ -304,13 +304,13 @@ class LoanController extends Controller
                 ->addText('- ' . $detail['expense']['name'] . ' ' . $detail['description'], $itemFontStyle, ['spaceAfter' => 0]);
             $orderTable
                 ->addCell(50 * 50)
-                ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         }
 
         $orderTable->addRow();
         $orderTable
             ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-            ->addText('รวมเป็นเงิน ' . number_format($loan->order_total) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+            ->addText('รวมเป็นเงิน ' . number_format((float)$loan->order_total, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
         /** เพิ่มรายการลงในตาราง */
         $word->setComplexBlock('orders', $orderTable);
@@ -343,7 +343,7 @@ class LoanController extends Controller
                     ->addText('- ' . $detail['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
                 $itemTable
                     ->addCell(50 * 50)
-                    ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                    ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
                 /** คำนวณยอดรวมเป็นเงิน */
                 $courseTotal += $detail['total'];
@@ -353,7 +353,7 @@ class LoanController extends Controller
             $itemTable->addRow();
             $itemTable
                 ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                ->addText('รวมเป็นเงิน ' . number_format((float)$courseTotal, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         } else {
             /** คิดแยกวันที่ */
             foreach($loan->courses as $course => $cs) {
@@ -379,7 +379,7 @@ class LoanController extends Controller
                         ->addText('- ' . $detail['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
                     $itemTable
                         ->addCell(50 * 50)
-                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                        ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
                     /** คำนวณยอดรวมเป็นเงิน */
                     $courseTotal += $detail['total'];
@@ -389,14 +389,14 @@ class LoanController extends Controller
                 $itemTable->addRow();
                 $itemTable
                     ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                    ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                    ->addText('รวมเป็นเงิน ' . number_format((float)$courseTotal, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
             }
         }
 
         $word->setComplexBlock('items', $itemTable);
 
         /** =================== ยอดรวมทั้งสิ้น =================== */
-        $word->setValue('netTotal', number_format($loan->net_total));
+        $word->setValue('netTotal', number_format((float)$loan->net_total, 2, '.', ','));
         $word->setValue('netTotalText', baht_text($loan->net_total));
 
         /** เงื่อนไขการแสดงหมายเหตุ */
@@ -461,11 +461,11 @@ class LoanController extends Controller
         $budgetText = '';
         foreach($loan->budgets as $data) {
             $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgetText .= sizeof($loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+            $budgetText .= sizeof($loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format((float)$data->total, 2, '.', ',') . ' บาท ' : '';
         }
         $word->setValue('budget', $budgetText);
 
-        $word->setValue('budgetTotal', number_format($loan->budget_total));
+        $word->setValue('budgetTotal', number_format((float)$loan->budget_total, 2, '.', ','));
         $word->setValue('budgetTotalText', baht_text($loan->budget_total));
 
         
@@ -491,13 +491,13 @@ class LoanController extends Controller
                 ->addText('- ' . $detail['expense']['name'] . ' ' . $detail['description'], $itemFontStyle, ['spaceAfter' => 0]);
             $orderTable
                 ->addCell(50 * 50)
-                ->addText('เป็นเงิน  ' . number_format($detail['total']) . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         }
 
         $orderTable->addRow();
         $orderTable
             ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-            ->addText('รวมเป็นเงิน ' . number_format($loan->order_total) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+            ->addText('รวมเป็นเงิน ' . number_format((float)$loan->order_total, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
         /** เพิ่มรายการลงในตาราง */
         $word->setComplexBlock('orders', $orderTable);
@@ -529,7 +529,7 @@ class LoanController extends Controller
                     ->addText('- ' . $detail['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
                 $itemTable
                     ->addCell(50 * 50)
-                    ->addText('เป็นเงิน  ' . number_format($detail['total']) . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                    ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
                 /** คำนวณยอดรวมเป็นเงิน */
                 $courseTotal += $detail['total'];
@@ -539,7 +539,7 @@ class LoanController extends Controller
             $itemTable->addRow();
             $itemTable
                 ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                ->addText('รวมเป็นเงิน ' . number_format((float)$courseTotal, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         } else {
             /** คิดแยกวันที่ */
             foreach($loan->courses as $course => $cs) {
@@ -565,7 +565,7 @@ class LoanController extends Controller
                         ->addText('- ' . $detail['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
                     $itemTable
                         ->addCell(50 * 50)
-                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                        ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
                     /** คำนวณยอดรวมเป็นเงิน */
                     $courseTotal += $detail['total'];
@@ -575,7 +575,7 @@ class LoanController extends Controller
                 $itemTable->addRow();
                 $itemTable
                     ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                    ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                    ->addText('รวมเป็นเงิน ' . number_format((float)$courseTotal, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
             }
         }
 
@@ -583,7 +583,7 @@ class LoanController extends Controller
         $word->setComplexBlock('items', $itemTable);
 
         /** =================== ยอดรวมทั้งสิ้น =================== */
-        $word->setValue('netTotal', number_format($loan->net_total));
+        $word->setValue('netTotal', number_format((float)$loan->net_total, 2, '.', ','));
         $word->setValue('netTotalText', baht_text($loan->net_total));
 
         /** รวมรายการ */
