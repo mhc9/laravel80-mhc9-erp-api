@@ -365,11 +365,11 @@ class LoanRefundController extends Controller
         $budgetText = '';
         foreach($refund->contract->loan->budgets as $data) {
             $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format((float)$data->total, 2, '.', ',') . ' บาท ' : '';
         }
         $word->setValue('budget', $budgetText);
 
-        $word->setValue('budgetTotal', number_format($refund->contract->loan->budget_total));
+        $word->setValue('budgetTotal', number_format((float)$refund->contract->loan->budget_total, 2, '.', ','));
         $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
         $word->setValue('completed', $refund->contract->loan->loan_type_id == 1 ? 'ได้ดำเนินการจัดโครงการฯ เสร็จสิ้นแล้ว ' : '');
 
@@ -394,18 +394,18 @@ class LoanRefundController extends Controller
                 ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $detail['description'], $itemFontStyle, ['spaceAfter' => 0]);
             $orderTable
                 ->addCell(50 * 50)
-                ->addText('เป็นเงิน  ' . number_format($detail['total']) . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         }
 
         /** เพิ่มแถวยอดรวมเป็นเงิน */
         $orderTable->addRow();
         $orderTable
             ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-            ->addText('รวมเป็นเงิน ' . number_format($refund->order_total) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+            ->addText('รวมเป็นเงิน ' . number_format((float)$refund->order_total, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
         $word->setComplexBlock('orders', $orderTable);
 
-        $word->setValue('orderNetTotal', number_format($refund->order_total));
+        $word->setValue('orderNetTotal', number_format((float)$refund->order_total, 2, '.', ','));
         $word->setValue('orderNetTotalText', baht_text($refund->order_total));
 
         if (!array_any($refund->details->toArray(), function($detail) { return $detail['contract_detail']['expense_group'] == 2; })) {
@@ -432,7 +432,7 @@ class LoanRefundController extends Controller
                     ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
                 $itemTable
                     ->addCell(50 * 50)
-                    ->addText('เป็นเงิน  ' . number_format($detail['total']) . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                    ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
                 /** คำนวณยอดรวมเป็นเงิน */
                 $courseTotal += $detail['total'];
@@ -442,7 +442,7 @@ class LoanRefundController extends Controller
             $itemTable->addRow();
             $itemTable
                 ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                ->addText('รวมเป็นเงิน ' . number_format((float)$courseTotal, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
         } else {
             /** คิดแยกวันที่ */
             foreach($refund->contract->loan->courses as $course => $cs) {
@@ -468,7 +468,7 @@ class LoanRefundController extends Controller
                         ->addText('- ' . $detail['contract_detail']['expense']['name'] . ' ' . $description, $itemFontStyle, ['spaceAfter' => 0]);
                     $itemTable
                         ->addCell(50 * 50)
-                        ->addText('เป็นเงิน  ' . number_format($detail['total']) . 'บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                        ->addText('เป็นเงิน  ' . number_format((float)$detail['total'], 2, '.', ',') . ' บาท', $itemFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
 
                     /** คำนวณยอดรวมเป็นเงิน */
                     $courseTotal += $detail['total'];
@@ -478,7 +478,7 @@ class LoanRefundController extends Controller
                 $itemTable->addRow();
                 $itemTable
                     ->addCell(100 * 50, ['gridSpan' => 2, 'valign' => 'center'])
-                    ->addText('รวมเป็นเงิน ' . number_format($courseTotal) . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
+                    ->addText('รวมเป็นเงิน ' . number_format((float)$courseTotal, 2, '.', ',') . ' บาท ', $couseFontStyle, ['spaceAfter' => 0, 'align' => 'right']);
             }
         }
 
@@ -492,21 +492,21 @@ class LoanRefundController extends Controller
         }
 
         /** =================== ยอดรวมทั้งสิ้น =================== */
-        $word->setValue('netTotal', number_format($refund->net_total, 2));
+        $word->setValue('netTotal', number_format((float)$refund->net_total, 2, '.', ','));
         $word->setValue('netTotalText', baht_text($refund->net_total, 2));
 
         /** แผนงาน */
         $_budget = '';
         foreach($refund->budgets as $data) {
             $_budget .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $_budget .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+            $_budget .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format((float)$data->total, 2, '.', ',') . ' บาท ' : '';
         }
 
         /** =================== เงื่อนไขการคืนเงิน =================== */
         if ($refund->refund_type_id == 1) {
-            $word->setValue('refundType', 'และคืนเงินยืม' .$_budget. ' เป็นจำนวนเงินทั้งสิ้น ' . number_format($refund->balance, 2) . ' บาท (' . baht_text($refund->balance, 2) . ')');
+            $word->setValue('refundType', 'และคืนเงินยืม' .$_budget. ' เป็นจำนวนเงินทั้งสิ้น ' . number_format((float)$refund->balance, 2, '.', ',') . ' บาท (' . baht_text($refund->balance, 2) . ')');
         } else if ($refund->refund_type_id == 2) {
-            $word->setValue('refundType', 'และเบิกเงินเพิ่ม เป็นจำนวนเงินทั้งสิ้น ' . number_format(abs($refund->balance)) . ' บาท (' . baht_text(abs($refund->balance)) . ')');
+            $word->setValue('refundType', 'และเบิกเงินเพิ่ม เป็นจำนวนเงินทั้งสิ้น ' . number_format(abs($refund->balance), 2, '.', ',') . ' บาท (' . baht_text(abs($refund->balance)) . ')');
         } else {
             $word->setValue('refundType', '');
         }
@@ -560,7 +560,7 @@ class LoanRefundController extends Controller
         $budgetText = '';
         foreach($refund->contract->loan->budgets as $data) {
             $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format((float)$data->total, 2, '.', ',') . ' บาท ' : '';
         }
         $word->setValue('budget', $budgetText);
 
@@ -573,16 +573,16 @@ class LoanRefundController extends Controller
         // }
         // $word->setValue('budget', $budgets);
 
-        $word->setValue('budgetTotal', number_format($refund->contract->loan->budget_total));
-        $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
+        $word->setValue('budgetTotal',  number_format((float)$refund->contract->loan->budget_total, 2, '.', ','));
+        $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total, 2));
         $word->setValue('over20Reason', $refund->over20_reason);
 
         /** =================== รวมทั้งสิ้น =================== */
-        $word->setValue('netTotal', number_format($refund->net_total,2 ));
-        $word->setValue('netTotalText', baht_text($refund->net_total,2 ));
+        $word->setValue('netTotal', number_format((float)$refund->net_total, 2, '.', ','));
+        $word->setValue('netTotalText', baht_text($refund->net_total, 2));
 
         /** =================== ยอดคืน =================== */
-        $word->setValue('balance', number_format($refund->balance, 2));
+        $word->setValue('balance', number_format((float)$refund->balance, 2, '.', ','));
         $word->setValue('balanceText', baht_text($refund->balance, 2));
 
         /** =================== ผู้ขอ =================== */
@@ -635,21 +635,21 @@ class LoanRefundController extends Controller
         $budgetText = '';
         foreach($refund->contract->loan->budgets as $data) {
             $budgetText .= $data->budget->activity->project->plan->name . ' ' . $data->budget->activity->project->name  . ' ' . $data->budget->activity->name;
-            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format($data->total) . ' บาท ' : '';
+            $budgetText .= sizeof($refund->contract->loan->budgets) > 1 ? ' จำนวนเงิน ' . number_format((float)$data->total, 2, '.', ',') . ' บาท ' : '';
         }
         $word->setValue('budget', $budgetText);
 
-        $word->setValue('budgetTotal', number_format($refund->contract->loan->budget_total));
-        $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total));
+        $word->setValue('budgetTotal', number_format((float)$refund->contract->loan->budget_total, 2, '.', ','));
+        $word->setValue('budgetTotalText', baht_text($refund->contract->loan->budget_total, 2));
         $word->setValue('returnReason', $refund->return_reason);
 
         /** =================== รวมทั้งสิ้น =================== */
-        $word->setValue('netTotal', number_format($refund->net_total));
-        $word->setValue('netTotalText', baht_text($refund->net_total));
+        $word->setValue('netTotal', number_format((float)$refund->net_total, 2, '.', ','));
+        $word->setValue('netTotalText', baht_text($refund->net_total, 2));
 
         /** =================== ยอดคืน =================== */
-        $word->setValue('balance', number_format($refund->balance));
-        $word->setValue('balanceText', baht_text($refund->balance));
+        $word->setValue('balance', number_format((float)$refund->balance, 2, '.', ','));
+        $word->setValue('balanceText', baht_text($refund->balance, 2));
 
         /** =================== ผู้ขอ =================== */
         $word->setValue('requester', $refund->contract->loan->employee->prefix->name.$refund->contract->loan->employee->firstname . ' ' . $refund->contract->loan->employee->lastname);
