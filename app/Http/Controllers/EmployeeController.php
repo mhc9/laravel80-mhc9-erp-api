@@ -21,17 +21,19 @@ class EmployeeController extends Controller
 
     public function search(Request $req)
     {
-        return $this->employeeService->search($req->all());
+        $limit = $req->query('limit', 10);
+
+        return $this->employeeService->search($req->all(), false, $limit)->makeHidden(['face_descriptor','created_at','updated_at']);
     }
 
     public function getAll()
     {
-        return $this->employeeService->getAll();
+        return $this->employeeService->getAll()->makeHidden(['face_descriptor','created_at','updated_at']);
     }
 
     public function getById($id)
     {
-        return $this->employeeService->getById($id);
+        return $this->employeeService->getById($id)->makeHidden(['face_descriptor','created_at','updated_at']);
     }
 
     public function getInitialFormData()
