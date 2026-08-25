@@ -377,6 +377,8 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/attendances/{date}/daily', [App\Http\Controllers\AttendanceController::class, 'getCheckTimeDaily']);
     Route::get('/attendances/{date}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTimeByEmployee']);
     Route::get('/attendances/{date}/{type}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTypeByEmployee']);
+    Route::post('/attendances', [App\Http\Controllers\AttendanceController::class, 'store']);
+    Route::post('/attendances/{id}/update', [App\Http\Controllers\AttendanceController::class, 'update']);
 
     Route::get('/attendances/check-time/{date}/daily', [App\Http\Controllers\WpmCheckTimeController::class, 'getCheckTimeDaily']);
     Route::post('/attendances/check-time/store', [App\Http\Controllers\WpmCheckTimeController::class, 'store']);
