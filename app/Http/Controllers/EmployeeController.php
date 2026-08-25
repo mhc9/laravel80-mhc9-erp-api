@@ -28,12 +28,22 @@ class EmployeeController extends Controller
 
     public function getAll()
     {
-        return $this->employeeService->getAll()->makeHidden(['face_descriptor','created_at','updated_at']);
+        return $this->employeeService
+                    ->getAll()
+                    ->map(function($employee) {
+                        $employee->isRegistered = $employee->face_descriptor ? true : false;
+
+                        return $employee->makeHidden(['face_descriptor','created_at','updated_at']);
+                    });
     }
 
     public function getById($id)
     {
-        return $this->employeeService->getById($id)->makeHidden(['face_descriptor','created_at','updated_at']);
+        if ($employee = $this->employeeService->getById($id)) {
+            $employee->isRegistered = $employee->face_descriptor ? true : false;
+        }
+
+        return $employee ? $employee->makeHidden(['face_descriptor','created_at','updated_at']) : null;
     }
 
     public function getInitialFormData()
