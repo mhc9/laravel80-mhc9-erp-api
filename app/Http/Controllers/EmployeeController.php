@@ -85,7 +85,13 @@ class EmployeeController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            if($updatedEmployee = $this->employeeService->update($id, $req->all())) {
+            $memberData = $req->only(['department_id','division_id', 'duty_id']);
+            $employeeData = $req->except(['department_id','division_id', 'duty_id','prefix','changwat','amphur','tambon','position','level','member_of','isRegistered']);
+
+            if($updatedEmployee = $this->employeeService->update($id, $employeeData)) {
+                $member = Member::where(['employee_id' => $id, 'is_primary' => 1])->first();
+                $member->update($memberData);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
