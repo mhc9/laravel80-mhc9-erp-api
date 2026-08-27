@@ -120,9 +120,9 @@ class AttendanceController extends Controller
         try {
             $attendanceData = addMultipleInputs(
                 $req->except(['id','check_image']),
-                [
-                    'check_image' => $req->hasFile('check_image') ? $this->attendanceService->updateImage($id, $req->file('check_image'))->check_image : '',
-                ]
+                $req->hasFile('check_image') ? [
+                    'check_image' => $this->attendanceService->updateImage($id, $req->file('check_image'))->check_image,
+                ] : []
             );
 
             if($updatedAtt = $this->attendanceService->update($id, $attendanceData)) {
