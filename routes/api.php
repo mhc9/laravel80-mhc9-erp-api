@@ -370,7 +370,7 @@ Route::middleware('auth:api')->group(function() {
     // Route::post('/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
     // Route::post('/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
 
-    /** Attendances */
+    /** Time Attendances */
     Route::get('/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
     Route::get('/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
     Route::post('/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
@@ -380,6 +380,17 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/attendances', [App\Http\Controllers\AttendanceController::class, 'store']);
     Route::post('/attendances/{id}/update', [App\Http\Controllers\AttendanceController::class, 'update']);
 
+    /** Attendance Approvals */
+    Route::get('/attendance-approvals', [App\Http\Controllers\AttendanceApprovalController::class, 'getAll']);
+    Route::get('/attendance-approvals/{id}', [App\Http\Controllers\AttendanceApprovalController::class, 'getById']);
+    Route::get('/attendance-approvals/{date}/daily', [App\Http\Controllers\AttendanceApprovalController::class, 'getDailyApprovals']);
+    Route::post('/attendance-approvals', [App\Http\Controllers\AttendanceApprovalController::class, 'store']);
+    Route::post('/attendance-approvals/{id}/update', [App\Http\Controllers\AttendanceApprovalController::class, 'update']);
+    Route::post('/attendance-approvals/{id}/delete', [App\Http\Controllers\AttendanceApprovalController::class, 'delete']);
+    Route::post('/attendance-approvals/{id}/approve', [App\Http\Controllers\AttendanceApprovalController::class, 'approve']);
+    Route::post('/attendance-approvals/{id}/reject', [App\Http\Controllers\AttendanceApprovalController::class, 'reject']);
+
+    /** WPM Check Time */
     Route::get('/attendances/check-time/{date}/daily', [App\Http\Controllers\WpmCheckTimeController::class, 'getCheckTimeDaily']);
     Route::post('/attendances/check-time/store', [App\Http\Controllers\WpmCheckTimeController::class, 'store']);
 });
