@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str; // TODO: Import the Str facade for UUID
 
 class BudgetExpenseDetail extends Model
 {
