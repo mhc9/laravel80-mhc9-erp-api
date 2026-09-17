@@ -21,17 +21,29 @@ class EmployeeController extends Controller
 
     public function search(Request $req)
     {
-        return $this->employeeService->search($req->all());
+        $limit = $req->query('limit', 10);
+
+        return $this->employeeService->search($req->all(), false, $limit)->makeHidden(['face_descriptor','created_at','updated_at']);
     }
 
     public function getAll()
     {
-        return $this->employeeService->getAll();
+        return $this->employeeService
+                    ->getAll()
+                    ->map(function($employee) {
+                        $employee->isRegistered = $employee->face_descriptor ? true : false;
+
+                        return $employee->makeHidden(['face_descriptor','created_at','updated_at']);
+                    });
     }
 
     public function getById($id)
     {
-        return $this->employeeService->getById($id);
+        if ($employee = $this->employeeService->getById($id)) {
+            $employee->isRegistered = $employee->face_descriptor ? true : false;
+        }
+
+        return $employee ? $employee->makeHidden(['face_descriptor','created_at','updated_at']) : null;
     }
 
     public function getInitialFormData()
@@ -73,7 +85,13 @@ class EmployeeController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            if($updatedEmployee = $this->employeeService->update($id, $req->all())) {
+            $memberData = $req->only(['department_id','division_id', 'duty_id']);
+            $employeeData = $req->except(['department_id','division_id', 'duty_id','prefix','changwat','amphur','tambon','position','level','member_of','isRegistered']);
+
+            if($updatedEmployee = $this->employeeService->update($id, $employeeData)) {
+                $member = Member::where(['employee_id' => $id, 'is_primary' => 1])->first();
+                $member->update($memberData);
+
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',

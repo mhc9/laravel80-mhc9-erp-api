@@ -64,6 +64,11 @@ class BudgetPlanController extends Controller
         return BudgetPlan::with('type')->find($id);
     }
 
+    public function getByYear($year)
+    {
+        return BudgetPlan::with('type')->where('year', $year)->get();
+    }
+
     public function getInitialFormData()
     {
         return [

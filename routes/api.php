@@ -186,6 +186,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'getAll']);
     Route::get('/budget-plans/search', [App\Http\Controllers\BudgetPlanController::class, 'search']);
     Route::get('/budget-plans/{id}', [App\Http\Controllers\BudgetPlanController::class, 'getById']);
+    Route::get('/budget-plans/year/{year}', [App\Http\Controllers\BudgetPlanController::class, 'getByYear']);
     Route::get('/budget-plans/init/form', [App\Http\Controllers\BudgetPlanController::class, 'getInitialFormData']);
     Route::post('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'store']);
     Route::post('/budget-plans/{id}/update', [App\Http\Controllers\BudgetPlanController::class, 'update']);
@@ -195,6 +196,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-projects', [App\Http\Controllers\BudgetProjectController::class, 'getAll']);
     Route::get('/budget-projects/search', [App\Http\Controllers\BudgetProjectController::class, 'search']);
     Route::get('/budget-projects/{id}', [App\Http\Controllers\BudgetProjectController::class, 'getById']);
+    Route::get('/budget-projects/plan/{planId}', [App\Http\Controllers\BudgetProjectController::class, 'getByPlan']);
     Route::get('/budget-projects/init/form', [App\Http\Controllers\BudgetProjectController::class, 'getInitialFormData']);
     Route::post('/budget-projects', [App\Http\Controllers\BudgetProjectController::class, 'store']);
     Route::post('/budget-projects/{id}/update', [App\Http\Controllers\BudgetProjectController::class, 'update']);
@@ -204,6 +206,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-activities', [App\Http\Controllers\BudgetActivityController::class, 'getAll']);
     Route::get('/budget-activities/search', [App\Http\Controllers\BudgetActivityController::class, 'search']);
     Route::get('/budget-activities/{id}', [App\Http\Controllers\BudgetActivityController::class, 'getById']);
+    Route::get('/budget-activities/project/{projectId}', [App\Http\Controllers\BudgetActivityController::class, 'getByProject']);
     Route::get('/budget-activities/init/form', [App\Http\Controllers\BudgetActivityController::class, 'getInitialFormData']);
     Route::post('/budget-activities', [App\Http\Controllers\BudgetActivityController::class, 'store']);
     Route::post('/budget-activities/{id}/update', [App\Http\Controllers\BudgetActivityController::class, 'update']);
@@ -370,14 +373,27 @@ Route::middleware('auth:api')->group(function() {
     // Route::post('/reservations/{id}/update', [App\Http\Controllers\ReservationController::class, 'update']);
     // Route::post('/reservations/{id}/delete', [App\Http\Controllers\ReservationController::class, 'destroy']);
 
-    /** Attendances */
+    /** Time Attendances */
     Route::get('/attendances', [App\Http\Controllers\EventController::class, 'getAll']);
     Route::get('/attendances/face/recognize', [App\Http\Controllers\AttendanceController::class, 'getFaceRecognize']);
     Route::post('/attendances/{date}/check-in', [App\Http\Controllers\AttendanceController::class, 'checkIn']);
     Route::get('/attendances/{date}/daily', [App\Http\Controllers\AttendanceController::class, 'getCheckTimeDaily']);
     Route::get('/attendances/{date}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTimeByEmployee']);
     Route::get('/attendances/{date}/{type}/employee/{employeeId}', [App\Http\Controllers\AttendanceController::class, 'getCheckTypeByEmployee']);
+    Route::post('/attendances', [App\Http\Controllers\AttendanceController::class, 'store']);
+    Route::post('/attendances/{id}/update', [App\Http\Controllers\AttendanceController::class, 'update']);
 
+    /** Attendance Approvals */
+    Route::get('/attendance-approvals', [App\Http\Controllers\AttendanceApprovalController::class, 'getAll']);
+    Route::get('/attendance-approvals/{id}', [App\Http\Controllers\AttendanceApprovalController::class, 'getById']);
+    Route::get('/attendance-approvals/{date}/daily', [App\Http\Controllers\AttendanceApprovalController::class, 'getDailyApprovals']);
+    Route::post('/attendance-approvals', [App\Http\Controllers\AttendanceApprovalController::class, 'store']);
+    Route::post('/attendance-approvals/{id}/update', [App\Http\Controllers\AttendanceApprovalController::class, 'update']);
+    Route::post('/attendance-approvals/{id}/delete', [App\Http\Controllers\AttendanceApprovalController::class, 'delete']);
+    Route::post('/attendance-approvals/{id}/approve', [App\Http\Controllers\AttendanceApprovalController::class, 'approve']);
+    Route::post('/attendance-approvals/{id}/reject', [App\Http\Controllers\AttendanceApprovalController::class, 'reject']);
+
+    /** WPM Check Time */
     Route::get('/attendances/check-time/{date}/daily', [App\Http\Controllers\WpmCheckTimeController::class, 'getCheckTimeDaily']);
     Route::post('/attendances/check-time/store', [App\Http\Controllers\WpmCheckTimeController::class, 'store']);
 });

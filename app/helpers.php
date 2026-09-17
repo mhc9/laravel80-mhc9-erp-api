@@ -410,7 +410,9 @@ function transformManyInputs(array $data, array $fields, array $addOptions) {
     }, $data);
 }
 
-function addMultipleInputs(array $data, array $additions) {
+function addMultipleInputs(array $data, array $additions = []) {
+    if (empty($additions)) return $data;
+
     $newInputs = [];
     foreach ($additions as $key => $val) {
         $newInputs = Arr::add($data, $key, $val);
