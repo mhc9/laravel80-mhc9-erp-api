@@ -186,6 +186,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'getAll']);
     Route::get('/budget-plans/search', [App\Http\Controllers\BudgetPlanController::class, 'search']);
     Route::get('/budget-plans/{id}', [App\Http\Controllers\BudgetPlanController::class, 'getById']);
+    Route::get('/budget-plans/year/{year}', [App\Http\Controllers\BudgetPlanController::class, 'getByYear']);
     Route::get('/budget-plans/init/form', [App\Http\Controllers\BudgetPlanController::class, 'getInitialFormData']);
     Route::post('/budget-plans', [App\Http\Controllers\BudgetPlanController::class, 'store']);
     Route::post('/budget-plans/{id}/update', [App\Http\Controllers\BudgetPlanController::class, 'update']);
@@ -195,6 +196,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-projects', [App\Http\Controllers\BudgetProjectController::class, 'getAll']);
     Route::get('/budget-projects/search', [App\Http\Controllers\BudgetProjectController::class, 'search']);
     Route::get('/budget-projects/{id}', [App\Http\Controllers\BudgetProjectController::class, 'getById']);
+    Route::get('/budget-projects/plan/{planId}', [App\Http\Controllers\BudgetProjectController::class, 'getByPlan']);
     Route::get('/budget-projects/init/form', [App\Http\Controllers\BudgetProjectController::class, 'getInitialFormData']);
     Route::post('/budget-projects', [App\Http\Controllers\BudgetProjectController::class, 'store']);
     Route::post('/budget-projects/{id}/update', [App\Http\Controllers\BudgetProjectController::class, 'update']);
@@ -204,6 +206,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/budget-activities', [App\Http\Controllers\BudgetActivityController::class, 'getAll']);
     Route::get('/budget-activities/search', [App\Http\Controllers\BudgetActivityController::class, 'search']);
     Route::get('/budget-activities/{id}', [App\Http\Controllers\BudgetActivityController::class, 'getById']);
+    Route::get('/budget-activities/project/{projectId}', [App\Http\Controllers\BudgetActivityController::class, 'getByProject']);
     Route::get('/budget-activities/init/form', [App\Http\Controllers\BudgetActivityController::class, 'getInitialFormData']);
     Route::post('/budget-activities', [App\Http\Controllers\BudgetActivityController::class, 'store']);
     Route::post('/budget-activities/{id}/update', [App\Http\Controllers\BudgetActivityController::class, 'update']);
