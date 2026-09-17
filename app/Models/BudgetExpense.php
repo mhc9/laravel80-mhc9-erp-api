@@ -3,15 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str; // TODO: Import the Str facade for UUID
 
-class Attendance extends Model
+class BudgetExpense extends Model
 {
-    protected $table = 'attendances';
+    protected $table = 'budget_expenses';
 
     /** Set primary key name manually if not id */
     // protected $primaryKey = 'id';
-
+    
     /** TODO: The primary key type is a string */
     protected $keyType = 'string';
 
@@ -40,8 +39,13 @@ class Attendance extends Model
         });
     }
 
-    public function employee()
+    public function activity()
     {
-        return $this->belongsTo(Employee::class, 'employee_id', 'id');
+        return $this->belongsTo(BudgetActivity::class, 'activity_id', 'id');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(BudgetType::class, 'budget_type_id', 'id');
     }
 }
