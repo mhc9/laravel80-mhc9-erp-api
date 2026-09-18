@@ -40,13 +40,23 @@ class BudgetExpense extends Model
         });
     }
 
-    public function activity()
+    public function budget()
     {
-        return $this->belongsTo(BudgetActivity::class, 'activity_id', 'id');
+        return $this->belongsTo(Budget::class, 'budget_id', 'id');
     }
 
-    public function type()
+    public function expenseType()
     {
-        return $this->belongsTo(BudgetType::class, 'budget_type_id', 'id');
+        return $this->belongsTo(BudgetExpenseType::class, 'expense_type_id', 'id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany(BudgetExpenseDetail::class, 'budget_expense_id', 'id');
     }
 }
