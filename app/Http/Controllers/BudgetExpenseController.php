@@ -138,4 +138,26 @@ class BudgetExpenseController extends Controller
             ];
         }
     }
+
+    public function updateDetails(Request $req, $id, $detailId)
+    {
+        try {
+            if($this->budgetExpenseService->updateDetails($id, $detailId, $req->all())) {
+                return [
+                    'status'    => 1,
+                    'message'   => 'Update successfully!!',
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
 }
