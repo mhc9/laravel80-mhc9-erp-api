@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\BaseService;
 use App\Repositories\BudgetExpenseRepository;
@@ -36,7 +38,7 @@ class BudgetExpenseService extends BaseService
         ]);
     }
 
-    public function search(array $params, $all = false, $perPage = 10)
+    public function search(array $params, $all = false, $perPage = 10): LengthAwarePaginator | Collection
     {
         $collections = $this->repo->getModelWithRelations()
                             ->when(!empty($params['type']), function($q) use ($params) {
