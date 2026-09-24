@@ -15,50 +15,6 @@ use App\Models\Bank;
 
 class SupplierController extends Controller
 {
-    public function formValidate (Request $request)
-    {
-        $rules = [
-            'plan_type_id'      => 'required',
-            'item_name'         => 'required',
-            'unit_id'           => 'required',
-        ];
-
-        if ($request['is_addon'] != '1') {
-            $rules['category_id'] = 'required';
-            $rules['price_per_unit'] = 'required';
-        }
-
-        $messages = [
-            'plan_type_id.required'     => 'กรุณาเลือกประเภทแผน',
-            'category_id.required'        => 'กรุณาเลือกประเภทสินค้า/บริการ',
-            'item_name.required'        => 'กรุณาระบุชื่อสินค้า/บริการ',
-            'price_per_unit.required'   => 'กรุณาระบุราคาต่อหน่วย',
-            'unit_id.required'          => 'กรุณาเลือกหน่วยนับ',
-        ];
-
-        $validator = \Validator::make($request->all(), $rules, $messages);
-
-        if ($validator->fails()) {
-            $messageBag = $validator->getMessageBag();
-
-            // if (!$messageBag->has('start_date')) {
-            //     if ($this->isDateExistsValidation(convThDateToDbDate($request['start_date']), 'start_date') > 0) {
-            //         $messageBag->add('start_date', 'คุณมีการลาในวันที่ระบุแล้ว');
-            //     }
-            // }
-
-            return [
-                'success' => 0,
-                'errors' => $messageBag->toArray(),
-            ];
-        } else {
-            return [
-                'success' => 1,
-                'errors' => $validator->getMessageBag()->toArray(),
-            ];
-        }
-    }
-
     public function search(Request $req)
     {
         /** Get params from query string */
@@ -73,9 +29,9 @@ class SupplierController extends Controller
                         ->when(!empty($changwat), function($q) use ($changwat) {
                             $q->where('changwat_id', $changwat);
                         })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
+                        ->when(!empty($status), function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         ->paginate(10);
 
         return $suppliers;
@@ -86,6 +42,7 @@ class SupplierController extends Controller
         /** Get params from query string */
         $changwat = $req->get('changwat');
         $name  = $req->get('name');
+        $status = $req->get('status');
 
         $suppliers = Supplier::with('changwat','amphur','tambon','bank')
                         ->when(!empty($name), function($q) use ($name) {
@@ -94,9 +51,9 @@ class SupplierController extends Controller
                         ->when(!empty($changwat), function($q) use ($changwat) {
                             $q->where('changwat_id', $changwat);
                         })
-                        // ->when($status != '', function($q) use ($status) {
-                        //     $q->where('status', $status);
-                        // })
+                        ->when(!empty($status), function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
                         ->paginate(10);
 
         return $suppliers;
@@ -104,7 +61,7 @@ class SupplierController extends Controller
 
     public function getById($id)
     {
-        return Supplier::with('type','group')->find($id);
+        return Supplier::with('changwat','amphur','tambon','bank')->find($id);
     }
 
     public function getInitialFormData()
