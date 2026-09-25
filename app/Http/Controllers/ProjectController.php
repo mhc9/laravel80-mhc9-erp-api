@@ -19,27 +19,26 @@ class ProjectController extends Controller
         /** Get params from query string */
         $year    = $req->get('year');
         $name       = $req->get('name');
-        // $plan       = $req->get('plan');
-        // $status     = $req->get('status');
+        $plan       = $req->get('plan');
+        $status     = $req->get('status');
 
-        $activities = Project::with('owner','division')
-                    ->when(!empty($year), function($q) use ($year) {
-                        $q->where('year', $year);
-                    })
-                    ->when(!empty($name), function($q) use ($name) {
-                        $q->where('name', 'like', '%'.$name.'%');
-                    })
-                    // ->when(!empty($plan), function($q) use ($plan) {
-                    //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                    //         $sq->where('plan_id', $plan);
-                    //     });
-                    // })
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
-                    ->paginate(10);
+        $projects = Project::with('owner','division','budget','budget.type','budget.activity')
+                        ->with('budget.activity.project','budget.activity.project.plan')
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
+                        })
+                        ->when(!empty($name), function($q) use ($name) {
+                            $q->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->when(!empty($plan), function($q) use ($plan) {
+                            $q->whereRelation('budget.activity.project', 'plan_id', $plan);
+                        })
+                        ->when($status != '', function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
+                        ->paginate(10);
 
-        return $activities;
+        return $projects;
     }
 
     public function getAll(Request $req)
@@ -47,27 +46,26 @@ class ProjectController extends Controller
         /** Get params from query string */
         $year    = $req->get('year');
         $name       = $req->get('name');
-        // $plan       = $req->get('plan');
-        // $status     = $req->get('status');
+        $plan       = $req->get('plan');
+        $status     = $req->get('status');
 
-        $activities = Project::with('owner','division')
-                    ->when(!empty($year), function($q) use ($year) {
-                        $q->where('year', $year);
-                    })
-                    ->when(!empty($name), function($q) use ($name) {
-                        $q->where('name', 'like', '%'.$name.'%');
-                    })
-                    // ->when(!empty($plan), function($q) use ($plan) {
-                    //     $q->whereHas('project.plan', function($sq) use ($plan) {
-                    //         $sq->where('plan_id', $plan);
-                    //     });
-                    // })
-                    // ->when($status != '', function($q) use ($status) {
-                    //     $q->where('status', $status);
-                    // })
-                    ->get();
+        $projects = Project::with('owner','division','budget','budget.type','budget.activity')
+                        ->with('budget.activity.project','budget.activity.project.plan')
+                        ->when(!empty($year), function($q) use ($year) {
+                            $q->where('year', $year);
+                        })
+                        ->when(!empty($name), function($q) use ($name) {
+                            $q->where('name', 'like', '%'.$name.'%');
+                        })
+                        ->when(!empty($plan), function($q) use ($plan) {
+                            $q->whereRelation('budget.activity.project', 'plan_id', $plan);
+                        })
+                        ->when($status != '', function($q) use ($status) {
+                            $q->where('status', $status);
+                        })
+                        ->get();
 
-        return $activities;
+        return $projects;
     }
 
     public function getById($id)
@@ -88,24 +86,24 @@ class ProjectController extends Controller
     public function store(Request $req)
     {
         try {
-            $budget = new Project();
-            $budget->name           = $req['name'];
-            $budget->year           = $req['year'];
-            $budget->project_type_id = $req['project_type_id'];
-            $budget->budget_id      = $req['budget_id'];
-            $budget->department_id  = $req['department_id'];
-            $budget->division_id    = $req['division_id'];
-            $budget->owner_id       = $req['owner_id'];
-            $budget->from_date      = $req['from_date'];
-            $budget->to_date        = $req['to_date'];
-            $budget->remark         = $req['remark'];
-            $budget->status         = 1;
+            $project = new Project();
+            $project->name           = $req['name'];
+            $project->year           = $req['year'];
+            $project->project_type_id = $req['project_type_id'];
+            $project->budget_id      = $req['budget_id'];
+            $project->department_id  = $req['department_id'];
+            $project->division_id    = $req['division_id'];
+            $project->owner_id       = $req['owner_id'];
+            $project->from_date      = $req['from_date'];
+            $project->to_date        = $req['to_date'];
+            $project->remark         = $req['remark'];
+            $project->status         = 1;
 
-            if($budget->save()) {
+            if($project->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Insertion successfully!!',
-                    'Budget'    => $budget
+                    'project'    => $project
                 ];
             } else {
                 return [
@@ -124,23 +122,23 @@ class ProjectController extends Controller
     public function update(Request $req, $id)
     {
         try {
-            $budget = Project::find($id);
-            $budget->name           = $req['name'];
-            $budget->year           = $req['year'];
-            $budget->project_type_id = $req['project_type_id'];
-            $budget->budget_id      = $req['budget_id'];
-            $budget->department_id  = $req['department_id'];
-            $budget->division_id    = $req['division_id'];
-            $budget->owner_id       = $req['owner_id'];
-            $budget->from_date      = $req['from_date'];
-            $budget->to_date        = $req['to_date'];
-            $budget->remark         = $req['remark'];
+            $project = Project::find($id);
+            $project->name           = $req['name'];
+            $project->year           = $req['year'];
+            $project->project_type_id = $req['project_type_id'];
+            $project->budget_id      = $req['budget_id'];
+            $project->department_id  = $req['department_id'];
+            $project->division_id    = $req['division_id'];
+            $project->owner_id       = $req['owner_id'];
+            $project->from_date      = $req['from_date'];
+            $project->to_date        = $req['to_date'];
+            $project->remark         = $req['remark'];
 
-            if($budget->save()) {
+            if($project->save()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Updating successfully!!',
-                    'Budget'  => $budget
+                    'project'   => $project
                 ];
             } else {
                 return [
@@ -159,9 +157,9 @@ class ProjectController extends Controller
     public function destroy(Request $req, $id)
     {
         try {
-            $budget = Project::find($id);
+            $project = Project::find($id);
 
-            if($budget->delete()) {
+            if($project->delete()) {
                 return [
                     'status'    => 1,
                     'message'   => 'Deleting successfully!!',
