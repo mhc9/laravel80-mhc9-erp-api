@@ -34,6 +34,9 @@ class BudgetExpense extends Model
         'target_details' => 'array', // Automatically handles JSON conversion
     ];
 
+    /** Append the custom attribute */
+    protected $appends = ['net_total'];
+
     /** TODO: Boot method to set the UUID automatically */
     protected static function boot()
     {
@@ -65,5 +68,10 @@ class BudgetExpense extends Model
     public function details()
     {
         return $this->hasMany(BudgetExpenseDetail::class, 'budget_expense_id', 'id');
+    }
+
+    public function getNetTotalAttribute()
+    {
+        return $this->details()->sum('net_total');
     }
 }
