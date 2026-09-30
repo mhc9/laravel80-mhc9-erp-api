@@ -121,9 +121,15 @@ class BudgetExpenseController extends Controller
     {
         try {
             if($this->budgetExpenseService->storeDetails($id, $req->all())) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
                 return [
-                    'status'    => 1,
-                    'message'   => 'Insertion successfully!!',
+                    'status'            => 1,
+                    'message'           => 'Insertion successfully!!',
+                    'budget_expense'    => $budgetExpense
                 ];
             } else {
                 return [
@@ -143,9 +149,15 @@ class BudgetExpenseController extends Controller
     {
         try {
             if($this->budgetExpenseService->updateDetails($id, $detailId, $req->all())) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
                 return [
-                    'status'    => 1,
-                    'message'   => 'Update successfully!!',
+                    'status'            => 1,
+                    'message'           => 'Update successfully!!',
+                    'budget_expense'    => $budgetExpense
                 ];
             } else {
                 return [

@@ -27,6 +27,13 @@ class BudgetExpenseDetail extends Model
     /** Set all the fields mass assignable */
     protected $guarded = [];
 
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'target_details' => 'array', // Automatically handles JSON conversion
+    ];
+
     /** TODO: Boot method to set the UUID automatically */
     protected static function boot()
     {

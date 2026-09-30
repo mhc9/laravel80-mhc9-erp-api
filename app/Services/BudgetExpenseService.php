@@ -44,11 +44,14 @@ class BudgetExpenseService extends BaseService
                             ->when(!empty($params['type']), function($q) use ($params) {
                                 $q->where('expense_type_id', $params['type']);
                             })
-                            ->when(!empty($params['plan']), function($q) use ($params) {
-                                $q->whereRelation('budget.activity.project', 'plan_id', $params['plan']);
+                            ->when(!empty($params['budget']), function($q) use ($params) {
+                                $q->where('budget_id', $params['budget']);
                             })
                             ->when(!empty($params['status']), function($q) use ($params) {
                                 $q->where('status', $params['status']);
+                            })
+                            ->when(!empty($params['plan']), function($q) use ($params) {
+                                $q->whereRelation('budget.activity.project', 'plan_id', $params['plan']);
                             });
 
         return $all ?  $collections->get() : $collections->paginate($perPage);
