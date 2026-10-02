@@ -22,8 +22,27 @@ class EmployeeController extends Controller
     public function search(Request $req)
     {
         $limit = $req->query('limit', 10);
+        $employees = $this->employeeService->search($req->all(), false, $limit);
 
-        return $this->employeeService->search($req->all(), false, $limit)->makeHidden(['face_descriptor','created_at','updated_at']);
+        /** Hide sensitive fields from the response, if the request is for a paginated response */
+        if ($employees instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $employees->setCollection(
+                $employees->getCollection()->map(function($employee) {
+                    $employee->isRegistered = $employee->face_descriptor ? true : false;
+
+                    return $employee->makeHidden(['face_descriptor','created_at','updated_at']);
+                })
+            );
+
+            return $employees;
+        }
+
+        /** Hide sensitive fields from the response, if the request is for a non-paginated response */
+        return $employees->map(function($employee) {
+                    $employee->isRegistered = $employee->face_descriptor ? true : false;
+
+                    return $employee->makeHidden(['face_descriptor','created_at','updated_at']);
+                });
     }
 
     public function getAll()
