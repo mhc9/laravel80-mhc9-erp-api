@@ -172,4 +172,105 @@ class BudgetExpenseController extends Controller
             ];
         }
     }
+
+    public function destroyDetails(Request $req, $id, $detailId)
+    {
+        try {
+            if($this->budgetExpenseService->destroyDetails($id, $detailId)) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
+                return [
+                    'status'            => 1,
+                    'message'           => 'Delete successfully!!',
+                    'budget_expense'    => $budgetExpense
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function getWithholdingTax(Request $req, $id, $detailId)
+    {
+        try {
+            if($withholdingTax = $this->budgetExpenseService->getWithholdingTax($id, $detailId)) {
+                $supplier = $withholdingTax->supplier->load('changwat','amphur','tambon','bank');
+
+                return [
+                    'id'    => $withholdingTax->id,
+                    'certificate_no' => $withholdingTax->voucher_no . ' / ' . $withholdingTax->year,
+                    'fiscal_year'   => $withholdingTax->year,
+                    'payer' => [
+                        'name'      => 'ศูนย์สุขภาพจิตที่ 9',
+                        'address'   => '86 ถ.ช้างเผือก ต.ในเมือง อ.เมือง จ.นครราชสีมา 30000',
+                        'tax_id'    => '0994002880291'
+                    ],
+                    'payment_document' => [
+                        'document_no'   => $withholdingTax->voucher_no . ' / ' . $withholdingTax->year,
+                        'document_date' => ''
+                    ],
+                    'payee' => [
+                        'name'      => $supplier->name,
+                        'address'   => $supplier->full_address,
+                        'tax_id'    => $supplier->tax_no
+                    ],
+                    'tax_items' => [[
+                        'id'            => $withholdingTax->id,
+                        'tax_type'      => $withholdingTax->supplier->tax_type_id == 1 ? 'PERSONAL_INCOME_TAX' : 'CORPORATE_INCOME_TAX',
+                        'income_type'   => '',
+                        'payment_date'  => $withholdingTax->paid_at,
+                        'amount'        => $withholdingTax->supplier->tax_type_id == 1 ? $withholdingTax->amount : $withholdingTax->base_amount,
+                        'tax_amount'    => $withholdingTax->tax_amount
+                    ]],
+                    'total_income' => $withholdingTax->supplier->tax_type_id == 1 ? $withholdingTax->amount : $withholdingTax->base_amount,
+                    'total_tax' => $withholdingTax->tax_amount,
+                    'total_tax_text' => baht_text($withholdingTax->tax_amount)
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function getVoucherAttachment(Request $req, $id, $detailId)
+    {
+        try {
+            if($voucherAttachment = $this->budgetExpenseService->getVoucherAttachment($id, $detailId)) {
+                return [
+                    'status'            => 1,
+                    'message'           => 'Get voucher attachment successfully!!',
+                    'voucher_attachment'   => $voucherAttachment
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
 }
