@@ -255,10 +255,47 @@ class BudgetExpenseController extends Controller
     {
         try {
             if($voucherAttachment = $this->budgetExpenseService->getVoucherAttachment($id, $detailId)) {
+                $supplier = $voucherAttachment->supplier->load('changwat','amphur','tambon','bank');
+
                 return [
-                    'status'            => 1,
-                    'message'           => 'Get voucher attachment successfully!!',
-                    'voucher_attachment'   => $voucherAttachment
+                    'id'                => $voucherAttachment->id,
+                    'formCode'          => '4117',
+                    'taxpayerEntityType' => $voucherAttachment->supplier->tax_type_id == 1 ? 'INDIVIDUAL' : 'JURISTIC_PERSON',
+                    'agency' => [
+                        'name'          => 'ศูนย์สุขภาพจิตที่ 9',
+                        'address'       => '86 ถ.ช้างเผือก ต.ในเมือง อ.เมือง จ.นครราชสีมา',
+                        'postalCode'    => '30000',
+                        'telephone'     => '044-253-000',
+                        'fax'           => '044-253-000'
+                    ],
+                    'paymentRequestNo'  => $voucherAttachment->voucher_no,
+                    'receiptNo'         => null,
+                    'month'             => $voucherAttachment->month,
+                    'buddhistYear'      => (int)$voucherAttachment->year + 543,
+                    'items' => [[
+                        'id'            => $voucherAttachment->id,
+                        'sequence'      => '1',
+                        'taxId'         => $supplier->tax_no,
+                        'branchNo'      => '',
+                        'vendorName'    => $supplier->name,
+                        'vendorAddress' => $supplier->full_address,
+                        'incomeType'    => '',
+                        'voucherAmount' => $voucherAttachment->amount,
+                        'vatAmount'     => $voucherAttachment->supplier->tax_type_id == 1 ? '0.00' : $voucherAttachment->vat_amount,
+                        'goodsServiceAmount' => $voucherAttachment->supplier->tax_type_id == 1 ? $voucherAttachment->amount : $voucherAttachment->base_amount,
+                        'withholdingTaxAmount' => $voucherAttachment->tax_amount,
+                        'penaltyAmount' => '0.00',
+                        'netAmount'     => $voucherAttachment->net_total
+                    ]],
+                    'totals' => [
+                        'voucherAmount' => $voucherAttachment->amount,
+                        'vatAmount' => $voucherAttachment->supplier->tax_type_id == 1 ? '0.00' : $voucherAttachment->vat_amount,
+                        'goodsServiceAmount' => $voucherAttachment->supplier->tax_type_id == 1 ? $voucherAttachment->amount : $voucherAttachment->base_amount,
+                        'withholdingTaxAmount' => $voucherAttachment->tax_amount,
+                        'penaltyAmount' => '0.00',
+                        'netAmount' => $voucherAttachment->net_total
+                    ],
+                    'signer'            => null
                 ];
             } else {
                 return [
