@@ -209,15 +209,15 @@ class BudgetExpenseController extends Controller
 
                 return [
                     'id'    => $withholdingTax->id,
-                    'certificate_no' => $withholdingTax->voucher_no . ' / ' . $withholdingTax->year,
-                    'fiscal_year'   => $withholdingTax->year,
+                    'certificate_no' => $withholdingTax->voucher_no . ' / ' . ($withholdingTax->year + 543),
+                    'fiscal_year'   => $withholdingTax->year + 543,
                     'payer' => [
                         'name'      => 'ศูนย์สุขภาพจิตที่ 9',
                         'address'   => '86 ถ.ช้างเผือก ต.ในเมือง อ.เมือง จ.นครราชสีมา 30000',
                         'tax_id'    => '0994002880291'
                     ],
                     'payment_document' => [
-                        'document_no'   => $withholdingTax->voucher_no . ' / ' . $withholdingTax->year,
+                        'document_no'   => $withholdingTax->voucher_no . ' / ' . ($withholdingTax->year + 543),
                         'document_date' => ''
                     ],
                     'payee' => [
