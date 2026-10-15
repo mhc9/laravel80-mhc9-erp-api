@@ -244,6 +244,8 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/budget-expenses/{id}/details/store', [App\Http\Controllers\BudgetExpenseController::class, 'storeDetails']);
     Route::post('/budget-expenses/{id}/details/{detailId}/update', [App\Http\Controllers\BudgetExpenseController::class, 'updateDetails']);
     Route::post('/budget-expenses/{id}/details/{detailId}/delete', [App\Http\Controllers\BudgetExpenseController::class, 'destroyDetails']);
+    Route::get('/budget-expenses/{id}/details/{detailId}/withholding-tax', [App\Http\Controllers\BudgetExpenseController::class, 'getWithholdingTax']);
+    Route::get('/budget-expenses/{id}/details/{detailId}/voucher-attachment', [App\Http\Controllers\BudgetExpenseController::class, 'getVoucherAttachment']);
 
     /** projects */
     Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'getAll']);

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use App\Services\BaseService;
 use App\Repositories\EmployeeRepository;
 use App\Models\Prefix;
@@ -37,7 +39,7 @@ class EmployeeService extends BaseService
         ]);
     }
 
-    public function search(array $params, $all = false, $perPage = 10)
+    public function search(array $params, $all = false, $perPage = 10): LengthAwarePaginator | Collection
     {
         $memberLists = [];
         if (!empty($params['department'])) {
@@ -61,7 +63,7 @@ class EmployeeService extends BaseService
                                 $q->where('status', $params['status']);
                             });
 
-        return $all ?  $collections->get() : $collections->paginate($perPage);
+        return $all ? $collections->get() : $collections->paginate($perPage);
     }
 
     public function getFormData()

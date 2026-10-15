@@ -87,4 +87,46 @@ class BudgetExpenseService extends BaseService
         $detail->update($data);
         return $detail;
     }
+
+    public function destroyDetails($id, $detailId)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        $detail = $budgetExpense->details()->find($detailId);
+        if (!$detail) {
+            return null;
+        }
+
+        return $detail->delete();
+    }
+
+    public function getWithholdingTax($id, $detailId)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        $detail = $budgetExpense->details()->with('supplier')->find($detailId);
+        if (!$detail) {
+            return null;
+        }
+
+        return $detail;
+    }
+
+    public function getVoucherAttachment($id, $detailId)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        $detail = $budgetExpense->details()->with('supplier')->find($detailId);
+        if (!$detail) {
+            return null;
+        }
+
+        return $detail;
+    }
 }

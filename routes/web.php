@@ -59,14 +59,14 @@ Route::get('/redirect', function (Request $request) {
     $request->session()->put('state', $state = Str::random(40));
 
     $query = http_build_query([
-        'client_id' => '3',
-        'redirect_uri' => 'http://localhost:32772/laravel80-mhc9-erp/public/callback',
+        'client_id'     => env('OAUTH_CLIENT_ID'),
+        'redirect_uri'  => env('OAUTH_REDIRECT_URL'),
         'response_type' => 'code',
-        'scope' => '',
-        'prompt' => 'none', // "none", "consent", or "login"
+        'scope'         => '',
+        'state'         => $state,
     ]);
 
-    return redirect('http://localhost:5000/oauth/authorize?'.$query);
+    return redirect(env('OAUTH_HOST_URL').'/oauth/authorize?'.$query);
 });
 
 Route::get('/callback', function (Request $request) {
@@ -78,11 +78,12 @@ Route::get('/callback', function (Request $request) {
         'Invalid state value.'
     );
 
-    $response = Http::asForm()->post('http://localhost:5000/oauth/token', [
-        'grant_type' => 'authorization_code',
-        'client_id' => '3',
-        'redirect_uri' => 'http://localhost:32772/laravel80-mhc9-erp/public/callback',
-        'code' => $request->code,
+    $response = Http::asForm()->post(env('OAUTH_HOST_URL').'/oauth/token', [
+        'grant_type'    => 'authorization_code',
+        'client_id'     => env('OAUTH_CLIENT_ID'),
+        'client_secret' => env('OAUTH_CLIENT_SECRET'),
+        'redirect_uri'  => env('OAUTH_REDIRECT_URL'),
+        'code'          => $request->code,
     ]);
 
     return $response->json();
