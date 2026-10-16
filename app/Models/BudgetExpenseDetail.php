@@ -52,6 +52,11 @@ class BudgetExpenseDetail extends Model
         return $this->belongsTo(BudgetExpense::class, 'budget_expense_id', 'id');
     }
 
+    public function source()
+    {
+        return $this->belongsTo(BudgetExpenseType::class, 'source_id', 'id');
+    }
+
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'paid_to', 'id');
