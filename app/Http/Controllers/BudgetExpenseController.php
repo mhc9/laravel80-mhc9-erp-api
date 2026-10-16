@@ -279,7 +279,7 @@ class BudgetExpenseController extends Controller
                         'branchNo'      => '',
                         'vendorName'    => $supplier->name,
                         'vendorAddress' => $supplier->full_address,
-                        'incomeType'    => '',
+                        'incomeType'    => $voucherAttachment->source->name ?? '',
                         'voucherAmount' => $voucherAttachment->amount,
                         'vatAmount'     => $voucherAttachment->supplier->tax_type_id == 1 ? '0.00' : $voucherAttachment->vat_amount,
                         'goodsServiceAmount' => $voucherAttachment->supplier->tax_type_id == 1 ? $voucherAttachment->amount : $voucherAttachment->base_amount,

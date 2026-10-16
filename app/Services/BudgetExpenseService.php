@@ -108,7 +108,7 @@ class BudgetExpenseService extends BaseService
             return null;
         }
 
-        $detail = $budgetExpense->details()->with('supplier')->find($detailId);
+        $detail = $budgetExpense->details()->with('supplier', 'source')->find($detailId);
         if (!$detail) {
             return null;
         }
@@ -122,7 +122,7 @@ class BudgetExpenseService extends BaseService
             return null;
         }
 
-        $detail = $budgetExpense->details()->with('supplier')->find($detailId);
+        $detail = $budgetExpense->details()->with('supplier', 'source')->find($detailId);
         if (!$detail) {
             return null;
         }
