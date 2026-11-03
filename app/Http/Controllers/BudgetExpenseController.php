@@ -201,6 +201,90 @@ class BudgetExpenseController extends Controller
         }
     }
 
+    public function storePayments(Request $req, $id)
+    {
+        try {
+            if($this->budgetExpenseService->storePayments($id, $req->all())) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
+                return [
+                    'status'            => 1,
+                    'message'           => 'Insertion successfully!!',
+                    'budget_expense'    => $budgetExpense
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function updatePayments(Request $req, $id, $paymentId)
+    {
+        try {
+            if($this->budgetExpenseService->updatePayments($id, $paymentId, $req->all())) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
+                return [
+                    'status'            => 1,
+                    'message'           => 'Update successfully!!',
+                    'budget_expense'    => $budgetExpense
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function destroyPayments(Request $req, $id, $paymentId)
+    {
+        try {
+            if($this->budgetExpenseService->destroyPayments($id, $paymentId)) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
+                return [
+                    'status'            => 1,
+                    'message'           => 'Delete successfully!!',
+                    'budget_expense'    => $budgetExpense
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
     public function getWithholdingTax(Request $req, $id, $detailId)
     {
         try {
