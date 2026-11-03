@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 /*
@@ -54,37 +55,3 @@ Route::get('/invitations/report', [App\Http\Controllers\InvitationController::cl
 
 /** WPM Car */
 Route::get('/cars', [App\Http\Controllers\CarController::class, 'index']);
-
-Route::get('/redirect', function (Request $request) {
-    $request->session()->put('state', $state = Str::random(40));
-
-    $query = http_build_query([
-        'client_id'     => env('OAUTH_CLIENT_ID'),
-        'redirect_uri'  => env('OAUTH_REDIRECT_URL'),
-        'response_type' => 'code',
-        'scope'         => '',
-        'state'         => $state,
-    ]);
-
-    return redirect(env('OAUTH_HOST_URL').'/oauth/authorize?'.$query);
-});
-
-Route::get('/callback', function (Request $request) {
-    $state = $request->session()->pull('state');
-
-    throw_unless(
-        strlen($state) > 0 && $state === $request->state,
-        InvalidArgumentException::class,
-        'Invalid state value.'
-    );
-
-    $response = Http::asForm()->post(env('OAUTH_HOST_URL').'/oauth/token', [
-        'grant_type'    => 'authorization_code',
-        'client_id'     => env('OAUTH_CLIENT_ID'),
-        'client_secret' => env('OAUTH_CLIENT_SECRET'),
-        'redirect_uri'  => env('OAUTH_REDIRECT_URL'),
-        'code'          => $request->code,
-    ]);
-
-    return $response->json();
-});
