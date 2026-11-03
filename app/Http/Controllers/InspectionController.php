@@ -146,7 +146,10 @@ class InspectionController extends Controller
                 $order->save();
 
                 /** อัพเดตสถานะของคำขอเป็น 5=ตรวจรับแล้ว */
-                Requisition::where('id', $order->requisition_id)->update(['status' => 5]);
+                $requisition = Requisition::find($order->requisition_id);
+                if ($requisition && $requisition->requisition_type_id == 1) {
+                    $requisition->update(['status' => 5]);
+                }
 
                 return [
                     'status'        => 1,
@@ -238,7 +241,10 @@ class InspectionController extends Controller
                 $order->save();
 
                 /** อัพเดตสถานะของคำขอเป็น 4=จัดซื้อแล้ว */
-                Requisition::where('id', $order->requisition_id)->update(['status' => 4]);
+                $requisition = Requisition::find($order->requisition_id);
+                if ($requisition && $requisition->requisition_type_id == 1) {
+                    $requisition->update(['status' => 4]);
+                }
 
                 return [
                     'status'     => 1,

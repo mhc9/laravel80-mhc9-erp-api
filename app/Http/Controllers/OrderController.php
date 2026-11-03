@@ -134,7 +134,7 @@ class OrderController extends Controller
                 }
 
                 /** อัพเดตสถานะของคำขอเป็น 4=จัดซื้อแล้ว */
-                $requisition = Requisition::where('id', $order->requisition_id)->first();
+                $requisition = Requisition::find($order->requisition_id);
                 if ($requisition && $requisition->requisition_type_id == 1) {
                     $requisition->update(['status' => 4]);
                 } else {
@@ -240,7 +240,12 @@ class OrderController extends Controller
 
             if($order->delete()) {
                 /** อัพเดตสถานะของคำขอเป็น 3=ประกาศผู้ชนะ */
-                Requisition::where('id', $order->requisition_id)->update(['status' => 3]);
+                $requisition = Requisition::find($order->requisition_id);
+                if ($requisition && $requisition->requisition_type_id == 1) {
+                    $requisition->update(['status' => 3]);
+                } else {
+                    $requisition->update(['net_total' => $requisition->net_total + $order->net_total]);
+                }
 
                 return [
                     'status'    => 1,
