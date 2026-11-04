@@ -267,6 +267,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/budget-expenses/{id}/details/{detailId}/delete', [App\Http\Controllers\BudgetExpenseController::class, 'destroyDetails']);
     Route::get('/budget-expenses/{id}/details/{detailId}/withholding-tax', [App\Http\Controllers\BudgetExpenseController::class, 'getWithholdingTax']);
     Route::get('/budget-expenses/{id}/details/{detailId}/voucher-attachment', [App\Http\Controllers\BudgetExpenseController::class, 'getVoucherAttachment']);
+    Route::get('/budget-expenses/{id}/details/{paymentId}/disbursement-memo', [App\Http\Controllers\BudgetExpenseController::class, 'getDisbursementMemo']);
 
     /** projects */
     Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'getAll']);
