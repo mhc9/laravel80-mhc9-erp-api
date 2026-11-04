@@ -35,7 +35,7 @@ class BudgetExpenseService extends BaseService
 
         $this->repo->setRelations([
             'budget','budget.type','budget.activity','budget.activity.project','budget.activity.project.plan',
-            'expenseType','project','details','details.supplier'
+            'expenseType','project','details','details.source','payments','payments.supplier'
         ]);
     }
 
