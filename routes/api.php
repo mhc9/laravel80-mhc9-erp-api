@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 /**
  * ===============================
  * Public routes
@@ -35,26 +31,51 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function() {
     Route::get('/me', [App\Http\Controllers\AuthController::class, 'me']);
 });
 
-/** Test db connection */
-Route::get('/db-connection/{dbname}', function ($dbname) {
-    try {
-        if ($dbname == 0) {
-            $dbconnect = \DB::connection()->getPDO();
-            $dbname = \DB::connection()->getDatabaseName();
-        } else {
-            $dbconnect = \DB::connection($dbname)->getPDO();
-            $dbname = \DB::connection($dbname)->getDatabaseName();
-        }
+/**
+ * ===============================
+ * Protected routes with session cookie
+ * ===============================
+ */
+Route::middleware('auth:sanctum')->group(function() {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
-        echo "Connected successfully to the database. Database name is :".$dbname;
-    } catch(Exception $e) {
-        echo $e->getMessage();
-    }
+    Route::post('/logout', function (Request $request) {
+        // 1. Log the user out of the web guard
+        Auth::guard('web')->logout();
+
+        // 2. Invalidate the user's session
+        $request->session()->invalidate();
+
+        // 3. Regenerate the CSRF token to prevent fixation attacks
+        $request->session()->regenerateToken();
+
+        // 4. Return an empty successful response
+        return response()->noContent();
+    })->name('logout');
+
+    /** Test db connection */
+    Route::get('/db-connection/{dbname}', function ($dbname) {
+        try {
+            if ($dbname == 0) {
+                $dbconnect = \DB::connection()->getPDO();
+                $dbname = \DB::connection()->getDatabaseName();
+            } else {
+                $dbconnect = \DB::connection($dbname)->getPDO();
+                $dbname = \DB::connection($dbname)->getDatabaseName();
+            }
+
+            echo "Connected successfully to the database. Database name is :".$dbname;
+        } catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    });
 });
 
 /**
  * ===============================
- * Authenticated routes
+ * Protected routes with access token
  * ===============================
  */
 Route::middleware('auth:api')->group(function() {
@@ -246,6 +267,7 @@ Route::middleware('auth:api')->group(function() {
     Route::post('/budget-expenses/{id}/details/{detailId}/delete', [App\Http\Controllers\BudgetExpenseController::class, 'destroyDetails']);
     Route::get('/budget-expenses/{id}/details/{detailId}/withholding-tax', [App\Http\Controllers\BudgetExpenseController::class, 'getWithholdingTax']);
     Route::get('/budget-expenses/{id}/details/{detailId}/voucher-attachment', [App\Http\Controllers\BudgetExpenseController::class, 'getVoucherAttachment']);
+    Route::get('/budget-expenses/{id}/details/{paymentId}/disbursement-memo', [App\Http\Controllers\BudgetExpenseController::class, 'getDisbursementMemo']);
 
     /** projects */
     Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'getAll']);
@@ -414,7 +436,7 @@ Route::middleware('auth:api')->group(function() {
 
 /**
  * ===============================
- * API Key protected routes
+ * Protected routes with API key
  * ===============================
  */
 Route::middleware('api.key')->group(function() {

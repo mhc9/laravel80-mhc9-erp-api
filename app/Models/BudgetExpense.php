@@ -70,8 +70,13 @@ class BudgetExpense extends Model
         return $this->hasMany(BudgetExpenseDetail::class, 'budget_expense_id', 'id');
     }
 
+    public function payments()
+    {
+        return $this->hasMany(BudgetExpensePayment::class, 'budget_expense_id', 'id');
+    }
+
     public function getNetTotalAttribute()
     {
-        return $this->details()->sum('net_total');
+        return $this->payments()->sum('net_total');
     }
 }

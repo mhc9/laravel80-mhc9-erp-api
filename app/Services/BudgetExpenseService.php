@@ -16,6 +16,7 @@ use App\Models\Division;
 use App\Models\Member;
 use App\Models\BudgetExpense;
 use App\Models\BudgetExpenseDetail;
+use App\Models\BudgetExpensePayment;
 
 
 class BudgetExpenseService extends BaseService
@@ -34,7 +35,7 @@ class BudgetExpenseService extends BaseService
 
         $this->repo->setRelations([
             'budget','budget.type','budget.activity','budget.activity.project','budget.activity.project.plan',
-            'expenseType','project','details','details.supplier'
+            'expenseType','project','details','details.source','payments','payments.supplier'
         ]);
     }
 
@@ -102,6 +103,44 @@ class BudgetExpenseService extends BaseService
         return $detail->delete();
     }
 
+    public function storePayments($id, array $data)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        return $budgetExpense->payments()->create($data);
+    }
+
+    public function updatePayments($id, $paymentId, array $data)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        $payment = $budgetExpense->payments()->find($paymentId);
+        if (!$payment) {
+            return null;
+        }
+
+        $payment->update($data);
+        return $payment;
+    }
+
+    public function destroyPayments($id, $paymentId)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        $payment = $budgetExpense->payments()->find($paymentId);
+        if (!$payment) {
+            return null;
+        }
+
+        return $payment->delete();
+    }
+
     public function getWithholdingTax($id, $detailId)
     {
         if (!$budgetExpense = $this->repo->findOne($id)) {
@@ -128,5 +167,19 @@ class BudgetExpenseService extends BaseService
         }
 
         return $detail;
+    }
+
+    public function getDisbursementMemo($id, $paymentId)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        $payment = $budgetExpense->payments()->with('supplier')->find($paymentId);
+        if (!$payment) {
+            return null;
+        }
+
+        return $payment;
     }
 }

@@ -201,6 +201,90 @@ class BudgetExpenseController extends Controller
         }
     }
 
+    public function storePayments(Request $req, $id)
+    {
+        try {
+            if($this->budgetExpenseService->storePayments($id, $req->all())) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
+                return [
+                    'status'            => 1,
+                    'message'           => 'Insertion successfully!!',
+                    'budget_expense'    => $budgetExpense
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function updatePayments(Request $req, $id, $paymentId)
+    {
+        try {
+            if($this->budgetExpenseService->updatePayments($id, $paymentId, $req->all())) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
+                return [
+                    'status'            => 1,
+                    'message'           => 'Update successfully!!',
+                    'budget_expense'    => $budgetExpense
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function destroyPayments(Request $req, $id, $paymentId)
+    {
+        try {
+            if($this->budgetExpenseService->destroyPayments($id, $paymentId)) {
+                /** Update the main budget expense amount */
+                $budgetExpense = $this->budgetExpenseService->getById($id);
+                $budgetExpense->amount = $budgetExpense->net_total;
+                $budgetExpense->save();
+
+                return [
+                    'status'            => 1,
+                    'message'           => 'Delete successfully!!',
+                    'budget_expense'    => $budgetExpense
+                ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
     public function getWithholdingTax(Request $req, $id, $detailId)
     {
         try {
@@ -297,6 +381,56 @@ class BudgetExpenseController extends Controller
                     ],
                     'signer'            => null
                 ];
+            } else {
+                return [
+                    'status'    => 0,
+                    'message'   => 'Something went wrong!!'
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'status'    => 0,
+                'message'   => $ex->getMessage()
+            ];
+        }
+    }
+
+    public function getDisbursementMemo(Request $req, $id, $paymentId)
+    {
+        try {
+            if($memo = $this->budgetExpenseService->getDisbursementMemo($id, $paymentId)) {
+                $supplier = $memo->supplier->load('changwat','amphur','tambon','bank');
+                $expense = $this->budgetExpenseService->getById($id);
+                $userEmployee = auth()->user()->employee->load('prefix','position','level');
+                $fiscalYear = thainumDigit((int)$expense->year + 543);
+
+                return response()->json([
+                    'id'                => $memo->id,
+                    'document_no'       => thainumDigit($memo->doc_no),
+                    'document_date'     => $memo->doc_date,
+                    'department'        => thainumDigit('ศูนย์สุขภาพจิตที่ 9'),
+                    'department_unit'   => 'งานการเงินและบัญชี',
+                    'phone'             => thainumDigit('0 4425 6729'),
+                    'fax'               => thainumDigit('0 4425 6730'),
+                    'subject'           => 'ขออนุมัติเบิกเงิน' . $expense->budget->type->name . ' ประจำปีงบประมาณ ' . $fiscalYear,
+                    'recipient'         => 'อธิบดีกรมสุขภาพจิต',
+                    'fiscal_year'       => $fiscalYear,
+                    'plan'              => thainumDigit($expense->budget->activity->project->plan->name),
+                    'output'            => thainumDigit($expense->budget->activity->project->name),
+                    'activity'          => thainumDigit($expense->budget->activity->name),
+                    'budget_type'       => thainumDigit($expense->budget->type->name),
+                    'payee_name'        => thainumDigit($supplier->name),
+                    'expense_description' => thainumDigit($expense->expenseType->name . ($expense->project->project_type_id == 1 ? ' ' . $expense->project->name : ' (' . $expense->project->name . ')')),
+                    'expense_period'    => MONTH_LONG_NAMES[str_pad($memo->month, 2, '0', STR_PAD_LEFT)] . ' ' . thainumDigit((int)$memo->year + 543),
+                    'amount'            => $memo->amount,
+                    'requester_name'    => $userEmployee->prefix->name . $userEmployee->firstname . ' ' . $userEmployee->lastname,
+                    'requester_position' => $userEmployee->position->name . $userEmployee->level->name,
+                    'approver_name'     => 'นางสาวจุฑามาศ วรรณศิลป์',
+                    'approver_position' => thainumDigit('ผู้อำนวยการศูนย์สุขภาพจิตที่ 9'),
+                    'approved_date'     => MONTH_LONG_NAMES[str_pad(Carbon::now()->month, 2, '0', STR_PAD_LEFT)] . ' ' . thainumDigit((int)Carbon::now()->year + 543),
+                    'reference_no'      => thainumDigit($memo->ref_no),
+                    'disbursement_no'   => thainumDigit($memo->voucher_no),
+                ]);
             } else {
                 return [
                     'status'    => 0,
