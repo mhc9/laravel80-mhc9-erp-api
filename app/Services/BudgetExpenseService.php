@@ -168,4 +168,18 @@ class BudgetExpenseService extends BaseService
 
         return $detail;
     }
+
+    public function getDisbursementMemo($id, $paymentId)
+    {
+        if (!$budgetExpense = $this->repo->findOne($id)) {
+            return null;
+        }
+
+        $payment = $budgetExpense->payments()->with('supplier')->find($paymentId);
+        if (!$payment) {
+            return null;
+        }
+
+        return $payment;
+    }
 }
