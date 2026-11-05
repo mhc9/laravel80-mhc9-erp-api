@@ -141,32 +141,32 @@ class BudgetExpenseService extends BaseService
         return $payment->delete();
     }
 
-    public function getWithholdingTax($id, $detailId)
+    public function getWithholdingTax($id, $paymentId)
     {
         if (!$budgetExpense = $this->repo->findOne($id)) {
             return null;
         }
 
-        $detail = $budgetExpense->details()->with('supplier', 'source')->find($detailId);
-        if (!$detail) {
+        $payment = $budgetExpense->payments()->with('supplier')->find($paymentId);
+        if (!$payment) {
             return null;
         }
 
-        return $detail;
+        return $payment;
     }
 
-    public function getVoucherAttachment($id, $detailId)
+    public function getVoucherAttachment($id, $paymentId)
     {
         if (!$budgetExpense = $this->repo->findOne($id)) {
             return null;
         }
 
-        $detail = $budgetExpense->details()->with('supplier', 'source')->find($detailId);
-        if (!$detail) {
+        $payment = $budgetExpense->payments()->with('supplier')->find($paymentId);
+        if (!$payment) {
             return null;
         }
 
-        return $detail;
+        return $payment;
     }
 
     public function getDisbursementMemo($id, $paymentId)

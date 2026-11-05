@@ -285,10 +285,10 @@ class BudgetExpenseController extends Controller
         }
     }
 
-    public function getWithholdingTax(Request $req, $id, $detailId)
+    public function getWithholdingTax(Request $req, $id, $paymentId)
     {
         try {
-            if($withholdingTax = $this->budgetExpenseService->getWithholdingTax($id, $detailId)) {
+            if($withholdingTax = $this->budgetExpenseService->getWithholdingTax($id, $paymentId)) {
                 $supplier = $withholdingTax->supplier->load('changwat','amphur','tambon','bank');
 
                 return [
@@ -335,10 +335,10 @@ class BudgetExpenseController extends Controller
         }
     }
 
-    public function getVoucherAttachment(Request $req, $id, $detailId)
+    public function getVoucherAttachment(Request $req, $id, $paymentId)
     {
         try {
-            if($voucherAttachment = $this->budgetExpenseService->getVoucherAttachment($id, $detailId)) {
+            if($voucherAttachment = $this->budgetExpenseService->getVoucherAttachment($id, $paymentId)) {
                 $supplier = $voucherAttachment->supplier->load('changwat','amphur','tambon','bank');
 
                 return [
